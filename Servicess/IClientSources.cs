@@ -7,6 +7,7 @@ namespace OfficeProject.Servicess
     public interface IClientSources
     {
         Task<List<ClientSources>> GetAll();
-        Task Add(ClientSources clientSource);
+        Task AddOrUpdate(ClientSources clientSource);
+        Task Delete(int clientSourceId);
     }
 }

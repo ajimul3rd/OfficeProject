@@ -179,3 +179,4 @@ E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.pdb
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.genruntimeconfig.cache
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\ref\OfficeProject.dll
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.sourcelink.json

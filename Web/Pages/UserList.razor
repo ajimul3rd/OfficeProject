@@ -23,8 +23,6 @@ else
 
     @if (showAddForm)
     {
-        @* <AuthorizeView Roles="CLIENT" Context="authContext"> *@
-        @* 	<Authorized Context="authContext"> *@
         <div class="card mb-3">
             <div class="card-header">
                 <h4>@(registerModel.UserId == 0 ? "Add New User" : "Edit User")</h4>
@@ -72,7 +70,7 @@ else
                     <div class="form-group mb-3">
                         <label>Role:</label>
                         <InputSelect class="form-control" @bind-Value="registerModel.Role">
-                            <option value="">Select Role</option> @* Keep the empty value for the placeholder *@
+                            <option value="">Select Role</option> 
                             <option value="@UserRole.USER">USER</option>
                             <option value="@UserRole.ADMIN">ADMIN</option>
                             <option value="@UserRole.MANAGER">MANAGER</option>
@@ -119,14 +117,13 @@ else
 
             </div>
         </div>
-        @* 	</Authorized> *@
-        @* </AuthorizeView> *@
+
         <p>@message</p>
     }
-    @* <AuthorizeView Roles="ADMIN"> *@
-    @*     <Authorized> *@
-    <table class="table table-bordered">
-        <thead class="table-info">
+
+    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+        <table class="table table-bordered table-sm custom-tight-table mb-0">
+            <thead class="table-info sticky-header">
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
@@ -157,16 +154,31 @@ else
                     }
                 </tbody>
             </table>
+            </div>
 
-    @*     </Authorized> *@
-    @* </AuthorizeView> *@
-}
+ }
+
+<style>
+    .table-responsive {
+        max-height: 500px;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .sticky-header th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #e0f3ff; /* Same color as you set */
+    }
+</style>
 
 
 @if (!string.IsNullOrEmpty(errorMessage))
 {
     <div class="alert alert-danger">@errorMessage</div>
 }
+
 
 <p>@message</p>
 
