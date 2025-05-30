@@ -1,0 +1,388 @@
+﻿ @page "/add_products"
+@using OfficeProject.Models.DTO
+@using System.ComponentModel.DataAnnotations
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ApiService ApiService
+@using OfficeProject.Web.Pages.DialogModel
+@using System.Text.Json
+
+<h3>Product Management</h3>
+
+<!-- Add Button (Only visible when form is hidden) -->
+@if (!showForm)
+{
+    <div class="mb-3">
+        <button class="btn btn-success" @onclick="ToggleForm">Add Product</button>
+    </div>
+}
+<!-- Form Section -->
+@if (showForm)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@((product.ProductsId.HasValue ? "Edit Product" : "Add New Product"))</h5>
+                    <button type="button" class="btn-close" @onclick="CancelForm" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">@errorMessage</div>
+                    }
+                    <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+                        <ObjectGraphDataAnnotationsValidator />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Alias Name:</label>
+                                <InputText @bind-Value="product.ProductsAlias" class="form-control"
+                                @onblur="@(() => ValidateField(product, nameof(product.ProductsAlias)))" />
+                                <ValidationMessage For="@(() => product.ProductsAlias)" />
+                            </div>
+                            <div class="col-md-6">
+                                <label>Product Name:</label>
+                                <InputText @bind-Value="product.ProductsName" class="form-control"
+                                @onblur="@(() => ValidateField(product, nameof(product.ProductsName)))" />
+                                <ValidationMessage For="@(() => product.ProductsName)" />
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <label>Description:</label>
+                            <InputTextArea @bind-Value="product.ProductsDescription" class="form-control"
+                            @onblur="@(() => ValidateField(product, nameof(product.ProductsDescription)))" />
+                            <ValidationMessage For="@(() => product.ProductsDescription)" />
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label>Selling Price:</label>
+                                <InputNumber @bind-Value="product.ProductsSellingPrice" class="form-control"
+                                @oninput="@(() => editContext?.Validate())" />
+                                <ValidationMessage For="@(() => product.ProductsSellingPrice)" />
+                            </div>
+                            <div class="col-md-6">
+                                <label>Costing Price:</label>
+                                <InputNumber @bind-Value="product.ProductsCostingPrice" class="form-control"
+                                @oninput="@(() => editContext?.Validate())" />
+                                <ValidationMessage For="@(() => product.ProductsCostingPrice)" />
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label>Active:</label><br />
+                                <InputCheckbox class="form-check-input" @bind-Value="product.ProductsStatus" />
+                            </div>
+                            @* <div class="col-md-6"> *@
+                            @*     <label>Entry Date:</label> *@
+                            @*     <InputDate @bind-Value="product.ProductsEntryDate" class="form-control" *@
+                            @*     @onblur="@(() => ValidateField(product, nameof(product.ProductsEntryDate)))" /> *@
+                            @*     <ValidationMessage For="@(() => product.ProductsEntryDate)" /> *@
+                            @* </div> *@
+                            @* <div class="col-md-6 mt-2"> *@
+                            @*     <label>Modification Date:</label> *@
+                            @*     <InputDate @bind-Value="product.ProductsModificationDate" class="form-control" *@
+                            @*     @onblur="@(() => ValidateField(product, nameof(product.ProductsModificationDate)))" /> *@
+                            @*     <ValidationMessage For="@(() => product.ProductsModificationDate)" /> *@
+                            @* </div> *@
+                        </div>
+
+                        <div class="modal-footer mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                @(product.ProductsId.HasValue ? "Update" : "Save")
+                            </button>
+                            <button type="button" class="btn btn-secondary" @onclick="CancelForm">Cancel</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<style>
+    body.modal-open {
+    overflow: hidden;
+    }
+</style>
+
+<!-- Table Section -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Product List</h5>
+        <div class="d-flex">
+            <input type="text" class="form-control me-2" placeholder="Search..." @bind="searchText"
+            @bind:event="oninput" style="width: 200px;" />
+            <select class="form-select" @bind="selectedFilter" style="width: 150px;">
+                <option value="all">All Products</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (tableData == null || !tableData.Any())
+        {
+            <div class="alert alert-info">No products found</div>
+        }
+        else
+        {
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-bordered">
+                    <thead class="table-info sticky-header">
+                        <tr>
+                            <th>Alias</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>C. Price</th>
+                            <th>S. Price</th>
+                            <th>Status</th>
+                            <th>Entry</th>
+                            <th class="d-none d-md-table-cell">Modified</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredProducts)
+                        {
+                            <tr>
+                                <td>@item.ProductsAlias</td>
+                                <td>@item.ProductsName</td>
+                                <td>
+                                    <span class="truncate-text" title="@item.ProductsDescription">
+                                        @item.ProductsDescription
+                                    </span>
+                                </td>
+                                <td>@item.ProductsCostingPrice.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
+                                <td>@item.ProductsSellingPrice.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
+                                <td>
+                                    <button class="btn btn-sm @(item.ProductsStatus ? "btn-success" : "btn-danger")"
+                                    @onclick="() => ToggleProductStatus(item, !item.ProductsStatus)">
+                                        @(item.ProductsStatus ? "Active" : "Inactive")
+                                    </button>
+                                </td>
+                                <td>@item.ProductsEntryDate?.ToString("yyyy-MM-dd")</td>
+                                <td class="d-none d-md-table-cell">@item.ProductsModificationDate?.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @onclick="() => EditProduct(item)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        }
+    </div>
+</div>
+<style>
+    .sticky-header th {
+    position: sticky;
+    top: 0;
+    background-color: #e9f4ff; /* or your header background */
+    z-index: 10;
+    }
+
+    .truncate-text {
+    display: inline-block;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+</style>
+
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+@code {
+    private ClientsDTO? selectedClient;    
+    private ProductsDTO product = new ProductsDTO();
+    private List<ProductsDTO> tableData = new();
+    private EditContext? editContext;
+    private string searchText = "";
+    private string selectedFilter = "all";
+    private bool showForm = false;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = new ProductsDTO
+            {
+                OnPriceChanged = (p) =>
+                {
+                    editContext?.Validate();
+                    StateHasChanged();
+                }
+            };
+        product.UserId = 0;
+        editContext = new EditContext(product);
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
+    {
+        try
+        {
+            tableData = await ApiService.GetProductListdAsync() ?? new List<ProductsDTO>();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading products: {ex.Message}");
+        }
+    }
+
+    private void ValidateField(object model, string fieldName)
+    {
+        var fieldIdentifier = new FieldIdentifier(model, fieldName);
+        editContext?.NotifyFieldChanged(fieldIdentifier);
+    }
+    private IEnumerable<ProductsDTO> FilteredProducts =>
+        tableData.Where(c =>
+            (string.IsNullOrWhiteSpace(searchText) ||
+             c.ProductsAlias.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+             c.ProductsName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            &&
+            (
+                selectedFilter == "all" ||
+                (selectedFilter == "active" && c.ProductsStatus) ||
+                (selectedFilter == "inactive" && !c.ProductsStatus)
+            )
+        );
+
+    // private async Task HandleValidSubmit()
+    // {
+    //     try
+    //     {
+    //         var response = await ApiService.AddOrUpdateProductAsync(product);
+
+    //         if (response.IsSuccessStatusCode)
+    //         {
+    //             await LoadProducts();
+    //             ResetForm();
+    //             showForm = false;
+    //         }
+    //         else
+    //         {
+    //             var errorContent = await response.Content.ReadAsStringAsync();
+    //             Console.WriteLine($"Error adding product: {errorContent}");
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Console.WriteLine($"Exception when adding product: {ex.Message}");
+    //     }
+    // }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var response = await ApiService.AddOrUpdateProductAsync(product);
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadProducts();
+                ResetForm();
+                showForm = false;
+                errorMessage = string.Empty; // Clear error on success
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+
+                try
+                {
+                    // Deserialize the response error (assuming backend returns { message: "..." })
+                    var error = JsonSerializer.Deserialize<Dictionary<string, string>>(errorContent);
+                    if (error != null && error.TryGetValue("message", out var msg))
+                    {
+                        errorMessage = msg;
+                    }
+                    else
+                    {
+                        errorMessage = "An unknown error occurred.";
+                    }
+                }
+                catch
+                {
+                    errorMessage = "An unexpected error occurred.";
+                }
+
+                Console.WriteLine($"Error adding product: {errorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Exception: {ex.Message}";
+        }
+    }
+
+
+    private void EditProduct(ProductsDTO productToEdit)
+    {
+        product = new ProductsDTO
+            {
+                ProductsId = productToEdit.ProductsId,
+                UserId = productToEdit.UserId,
+                ProductsAlias = productToEdit.ProductsAlias,
+                ProductsName = productToEdit.ProductsName,
+                ProductsDescription = productToEdit.ProductsDescription,
+                ProductsSellingPrice = productToEdit.ProductsSellingPrice,
+                ProductsCostingPrice = productToEdit.ProductsCostingPrice
+            };
+        editContext = new EditContext(product);
+        showForm = true;
+    }
+
+
+    private async Task ToggleProductStatus(ProductsDTO? productsDTO, bool newStatus)
+    {
+        try
+        {
+            productsDTO.ProductsStatus = newStatus;
+            await ApiService.AddOrUpdateProductAsync(productsDTO);
+            await LoadProducts();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error updating user status: {ex.Message}";
+        }
+    }
+
+    private void ToggleForm()
+    {
+        if (!showForm)
+        {
+            ResetForm();
+            showForm = true;
+        }
+    }
+
+    private void CancelForm()
+    {
+        ResetForm();
+        errorMessage = string.Empty;
+        showForm = false;
+    }
+
+    private void ResetForm()
+    {
+        var existingHandler = product?.OnPriceChanged;
+        product = new ProductsDTO();
+        if (existingHandler != null)
+        {
+            product.OnPriceChanged = existingHandler;
+        }
+        editContext = new EditContext(product);
+        StateHasChanged();
+    }
+}

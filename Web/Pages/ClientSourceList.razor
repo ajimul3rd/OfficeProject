@@ -1,0 +1,166 @@
+﻿@page "/client-source"
+@using OfficeProject.Models.Entities
+
+@if (showHeader)
+{
+    <h1>Client Source Manager</h1>
+}
+
+@if (clientSources == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="mb-3 d-flex align-items-center gap-2" style="max-width: 400px;">
+        @if (!isAddingNew)
+        {
+            <select class="form-select flex-grow-1" @onchange="OnSelectionChanged">
+                <option value="">-- Select Client Source --</option>
+                @foreach (var source in clientSources)
+                {
+                    <option value="@source.ClientSourcesId">@source.ClientSourcesName</option>
+                }
+                <option value="new">+ Add new...</option>
+            </select>
+            <button class="btn btn-outline-primary" @onclick="()=>isAddingNew=true" title="Add new client source">
+                +
+            </button>
+        }
+        else
+        {
+            <input type="text" class="form-control flex-grow-1" placeholder="Enter new client source"
+            @bind="newClientSourceName" @onkeydown="HandleKeyDown" />
+            <button class="btn btn-success" @onclick="AddNewClientSource" disabled="@string.IsNullOrWhiteSpace(newClientSourceName)">
+                Save
+            </button>
+            <button class="btn btn-secondary" @onclick="CancelAdd">
+                Cancel
+            </button>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success" role="alert" style="max-width:400px;">
+            @successMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert" style="max-width:400px;">
+            @errorMessage
+        </div>
+    }
+}
+
+@code {
+    [Inject] public IClientSources ClientSourcesService { get; set; }
+    [Parameter] public string SelectedName { get; set; }
+    [Parameter] public EventCallback<string> SelectedNameChanged { get; set; }
+    [Parameter] public bool showHeader { get; set; } = true;
+
+
+    private List<ClientSources> clientSources;
+    private bool isAddingNew = false;
+    private string newClientSourceName;
+    private int? selectedClientSourceId;
+    private string errorMessage;
+    private string successMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadClientSources();
+
+    }
+
+    private async Task LoadClientSources()
+    {
+        clientSources = await ClientSourcesService.GetAll();
+        isAddingNew = false;
+        newClientSourceName = null;
+        selectedClientSourceId = null;
+        errorMessage = null;
+        successMessage = null;
+    }
+
+   private async void OnSelectionChanged(ChangeEventArgs e)
+{
+    var value = e.Value?.ToString();
+    if (value == "new")
+    {
+        isAddingNew = true;
+        await SelectedNameChanged.InvokeAsync(null);
+    }
+    else if (int.TryParse(value, out int id))
+    {
+        var selected = clientSources.FirstOrDefault(cs => cs.ClientSourcesId == id);
+        if (selected != null)
+        {
+            await SelectedNameChanged.InvokeAsync(selected.ClientSourcesName);
+        }
+    }
+    else
+    {
+        await SelectedNameChanged.InvokeAsync(null);
+    }
+
+    errorMessage = null;
+    successMessage = null;
+}
+
+
+    private async Task AddNewClientSource()
+    {
+        if (string.IsNullOrWhiteSpace(newClientSourceName))
+        {
+            errorMessage = "Name cannot be empty.";
+            return;
+        }
+
+        try
+        {
+            var newSource = new ClientSources { ClientSourcesName = newClientSourceName };
+            await ClientSourcesService.Add(newSource);
+            successMessage = $"Client Source '{newClientSourceName}' added successfully!";
+            await LoadClientSources();
+
+            // Optionally select the newly added item
+            var added = clientSources.FirstOrDefault(x => x.ClientSourcesName == newClientSourceName);
+            if (added != null)
+            {
+                selectedClientSourceId = added.ClientSourcesId;
+            }
+
+            // Clear new source input
+            newClientSourceName = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving data: {ex.Message}";
+            successMessage = null;
+        }
+    }
+
+    private void CancelAdd()
+    {
+        isAddingNew = false;
+        newClientSourceName = null;
+        errorMessage = null;
+        successMessage = null;
+        selectedClientSourceId = null;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(newClientSourceName))
+        {
+            await AddNewClientSource();
+        }
+        else if (e.Key == "Escape")
+        {
+            CancelAdd();
+        }
+    }
+}

@@ -1,0 +1,101 @@
+﻿@using OfficeProject.Models.DTO
+@using OfficeProject.Web.Pages.TappanDialog
+
+<h4 class="mt-3">Services Overview</h4>
+
+@if (Services != null && Services.Any())
+{
+    <div class="table-responsive mt-2">
+        <table class="table table-bordered table-hover">
+            <thead class="table-primary">
+                <tr>
+                    <th>Service Name</th>
+                    <th>Total Post</th>
+                    <th>Total Reels</th>
+                    <th>Billing Type</th>
+                    <th>Ads Budget</th>
+                    <th>Service Deadline</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var service in Services)
+                {
+
+                    <tr @onclick="() => OpenDialog(service)" style="cursor: pointer;" class="hover-row">
+                        <td>@service.ServiceName</td>
+                        <td>@service.TotalPost</td>
+                        <td>@service.TotalReels</td>
+                        <td>@service.BillingType</td>
+                        <td>@service.AdsBudget.ToString("C")</td>
+                        <td>@service.DeadLine.ToString("d")</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary"
+                            @onclick="() => AddWorkRecord()">
+                                <i class="fas fa-plus"></i> Add Work
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>No services found.</p>
+}
+
+<TappanSeoOthServicess IsVisible="@ShowActivityDialog" IsVisibleChanged="@((bool val) => ShowActivityDialog = val)" />
+
+@code {
+    private List<ServicesDTO> Services = new();
+    private bool ShowActivityDialog = false;
+
+    protected override void OnInitialized()
+    {
+        Services = new List<ServicesDTO>
+        {
+            new ServicesDTO
+            {
+                ServiceId = 1,
+                ServiceName = "SEO Optimization",
+                TotalPost = 8,
+                TotalReels = 8,
+                BillingType =Models.Enums.BillingType.Monthly,                
+                AdsBudget = 2000,
+                DeadLine = DateTime.Today
+            },
+            new ServicesDTO
+            {
+                ServiceId = 2,
+                ServiceName = "Social Media Marketing",
+                TotalPost = 12,
+                TotalReels = 10,
+                BillingType =Models.Enums.BillingType.Monthly,
+                AdsBudget = 3500,
+                DeadLine =  DateTime.Today
+            },
+            new ServicesDTO
+            {
+                ServiceId = 3,
+                ServiceName = "Google Ads",
+                TotalPost = 5,
+                TotalReels = 3,
+                BillingType =Models.Enums.BillingType.Monthly,
+                AdsBudget = 1500,
+                DeadLine = DateTime.Today
+            }
+        };
+    }
+    private void OpenDialog(ServicesDTO services)
+    {
+        ShowActivityDialog = true;
+    }
+    private void AddWorkRecord()
+    {
+      
+
+    }
+
+}

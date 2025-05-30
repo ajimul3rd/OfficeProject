@@ -1,0 +1,62 @@
+﻿@using OfficeProject.Web.Pages.UserActivity
+@using OfficeProject.Web.Pages.DialogModel
+
+@if (IsVisible)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Activity Details</h5>
+                    <button type="button" class="btn-close" @onclick="CloseDialog"></button>
+                </div>
+
+                <div class="modal-body">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <button class="nav-link @(activeTab == "seo" ? "active" : "")"
+                                    @onclick="@(() => SwitchTab("seo"))">
+                                SEO Details
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link @(activeTab == "oth" ? "active" : "")"
+                                    @onclick="@(() => SwitchTab("oth"))">
+                                Others Services
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mt-3">
+                        <div class="@GetTabPaneClass("seo")">
+                            <SeoDetailListModel />
+                        </div>
+                        <div class="@GetTabPaneClass("oth")">
+                            <OthersServicesListModel />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseDialog">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private string activeTab = "seo";
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    private void SwitchTab(string tab) => activeTab = tab;
+    private string GetTabPaneClass(string tabName) =>
+        activeTab == tabName ? "tab-pane fade show active" : "tab-pane fade";
+
+    private async Task CloseDialog()
+    {
+        IsVisible = false;
+        await IsVisibleChanged.InvokeAsync(IsVisible);
+    }
+}

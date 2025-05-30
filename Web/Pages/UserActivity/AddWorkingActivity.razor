@@ -1,0 +1,294 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+@using OfficeProject.Models.DTO
+@using System.ComponentModel.DataAnnotations
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ApiService ApiService
+@using OfficeProject.Web.Pages.DialogModel
+
+<h3>Working record!</h3>
+
+@if (!showForm)
+{
+    <div class="mb-3">
+        <button class="btn btn-success" @onclick="ToggleForm">Add Record</button>
+    </div>
+}
+
+@if (showForm)
+{
+    <div class="card mb-4 position-relative">
+        <div class="card-header">
+            @(WorkRecord.WorkRecordId > 0 ? "Edit Record" : "Add New Record")
+            <button type="button" class="btn-close float-end" aria-label="Close" @onclick="CancelForm"></button>
+        </div>
+        <div class="card-body">
+            <EditForm Model="@WorkRecord" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Service ID:</label>
+                            <InputNumber @bind-Value="WorkRecord.ServiceId" class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Work Date:</label>
+                            <InputDate @bind-Value="WorkRecord.WorkDate" class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Status:</label>
+                            <InputSelect @bind-Value="WorkRecord.Status" class="form-control">
+                                <option value="">-- Select Status --</option>
+                                <option>Completed</option>
+                                <option>In Progress</option>
+                                <option>Pending</option>
+                            </InputSelect>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Posts:</label>
+                            <InputNumber @bind-Value="WorkRecord.Post" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>Reels:</label>
+                            <InputNumber @bind-Value="WorkRecord.Reels" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>Ads:</label>
+                            <InputNumber @bind-Value="WorkRecord.Ads" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Remarks:</label>
+                            <InputTextArea @bind-Value="WorkRecord.Remarks" class="form-control" rows="3" />
+                        </div>
+
+                        <div class="form-group mt-2">
+                            <InputCheckbox @bind-Value="IncludeSeoDetails" class="form-check-input" />
+                            <label class="form-check-label">Include SEO Details</label>
+                        </div>
+                    </div>
+                </div>
+
+                @if (IncludeSeoDetails)
+                {
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span>SEO Details</span>
+                                    <button type="button" class="btn btn-sm btn-success" @onclick="AddSeoDetail">
+                                        <i class="fas fa-plus"></i> Add Keyword
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Keyword</th>
+                                                <th>Rank</th>
+                                                <th>Note</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var (seo, i) in WorkRecord.WorkRecordsSeoDetails.Select((x, i) => (x, i)))
+                                            {
+                                                <tr>
+                                                    <td><InputText @bind-Value="seo.KeyWord" class="form-control form-control-sm" /></td>
+                                                    <td><InputNumber @bind-Value="seo.Rank" class="form-control form-control-sm" /></td>
+                                                    <td><InputText @bind-Value="seo.Note" class="form-control form-control-sm" /></td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoveSeoDetail(i)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="row mt-3">
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-save"></i> Submit
+                        </button>
+                        <button type="button" class="btn btn-secondary" @onclick="ResetForm">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Work Record List</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead class="table-info">
+                <tr>
+                    <th>#</th>
+                    <th>SID</th>
+                    <th>WorkDate</th>
+                    <th>Post</th>
+                    <th>Reels</th>
+                    <th>Ads</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                    <th>SEO Details</th>
+                   
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in tableData)
+                {
+                    <tr>
+                        <td>@item.WorkRecordId</td>
+                        <td>@item.ServiceId</td>
+                        <td>@item.WorkDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.Post</td>
+                        <td>@item.Reels</td>
+                        <td>@item.Ads</td>
+                        <td>@item.Status</td>
+                        <td>@item.Remarks</td>
+                        <td>
+                            @if (item.WorkRecordsSeoDetails?.Any() == true)
+                            {
+                                <ul>
+                                    @foreach (var seo in item.WorkRecordsSeoDetails)
+                                    {
+                                        <li><strong>@seo.KeyWord</strong> - Rank: @seo.Rank, Note: @seo.Note</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <em>No SEO data</em>
+                            }
+                        </td>
+                       
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private bool showForm = false;
+    private bool IncludeSeoDetails = true;
+    private WorkRecordModel WorkRecord { get; set; } = new();
+    private List<WorkRecordModel> tableData = new();
+
+    protected override void OnInitialized()
+    {
+        LoadDummyData();
+    }
+
+    private void LoadDummyData()
+    {
+        tableData = new List<WorkRecordModel>
+        {
+            new WorkRecordModel
+            {
+                WorkRecordId = 1,
+                ServiceId = 1,
+                WorkDate = new DateTime(2025, 1, 15),
+                Post = 8,
+                Reels = 8,
+                Ads = 8,
+                Status = "Completed",
+                Remarks = "Initial planning completed",
+                WorkRecordsSeoDetails = new List<WorkRecordsSeoDetailModel>
+                {
+                    new WorkRecordsSeoDetailModel
+                    {
+                        WorkRecordsSeoId = 1,
+                        WorkRecordId = 1,
+                        KeyWord = "Best Coffee House",
+                        Rank = 5,
+                        Note = "Good improvement after GMB optimization"
+                    }
+                }
+            }
+        };
+    }
+
+    private void ToggleForm() => showForm = !showForm;
+
+    private void CancelForm()
+    {
+        showForm = false;
+        ResetForm();
+    }
+
+    private void ResetForm()
+    {
+        WorkRecord = new WorkRecordModel();
+    }
+
+    private void AddSeoDetail()
+    {
+        WorkRecord.WorkRecordsSeoDetails.Add(new WorkRecordsSeoDetailModel());
+    }
+
+    private void RemoveSeoDetail(int index)
+    {
+        if (index >= 0 && index < WorkRecord.WorkRecordsSeoDetails.Count)
+        {
+            WorkRecord.WorkRecordsSeoDetails.RemoveAt(index);
+        }
+    }
+
+
+
+    private void HandleValidSubmit()
+    {
+        if (!tableData.Contains(WorkRecord))
+        {
+            WorkRecord.WorkRecordId = tableData.Max(x => x.WorkRecordId) + 1;
+            tableData.Add(WorkRecord);
+        }
+        ResetForm();
+        showForm = false;
+    }
+
+    public class WorkRecordModel
+    {
+        public int WorkRecordId { get; set; }
+        public int ServiceId { get; set; }
+        public DateTime WorkDate { get; set; } = DateTime.Today;
+        public int Post { get; set; }
+        public int Reels { get; set; }
+        public int Ads { get; set; }
+        public string Status { get; set; }
+        public string Remarks { get; set; }
+        public List<WorkRecordsSeoDetailModel> WorkRecordsSeoDetails { get; set; } = new();
+    }
+
+    public class WorkRecordsSeoDetailModel
+    {
+        public int WorkRecordsSeoId { get; set; }
+        public int WorkRecordId { get; set; }
+        public string KeyWord { get; set; }
+        public int Rank { get; set; }
+        public string Note { get; set; }
+    }
+}

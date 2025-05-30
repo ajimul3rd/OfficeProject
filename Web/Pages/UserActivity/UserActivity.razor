@@ -1,0 +1,133 @@
+﻿@using OfficeProject.Models.DTO
+@using OfficeProject.Web.Pages.DialogModel
+@using OfficeProject.Web.Pages.DialogModelComponents
+@using OfficeProject.Web.Pages.TappanDialog
+@using static OfficeProject.Web.Pages.DialogModel.DialogAddWorkingRecord
+@page "/userproject"
+@inject ApiService api
+
+<h3>My Projects</h3>
+
+@if (isLoading)
+{
+    <div class="text-center mt-3">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (loadFailed)
+{
+    <div class="alert alert-danger">
+        Failed to load projects. Please try again.
+    </div>
+}
+else if (projects == null || !projects.Any())
+{
+    <div class="alert alert-info">
+        You don't have any assigned projects.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-info">
+                <tr>
+                    <th>Project Name</th>
+                    <th>Client</th>
+                    <th>Start Date</th>
+                    <th>Type</th>                   
+                    <th>GMB</th>
+                    <th>Fb</th>
+                    <th>Ig</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in projects)
+                {
+                    <tr @onclick="() => OpenDialog(project)" style="cursor: pointer;" class="hover-row">
+                        <td>@project.ProjectName</td>
+                        <td>@(project.Client?.ClientName ?? "N/A")</td>
+                        <td>@project.ProjectStartDate.ToString("d")</td>
+                        <td>@project.ProjectType</td>
+                        <td>@project.GmbRakning</td>
+                        <td>@project.FbFollowers</td>
+                        <td>@project.IgFollowers</td>
+
+                        <td>In-Complete</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<TappanWorkingActivity IsVisible="@ShowDialog" IsVisibleChanged="@((bool val) => ShowDialog = val)"
+></TappanWorkingActivity>
+
+
+                     
+<style>
+    .hover-row:hover {
+        background-color: #f5f5f5;
+    }
+</style>
+
+@code {
+    // dialog code
+    private bool ShowDialog = false;
+    private async Task HandleWorkRecordSubmit(DialogAddWorkingRecord.WorkRecordModel model)
+    {
+        Console.WriteLine($"Submitted record: ServiceId={model.ServiceId}, SEO Count={model.WorkRecordsSeoDetails?.Count}");
+    }
+    private Task CloseDialog()
+    {
+        Console.WriteLine("Dialog closed without submit");
+        return Task.CompletedTask;
+    }
+    private void OpenDialog(ProjectsDTO project)
+    {
+        ShowDialog=true;
+    }
+
+
+    private string message { get; set; }
+    private List<ProjectsDTO> projects;
+    private bool isLoading = true;
+    private bool loadFailed = false;
+    private CancellationTokenSource cts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            projects = await api.GetProjectPerUserAsync();
+        }
+        catch (Exception ex)
+        {
+            loadFailed = true;
+            Console.WriteLine($"Error loading projects: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    // Add this class if not already defined
+    public class WorkRecordModel
+    {
+        public int WorkRecordId { get; set; }
+        public int ServiceId { get; set; }
+        public DateTime WorkDate { get; set; }
+        public int Post { get; set; }
+        public int Reels { get; set; }
+        public int Ads { get; set; }
+        public string Status { get; set; } = "Completed";
+        public string remarks { get; set; }
+        public List<WorkRecordsSeoDetailModel> WorkRecordsSeoDetails { get; set; }
+    }
+}

@@ -1,0 +1,230 @@
+﻿@page "/parent"
+
+@using System.ComponentModel.DataAnnotations
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleSubmit">
+    <ObjectGraphDataAnnotationsValidator />
+
+    <!-- Parent Section -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <strong>Parent Information @message</strong>
+        </div>
+        <div class="card-body">
+            <label for="parentName" class="form-label">Parent Name:</label>
+            <InputText id="parentName" class="form-control" @bind-Value="myParent.pName"
+                       onblur="@(() => ValidateField(myParent, nameof(myParent.pName)))" />
+            <ValidationMessage For="@(() => myParent.pName)" class="text-danger small" />
+        </div>
+    </div>
+
+    <!-- Children Section -->
+    @for (int i = 0; i < myParent.child.Count; i++)
+    {
+        var child = myParent.child[i];
+        var childIndex = i;
+        <div class="card mb-3 ms-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Child @((i + 1))</strong>
+                <button type="button" class="btn btn-sm btn-danger" title="Remove Child" @onclick="() => RemoveChild(childIndex)">
+                    <i class="bi bi-x-circle"></i> Remove Child
+                </button>
+            </div>
+            <div class="card-body">
+                <label class="form-label">Child Name:</label>
+                <InputText class="form-control mb-2" @bind-Value="child.cName"
+                           onblur="@(() => ValidateField(child, nameof(child.cName)))" />
+                <ValidationMessage For="@(() => child.cName)" class="text-danger small" />
+
+                <InputSelect class="form-select form-select-sm" @bind-Value="child.ProjectType"
+                             @onblur="@(() => ValidateField(child, nameof(child.ProjectType)))">
+                    <option value="">Select Project</option>
+                    <option value="@ProjectType.WEB_DEVELOPMENT">WEB_DEVELOPMENT</option>
+                    <option value="@ProjectType.DIGITAL_MARKETING">DIGITAL_MARKETING</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => child.ProjectType)" class="text-danger small" />
+
+                <!-- Child-Children Section -->
+                @for (int j = 0; j < child.child_child.Count; j++)
+                {
+                    var cc = child.child_child[j];
+                    var childChildIndex = j;
+                    <div class="border p-2 mb-2 ms-3 rounded bg-light">
+                        <label class="form-label">Child-Child @((j + 1)) Name:</label>
+                        <InputText class="form-control mb-1" @bind-Value="cc.ccName"
+                                   onblur="@(() => ValidateField(cc, nameof(cc.ccName)))" />
+                        <ValidationMessage For="@(() => cc.ccName)" class="text-danger small" />
+
+                        <button type="button" class="btn btn-sm btn-outline-danger mt-1" @onclick="() => RemoveChildChild(childIndex, childChildIndex)">
+                            <i class="bi bi-x-circle"></i> Remove Child-Child
+                        </button>
+                    </div>
+                }
+
+                <button type="button" class="btn btn-sm btn-outline-secondary mt-2" @onclick="() => AddChildChild(childIndex)">
+                    <i class="bi bi-plus-circle"></i> Add Child-Child
+                </button>
+            </div>
+        </div>
+    }
+
+    <button type="button" class="btn btn-outline-primary mt-3" @onclick="AddChild">
+        <i class="bi bi-plus-circle"></i> Add Child
+    </button>
+
+    <button type="submit" class="btn btn-primary mt-3 ms-2">Save Changes</button>
+</EditForm>
+
+@if (isSubmitted)
+{
+    <div class="alert alert-success mt-3">Changes have been saved successfully!</div>
+}
+
+
+@using System.ComponentModel.DataAnnotations
+@code {
+
+    private string message { get; set; } = "string.Empty";
+
+    private void HandleProjectTypeChange(Child child, ProjectType? selectedProjectType)
+    {
+        message = selectedProjectType.ToString();
+        StateHasChanged();
+    }
+
+
+    private Parent myParent = new();
+    private bool isSubmitted = false;
+    private EditContext? editContext;
+
+    protected override void OnInitialized()
+    {
+        InitializeData();
+    }
+
+    private void InitializeData()
+    {
+        myParent = new Parent
+            {
+                pName = "",
+                child = new List<Child>() // Initialize the list
+            };
+
+        // Add initial children and assign the callback
+        AddChild();
+        AddChild();
+
+        editContext = new EditContext(myParent);
+    }
+
+    private void ValidateField(object model, string fieldName)
+    {
+        var fieldIdentifier = new FieldIdentifier(model, fieldName);
+        editContext?.NotifyFieldChanged(fieldIdentifier);
+    }
+
+    private void AddChild()
+    {
+        var newChild = new Child
+            {
+                cName = "",
+                child_child = new List<ChildChild>()
+            };
+        // Assign the callback here!
+        newChild.OnProjectTypeChanged = HandleProjectTypeChange;
+        myParent.child.Add(newChild);
+    }
+
+    private void AddChildChild(int childIndex)
+    {
+        myParent.child[childIndex].child_child.Add(new ChildChild());
+    }
+
+    private void RemoveChild(int childIndex)
+    {
+        if (childIndex >= 0 && childIndex < myParent.child.Count)
+        {
+            myParent.child.RemoveAt(childIndex);
+        }
+    }
+
+    private void RemoveChildChild(int childIndex, int childChildIndex)
+    {
+        if (childIndex >= 0 && childIndex < myParent.child.Count)
+        {
+            var childList = myParent.child[childIndex].child_child;
+            if (childChildIndex >= 0 && childChildIndex < childList.Count)
+            {
+                childList.RemoveAt(childChildIndex);
+            }
+        }
+    }
+
+    private void HandleSubmit()
+    {
+        isSubmitted = true;
+        Console.WriteLine("All data saved:");
+        Console.WriteLine($"Parent: {myParent.pName}");
+
+        foreach (var child in myParent.child)
+        {
+            Console.WriteLine($"- Child: {child.cName}, ProjectType: {child.ProjectType}"); // Include ProjectType in output
+            foreach (var cc in child.child_child)
+            {
+                Console.WriteLine($"  - ChildChild: {cc.ccName}");
+            }
+        }
+    }
+
+    // Your data classes and enum with the modified Child class
+    public class Parent
+    {
+        [Required(ErrorMessage = "Parent name is required")]
+        public string pName { get; set; } = "";
+
+        [ValidateComplexType]
+        public List<Child> child { get; set; } = new();
+    }
+
+    public class Child
+    {
+        [Required(ErrorMessage = "Child name is required")]
+        public string cName { get; set; } = "";
+
+        // Add a property to hold the callback
+        public Action<Child, ProjectType?>? OnProjectTypeChanged { get; set; }
+
+        // Backing field for the ProjectType
+        private ProjectType? _projectType;
+
+        [Required(ErrorMessage = "Select Project Type")]
+        public ProjectType? ProjectType
+        {
+            get => _projectType;
+            set
+            {
+                if (_projectType != value)// Only trigger if value actually changed
+                {
+                    _projectType = value;// Update the stored value
+
+                    OnProjectTypeChanged?.Invoke(this, value);// Notify subscribers
+                }
+            }
+        }
+
+        [ValidateComplexType]
+        public List<ChildChild>? child_child { get; set; } = new();
+    }
+
+    public class ChildChild
+    {
+        [Required(ErrorMessage = "Child-Child name is required")]
+        public string ccName { get; set; } = "";
+    }
+
+    public enum ProjectType
+    {
+        WEB_DEVELOPMENT,
+        DIGITAL_MARKETING,
+    }
+}

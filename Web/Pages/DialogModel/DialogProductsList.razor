@@ -1,0 +1,431 @@
+﻿@using OfficeProject.Models.DTO
+@using System.Text.Json
+@inject ApiService ApiService
+
+@if (showModal)
+{
+    <div class="modal-overlay" @onclick:stopPropagation>
+        <div class="modal-dialog modal-lg modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0">Select Product</h5>
+
+                <button class="btn btn-sm btn-danger" @onclick="CloseModal">X</button>
+            </div>
+
+            <div class="d-flex justify-content-end mb-2">
+                <button class="btn btn-sm btn-success" @onclick="() => showAddForm = true">+ Add Product</button>
+            </div>
+
+            @if (showAddForm)
+            {
+                <div class="card-body">
+                    <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="productsAlias">Alias Name:</label>
+                                    <InputText @bind-Value="product.ProductsAlias" id="productsAlias" class="form-control"
+                                    @onblur="@(() => ValidateField(product, nameof(product.ProductsAlias)))" />
+                                    <ValidationMessage For="@(() => product.ProductsAlias)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="productsName">Product Name:</label>
+                                    <InputText @bind-Value="product.ProductsName" id="productsName" class="form-control"
+                                    @onblur="@(() => ValidateField(product, nameof(product.ProductsName)))" />
+                                    <ValidationMessage For="@(() => product.ProductsName)" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productsDescription">Description:</label>
+                            <InputTextArea @bind-Value="product.ProductsDescription" id="productsDescription" class="form-control"
+                            @onblur="@(() => ValidateField(product, nameof(product.ProductsDescription)))" />
+                            <ValidationMessage For="@(() => product.ProductsDescription)" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="productsSellingPrice">Selling Price:</label>
+                                    <InputNumber @bind-Value="product.ProductsSellingPrice" id="productsSellingPrice" class="form-control"
+                                    @onblur="@(() => ValidateField(product, nameof(product.ProductsSellingPrice)))" />
+                                    <ValidationMessage For="@(() => product.ProductsSellingPrice)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="productsCostingPrice">Costing Price:</label>
+                                    <InputNumber @bind-Value="product.ProductsCostingPrice" id="productsCostingPrice" class="form-control"
+                                    @onblur="@(() => ValidateField(product, nameof(product.ProductsCostingPrice)))" />
+                                    <ValidationMessage For="@(() => product.ProductsCostingPrice)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Active:</label>
+                                    <InputCheckbox class="form-check-input" @bind-Value="product.ProductsStatus" />
+                                    <ValidationMessage For="@(() => product.ProductsStatus)" />
+                                </div>
+                            </div>
+
+                            @* <div class="col-md-6"> *@
+                            @*     <div class="form-group"> *@
+                            @*         <label for="ProductsEntryDate">Entry Date:</label> *@
+                            @*         <InputDate @bind-Value="product.ProductsEntryDate" id="ProductsEntryDate" class="form-control" *@
+                            @*         @onblur="@(() => ValidateField(product, nameof(product.ProductsEntryDate)))" /> *@
+                            @*         <ValidationMessage For="@(() => product.ProductsEntryDate)" /> *@
+                            @*     </div> *@
+                            @* </div> *@
+
+                            @* <div class="col-md-6"> *@
+                            @*     <div class="form-group"> *@
+                            @*         <label for="ProductsModificationDate">Modification Date:</label> *@
+                            @*         <InputDate @bind-Value="product.ProductsModificationDate" id="ProductsModificationDate" class="form-control" *@
+                            @*         @onblur="@(() => ValidateField(product, nameof(product.ProductsModificationDate)))" /> *@
+                            @*         <ValidationMessage For="@(() => product.ProductsModificationDate)" /> *@
+                            @*     </div> *@
+                            @* </div> *@
+                            <!-- Form Actions -->
+                            <div class="col-12 mt-4">
+                                <div class="d-flex justify-content-end gap-3">
+                                    <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    @onclick="ToggleAddCancelForm">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </button>
+                                    <button type="submit"
+                                    class="btn btn-primary"
+                                    disabled="@isSubmitting">
+                                        @if (isSubmitting)
+                                        {
+                                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            <span>Saving...</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-save me-2"></i>
+                                            <span>Save Product</span>
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </EditForm>
+
+                    @if (!string.IsNullOrEmpty(statusMessage))
+                    {
+                        <div class="alert @(isError ? "alert-danger" : "alert-success") mt-4">
+                            <i class="@(isError ? "fas fa-exclamation-circle" : "fas fa-check-circle") me-2"></i>
+                            @statusMessage
+                        </div>
+                    }
+                </div>
+            }
+            <!-- Search and Filter Controls -->
+            <div class="mb-3 d-flex justify-content-between">
+                <input type="text" class="form-control me-2" 
+                placeholder="Search..." 
+                @bind="searchText" @bind:event="oninput" style="width: 200px;" />
+                <select class="form-select" @bind="selectedFilter" style="width: 150px;">
+                    @* <option value="all">All Products</option> *@
+                    <option value="active">Active</option>
+                    @* <option value="inactive">Inactive</option> *@
+                </select>
+            </div>
+
+            <!-- Product Table -->
+
+            @if (FilteredProducts != null && FilteredProducts.Any())
+            {
+
+                <table class="table table-bordered table-sm table-hover">
+                    <thead class="table-info">
+                        <tr>
+                            <th>Alias</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Selling Price</th>
+                            <th>Status</th>
+                            <th>Select</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredProducts)
+                        {
+                            <tr>
+                                <td>@item.ProductsAlias</td>
+                                <td>@item.ProductsName</td>
+                                <td>@(item.ProductsDescription.Length > 50 ? item.ProductsDescription.Substring(0, 50) + "..." : item.ProductsDescription)</td>
+                                <td>@item.ProductsSellingPrice.ToString("C")</td>
+
+
+
+                                <td>
+                                    <button class="btn btn-sm @(item.ProductsStatus ? "btn-success" : "btn-danger")">
+                                        @(item.ProductsStatus ? "Active" : "Inactive")
+                                    </button>
+                                </td>
+                                
+                                <td>
+                                    <input type="checkbox"
+                                           @onchange="(e) => ToggleProductSelection(item, (bool?)e.Value)"
+                                           checked="@IsProductSelectedOrAssigned(item)"
+                                           disabled="@IsProductPreAssigned(item)" />
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            }
+            else
+            {
+                <div class="alert alert-info">No products found</div>
+            }
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger mt-2">@errorMessage</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<ProductsDTO> tableData = new();//use for table
+    private ProductsDTO product = new ProductsDTO();//use for form
+    private string searchText = "";
+    private string selectedFilter = "active";
+    private string errorMessage = string.Empty;
+    public bool IsActive { get; set; } = true;
+    private bool showAddForm = false;
+    private EditContext? editContext;
+    private bool isSubmitting = false;
+    private string statusMessage = string.Empty;
+    private bool isError = false;
+
+    [Parameter]
+    public bool showModal { get; set; }
+    [Parameter]
+    public EventCallback<bool> showModalChanged { get; set; }
+    [Parameter]
+    public EventCallback<List<ProductsDTO>> OnProductSelected { get; set; }
+    [Parameter]
+    public List<ServicesDTO> callerSelectedProducts { get; set; }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     product = new ProductsDTO();
+    //     product.UserId = 0;
+    //     editContext = new EditContext(product);
+    //     await LoadProducts();
+
+    //     selectedProducts.Clear(); Reset
+
+    //     if (callerSelectedProducts != null && tableData != null)
+    //     {
+    //         selectedProducts = tableData
+    //             .Where(p => callerSelectedProducts.Any(csp => csp.ProductsId == p.ProductsId))
+    //             .ToList();
+    //     }
+    // }
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = new ProductsDTO();
+        product.UserId = 0;
+        editContext = new EditContext(product);
+        await LoadProducts();
+        ResetSelectedProducts();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (showModal) // Only reset when modal is being shown
+        {
+            await LoadProducts();
+            ResetSelectedProducts();
+        }
+    }
+
+    // protected override async Task OnParametersSetAsync()
+    // {
+    //     if (callerSelectedProducts != null && tableData != null)
+    //     {
+    //         Reset selectedProducts if callerSelectedProducts is empty
+    //         if (!callerSelectedProducts.Any())
+    //         {
+    //             selectedProducts.Clear();
+    //         }
+
+    //         var newSelections = tableData
+    //             .Where(p => callerSelectedProducts.Any(csp => csp.ProductsId == p.ProductsId) &&
+    //                         !selectedProducts.Any(sp => sp.ProductsId == p.ProductsId))
+    //             .ToList();
+
+    //         selectedProducts.AddRange(newSelections);
+    //         StateHasChanged();
+    //     }
+    // }
+    //private List<ProductsDTO> selectedProducts = new(); // Store selected users
+   
+
+    private async Task ToggleProductSelection(ProductsDTO product, bool? isChecked)
+    {
+        if (isChecked == true)
+        {
+            if (!selectedProducts.Any(p => p.ProductsId == product.ProductsId))
+            {
+                selectedProducts.Add(product);
+            }
+        }
+        else
+        {
+            selectedProducts.RemoveAll(p => p.ProductsId == product.ProductsId);
+        }
+
+        if (OnProductSelected.HasDelegate)
+        {
+            await OnProductSelected.InvokeAsync(selectedProducts);
+        }
+        StateHasChanged();
+    }
+    private bool IsProductSelectedOrAssigned(ProductsDTO product)
+    {
+
+        if (callerSelectedProducts != null)
+        {
+            return selectedProducts.Any(p => p.ProductsId == product.ProductsId) ||
+                   (callerSelectedProducts?.Any(csp => csp.ProductsId == product.ProductsId) ?? false);
+
+        }
+        return false;
+    }
+
+    private bool IsProductPreAssigned(ProductsDTO product)
+    {
+        return callerSelectedProducts?.Any(p => p.ProductsId == product.ProductsId) ?? false;
+    }   
+
+    private async Task LoadProducts()
+    {
+        try
+        {
+            tableData = await ApiService.GetProductListdAsync() ?? new List<ProductsDTO>();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading products: {ex.Message}";
+        }
+    }
+
+    private List<ProductsDTO> selectedProducts= new(); 
+
+    private IEnumerable<ProductsDTO> FilteredProducts =>
+        tableData.Where(c =>
+            (string.IsNullOrWhiteSpace(searchText) ||
+             c.ProductsAlias.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+             c.ProductsName.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
+            (selectedFilter == "active" && c.ProductsStatus) 
+        );
+
+    private void ToggleAddCancelForm()
+    {
+        showAddForm = !showAddForm;
+        ResetForm();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var response = await ApiService.AddOrUpdateProductAsync(product);
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadProducts();
+                statusMessage = "Product added successfully!";
+                ResetForm();
+                showAddForm = false;
+                isError = false;
+            }
+            else
+            {
+
+                var errorContent = await response.Content.ReadAsStringAsync(); 
+                statusMessage = $"Error adding client: {errorContent}";
+                isError = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception when adding product: {ex.Message}");
+        }
+    }
+
+    private void ResetForm()
+    {
+        product = new ProductsDTO();
+        editContext = new EditContext(product);
+        StateHasChanged();
+    }
+
+    private void ValidateField(object model, string fieldName)
+    {
+        var fieldIdentifier = new FieldIdentifier(model, fieldName);
+        editContext?.NotifyFieldChanged(fieldIdentifier);
+    }
+
+    private async Task CloseModal()
+    {
+        showModal = false;
+        ResetSelectedProducts(); // Reset selections when closing
+
+        if (showModalChanged.HasDelegate)
+        {
+            await showModalChanged.InvokeAsync(false);
+        }
+    }
+
+    private void ResetSelectedProducts()
+    {
+        selectedProducts.Clear();
+
+        if (callerSelectedProducts != null && tableData != null)
+        {
+            selectedProducts = tableData
+                .Where(p => callerSelectedProducts.Any(csp => csp.ProductsId == p.ProductsId))
+                .ToList();
+        }
+    }
+}
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1050;
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 8px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+</style>

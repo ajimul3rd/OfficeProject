@@ -1,0 +1,218 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using OfficeProject.Models.DTO
+@using OfficeProject.Models.Enums
+@using System.Text.Json
+@inject ApiService apiService
+<h3>ProjectInfoModel</h3>
+
+@if (Project == null)
+{
+    <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+
+else if (Project.ProjectId != 0)
+{
+
+    <EditForm EditContext="@editContext" OnValidSubmit="SaveProject">
+        <DataAnnotationsValidator />
+        <div class="row mt-3">
+            <!-- Basic Project Info Column -->
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">Project Name</label>
+                    <InputText @bind-Value="Project.ProjectName" class="form-control"
+                               @onblur="@(() => ValidateField(Project, nameof(Project.ProjectName)))" />
+                    <ValidationMessage For="@(() => Project.ProjectName)" class="text-danger small" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label">Project Type</label>
+                    <InputSelect @bind-Value="Project.ProjectType" class="form-select"
+                                 @onblur="@(() => ValidateField(Project, nameof(Project.ProjectType)))">
+                        <option value="">Select Type</option>
+                        @* <option value="@ProjectType.WEB_DEVELOPMENT">Web Development</option> *@
+                        <option value="@ProjectType.DIGITAL_MARKETING">Digital Marketing</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Project.ProjectType)" class="text-danger small" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label">Start Date</label>
+                    <InputDate @bind-Value="Project.ProjectStartDate" class="form-control"
+                               @onblur="@(() => ValidateField(Project, nameof(Project.ProjectStartDate)))" />
+                    <ValidationMessage For="@(() => Project.ProjectStartDate)" class="text-danger small" />
+                </div>
+
+               
+            </div>
+
+            <!-- Financial Column -->
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label class="form-label">Project Cost</label>
+                    <div class="input-group">
+                        <InputNumber @bind-Value="Project.ProjectCost" step="0.01" class="form-control"
+                                     @onblur="@(() => ValidateField(Project, nameof(Project.ProjectCost)))" />
+                        <ValidationMessage For="@(() => Project.ProjectCost)" class="text-danger small" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Save Project</button>
+        </div>
+        <p>@message</p>
+    </EditForm>
+
+}
+
+@code {
+
+    private EditContext? editContext;
+
+    public ProjectsDTO Project { get; set; }
+
+    public string message { get; set; } = "";
+
+    [Parameter]
+    public int clientId { get; set; } = 0;
+
+    [Parameter]
+    public int projectId { get; set; } = 0;
+
+    [Parameter]
+    public EventCallback<bool> OnSave { get; set; }
+
+    private bool showPassword = false; // Default: hidden
+
+    private CancellationTokenSource messageTimeoutCts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitializeProjectInfo();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await InitializeProjectInfo();
+    }
+
+    private void ValidateField(object model, string fieldName)
+    {
+        var fieldIdentifier = new FieldIdentifier(model, fieldName);
+        editContext?.NotifyFieldChanged(fieldIdentifier);
+    }
+
+    private async Task InitializeProjectInfo()
+    {
+        try
+        {
+            if (projectId != 0)
+            {
+                // Existing project
+                Project = await apiService.GetProjectById(projectId);
+                editContext = new EditContext(Project!);
+                StateHasChanged();
+
+                // message = "InitializeProjectInfo():" + JsonSerializer.Serialize(Project, new JsonSerializerOptions { WriteIndented = true });
+            }
+            else
+            {
+                // New project
+                InitializeNewProject();
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error initializing project: {ex.Message}");
+            ShowMessage($"Error loading project: {ex.Message}", true);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private void InitializeNewProject()
+    {
+        Project ??= new ProjectsDTO()
+            {
+                ProjectId = (int)0,
+                ClientId = (int)clientId
+            };
+        editContext = new EditContext(Project!);
+        StateHasChanged();
+        // message = "InitializeNewProject():" + JsonSerializer.Serialize(Project, new JsonSerializerOptions { WriteIndented = true });
+    }
+
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword; // Toggle true/false
+    }
+
+
+    private async Task SaveProject()
+    {
+
+
+        try
+        {
+            Project.WebDevelopment = null;
+            Project.MarketingPhase = null;
+            // message =JsonSerializer.Serialize(Project, new JsonSerializerOptions { WriteIndented = true });
+            if (editContext!.Validate())
+            {
+
+                var result = await apiService.AddProjectAsync(Project);
+
+
+                if (result != null)
+                {
+                    Project = result;
+                    ShowMessage("Project saved successfully!", false);
+                    await OnSave.InvokeAsync(true);
+                }
+                else
+                {
+                    ShowMessage("Failed to save Project Task", true);
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            await OnSave.InvokeAsync(false);
+            ShowMessage($"Error: {ex.Message}", true);
+            Console.Error.WriteLine(ex);
+        }
+
+    }
+
+    private void ShowMessage(string message, bool isError)
+    {
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(5000);
+            if (!messageTimeoutCts.IsCancellationRequested)
+            {
+                ClearMessage();
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+    }
+
+    private void ClearMessage()
+    {
+
+        messageTimeoutCts.Cancel();
+    }
+}
+

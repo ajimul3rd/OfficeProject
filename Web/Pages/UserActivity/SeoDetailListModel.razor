@@ -1,0 +1,120 @@
+﻿@if (SeoServiceDetails != null && SeoServiceDetails.Any())
+{
+    <div class="table-responsive mt-3">
+        <table class="table table-bordered table-hover">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>Keyword</th>
+                    <th>Current Rank</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detail in SeoServiceDetails)
+                {
+                    <tr>
+                        <td>@detail.SeoServiceDetailsId</td>
+                        <td>@detail.KeyWord</td>
+                        <td>@detail.Rank</td>
+                        <td>@detail.Note</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary"
+                                    @onclick="() => AddWorkRecord(detail)">
+                                <i class="fas fa-plus"></i> Add Work
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info mt-3">
+        No SEO service details found.
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<SeoServiceDetailModel> SeoServiceDetails { get; set; } = GetDummyData();
+
+    [Parameter]
+    public EventCallback<SeoServiceDetailModel> OnAddWorkRecord { get; set; }
+
+    private async Task AddWorkRecord(SeoServiceDetailModel detail)
+    {
+        await OnAddWorkRecord.InvokeAsync(detail);
+    }
+
+    private static List<SeoServiceDetailModel> GetDummyData()
+    {
+        return new List<SeoServiceDetailModel>
+        {
+            new()
+            {
+                SeoServiceDetailsId = 1,
+                ServiceId = 101,
+                KeyWord = "Best Coffee Shop",
+                Rank = 5,
+                Note = "Improved ranking after backlink building",
+                ExtraField1 = "",
+                ExtraField2 = ""
+            },
+            new()
+            {
+                SeoServiceDetailsId = 2,
+                ServiceId = 101,
+                KeyWord = "Organic Coffee Beans",
+                Rank = 8,
+                Note = "Needs more content optimization",
+                ExtraField1 = "",
+                ExtraField2 = ""
+            },
+            new()
+            {
+                SeoServiceDetailsId = 3,
+                ServiceId = 101,
+                KeyWord = "Specialty Coffee Online",
+                Rank = 12,
+                Note = "New keyword - tracking progress",
+                ExtraField1 = "",
+                ExtraField2 = ""
+            },
+            new()
+            {
+                SeoServiceDetailsId = 4,
+                ServiceId = 101,
+                KeyWord = "Cold Brew Delivery",
+                Rank = 3,
+                Note = "Top performer - maintain position",
+                ExtraField1 = "",
+                ExtraField2 = ""
+            },
+            new()
+            {
+                SeoServiceDetailsId = 5,
+                ServiceId = 101,
+                KeyWord = "Artisan Coffee Roasters",
+                Rank = 15,
+                Note = "Competitive keyword - needs more work",
+                ExtraField1 = "",
+                ExtraField2 = ""
+            }
+        };
+    }
+
+    public class SeoServiceDetailModel
+    {
+        public int SeoServiceDetailsId { get; set; }
+        public int ServiceId { get; set; }
+        public string KeyWord { get; set; }
+        public int Rank { get; set; }
+        public string Note { get; set; }
+        public string ExtraField1 { get; set; }
+        public string ExtraField2 { get; set; }
+    }
+}

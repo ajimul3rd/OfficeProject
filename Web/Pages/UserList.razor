@@ -1,0 +1,341 @@
+﻿@page "/users"
+@using AutoMapper
+@using OfficeProject.Authentication
+@using OfficeProject.Models.DTO
+@using OfficeProject.Models.Entities
+@inject IUserService userService
+@rendermode InteractiveServer
+@inject ApiService apiService
+@using OfficeProject.Models.Enums;
+@using System.Text.Json
+
+
+<h3>User Management</h3>
+
+
+@if (isLoading)
+{
+    <p>Loading users...</p>
+}
+else
+{
+    <button class="btn btn-primary mb-3" @onclick="ShowAddForm">Add New User</button>
+
+    @if (showAddForm)
+    {
+        @* <AuthorizeView Roles="CLIENT" Context="authContext"> *@
+        @* 	<Authorized Context="authContext"> *@
+        <div class="card mb-3">
+            <div class="card-header">
+                <h4>@(registerModel.UserId == 0 ? "Add New User" : "Edit User")</h4>
+            </div>
+            <div class="card-body">
+                <EditForm EditContext="@editContext" OnValidSubmit="@SaveUser" Context="formContext">
+                    <DataAnnotationsValidator />
+
+                    <!-- Existing fields... -->
+                    <div class="form-group mb-3">
+                        <label>Name:</label>
+                        <InputText class="form-control" @bind-Value="@registerModel.UserName" />
+                        <ValidationMessage For="@(() => registerModel.UserName)" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Email:</label>
+                        <InputText class="form-control" @bind-Value="@registerModel.UserEmail" />
+                        <ValidationMessage For="@(() => registerModel.UserEmail)" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Contact:</label>
+                        <InputText class="form-control" @bind-Value="@registerModel.UserContact" />
+                        <ValidationMessage For="@(() => registerModel.UserContact)" />
+                    </div>
+                    @if (registerModel.UserId == 0)
+                    {
+                        <div class="form-group mb-3">
+                            <label>Password:</label>
+                            <InputText type="password" class="form-control" @bind-Value="@registerModel.UserPassword"  />
+                            <ValidationMessage For="@(() => registerModel.UserPassword)" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group mb-3">
+                            <label>Password:</label>
+                            <InputText type="password" class="form-control" @bind-Value="@registerModel.UserPassword" readonly />
+                            <ValidationMessage For="@(() => registerModel.UserPassword)" />
+                        </div>
+                    }
+
+
+                    <div class="form-group mb-3">
+                        <label>Role:</label>
+                        <InputSelect class="form-control" @bind-Value="registerModel.Role">
+                            <option value="">Select Role</option> @* Keep the empty value for the placeholder *@
+                            <option value="@UserRole.USER">USER</option>
+                            <option value="@UserRole.ADMIN">ADMIN</option>
+                            <option value="@UserRole.MANAGER">MANAGER</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => registerModel.Role)" />
+                    </div>
+
+                    <!-- New fields -->
+                    <div class="form-group mb-3">
+                        <label>Company Name:</label>
+                        <InputText class="form-control" @bind-Value="@registerModel.CompanyName" />
+                        <ValidationMessage For="@(() => registerModel.CompanyName)" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Address:</label>
+                        <InputTextArea class="form-control" @bind-Value="@registerModel.Address" />
+                        <ValidationMessage For="@(() => registerModel.Address)" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Designation:</label>
+                        <InputText class="form-control" @bind-Value="@registerModel.Designation" />
+                        <ValidationMessage For="@(() => registerModel.Designation)" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Joining Date:</label>
+                        <InputDate class="form-control" @bind-Value="@registerModel.JoiningDate" />
+                        <ValidationMessage For="@(() => registerModel.JoiningDate)" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Active:</label>
+                        <InputCheckbox class="form-check-input" @bind-Value="@registerModel.IsActive" />
+                        <ValidationMessage For="@(() => registerModel.IsActive)" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary ms-2" @onclick="CancelEdit">Cancel</button>
+                    </div>
+                </EditForm>
+
+            </div>
+        </div>
+        @* 	</Authorized> *@
+        @* </AuthorizeView> *@
+        <p>@message</p>
+    }
+    @* <AuthorizeView Roles="ADMIN"> *@
+    @*     <Authorized> *@
+    <table class="table table-bordered">
+        <thead class="table-info">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Contact</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in users)
+                    {
+                        <tr>
+                            <td>@user.UserName</td>
+                            <td>@user.UserEmail</td>
+                            <td>@user.UserContact</td>
+                            <td>@user.Role</td>
+                            <td>
+                                <button class="btn btn-sm @(user.IsActive ? "btn-success" : "btn-danger")"
+                                @onclick="() => ToggleUserStatus(user.UserId, !user.IsActive)">
+                                    @(user.IsActive ? "Active" : "Inactive")
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-info" @onclick="() => EditUser(user.UserId)">Edit</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+    @*     </Authorized> *@
+    @* </AuthorizeView> *@
+}
+
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<p>@message</p>
+
+@code {
+
+
+    private EditContext? editContext;
+
+    private List<UserDTO> users = new();
+
+    private string message { get; set; }
+
+    private bool isLoading = true;
+
+    private bool isUpdate = false;
+
+    private bool showAddForm = false;
+
+    private string errorMessage = string.Empty;
+
+    private RegisterModel? registerModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            users = await apiService.GetAllUsersDTOAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading users: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private void ShowAddForm()
+    {
+        registerModel ??= new RegisterModel();
+        showAddForm = true;
+        editContext = new EditContext(registerModel!);
+        StateHasChanged();
+
+    }
+
+    private async Task EditUser(int? userId)
+    {
+        try
+        {
+            isUpdate = true;
+            var user = await userService.GetUserDTOById((int)userId!);
+
+
+
+            if (user != null)
+            {	
+                registerModel ??= new RegisterModel();
+                registerModel.UserId = user!.UserId;
+                registerModel.UserName = user.UserName;
+                registerModel.UserEmail = user.UserEmail;
+                registerModel.UserContact = user.UserContact;
+                registerModel.UserPassword = "AAAaaa@1234";//temp password for padd validation
+                registerModel.Role = user.Role;
+                registerModel.IsActive = user.IsActive;
+                registerModel.CompanyName = user.CompanyName;
+                registerModel.Address = user.Address;
+                registerModel.Designation = user.Designation;
+                registerModel.JoiningDate = user.JoiningDate;
+                registerModel.UserId = user.UserId;
+
+
+                // message = JsonSerializer.Serialize(registerModel, new JsonSerializerOptions { WriteIndented = true });
+                showAddForm = true;
+                editContext = new EditContext(registerModel!);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading user: {ex.Message}";
+        }
+    }
+    private async Task SaveUser()
+    {
+        try
+        {
+            if (registerModel == null) // Add this check
+            {
+                errorMessage = "User data is missing";
+                return;
+            }
+
+            errorMessage = string.Empty;
+
+            if (registerModel.UserId == 0)
+            {
+
+                var response = await apiService.RegisterUserAsync(registerModel);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    users = await apiService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
+                    showAddForm = false;
+                }
+                else
+                {
+                    errorMessage = await response.Content.ReadAsStringAsync();
+                }
+            }
+            else
+            {
+                // message = JsonSerializer.Serialize(registerModel, new JsonSerializerOptions { WriteIndented = true });
+                // For existing users, call update API
+
+                var userDto = new UserDTO
+                    {
+                        UserId = registerModel.UserId, // or handle null as needed
+                        UserName = registerModel.UserName,
+                        UserEmail = registerModel.UserEmail,
+                        UserContact = registerModel.UserContact,
+                        Role = registerModel.Role,
+                        IsActive = registerModel.IsActive,
+                        CompanyName = registerModel.CompanyName,
+                        Address = registerModel.Address,
+                        Designation = registerModel.Designation,
+                        JoiningDate = registerModel.JoiningDate
+                    };
+                // message = JsonSerializer.Serialize(userDto, new JsonSerializerOptions { WriteIndented = true });
+                await apiService.UpdateUserDTOAsync(userDto, (int)userDto.UserId!);
+                users = await apiService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
+                showAddForm = false;
+                
+            }
+            registerModel = new RegisterModel();
+		}
+		catch (Exception ex)
+		{
+			errorMessage = $"Error saving user: {ex.Message}";
+			Console.WriteLine(ex.ToString()); // Better logging
+		}
+	}
+
+	
+	private void CancelEdit()
+	{
+		showAddForm = false;
+		errorMessage = string.Empty;
+        registerModel = new RegisterModel();
+	}
+	private async Task ToggleUserStatus(int? userId, bool newStatus)
+	{
+		try
+		{
+			var user = await userService.GetUserDTOById((int)userId!);
+			if (user != null)
+			{
+				user.IsActive = newStatus;
+				await userService.UpdateUserAsync(user);
+				users = await userService.GetAllUsersDTOAsync();
+			}
+		}
+		catch (Exception ex)
+		{
+			errorMessage = $"Error updating user status: {ex.Message}";
+		}
+	}
+}
+

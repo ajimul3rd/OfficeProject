@@ -1,0 +1,117 @@
+﻿@page "/login"
+ @using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using OfficeProject.Authentication
+@using OfficeProject.Models.DTO
+ @inject HttpClient Http
+ @inject NavigationManager Navigation
+ @inject ILocalStorageService LocalStorage
+ @inject AuthenticationStateProvider AuthStateProvider
+ @rendermode InteractiveServer
+ @inject ApiService ApiService
+
+<h1>Login Page</h1>
+<div class="login-container">
+	<div class="login-header">
+		<h1>Office System Login</h1>
+		<p>Please enter your credentials</p>
+	</div>
+
+	<EditForm EditContext="@editContext" OnValidSubmit="HandleLogin" FormName="loginForm">
+		<DataAnnotationsValidator />
+
+		<div class="form-group">
+			<label for="userName">UserName</label>
+			<InputText id="userName" @bind-Value="loginModel.UserName" class="form-control" />
+			<ValidationMessage For="@(() => loginModel.UserName)" />
+		</div>
+
+		<div class="form-group">
+			<label for="password">Password</label>
+			<InputText id="password" type="password" @bind-Value="loginModel.UserPassword" class="form-control" />
+			<ValidationMessage For="@(() => loginModel.UserPassword)" />
+		</div>
+
+		<div class="form-group">
+			<button type="submit" class="btn btn-primary" disabled="@isLoading">
+				@if (isLoading)
+				{
+					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+					<span> Logging in...</span>
+				}
+				else
+				{
+					<span>Login</span>
+				}
+			</button>
+		</div>
+
+		@if (!string.IsNullOrEmpty(errorMessage))
+		{
+			<div class="alert alert-danger">@errorMessage</div>
+		}
+	</EditForm>
+</div>
+
+@code {
+	private EditContext? editContext;
+
+	private LoginModel? loginModel;
+
+	private bool isLoading = false;
+
+	private string errorMessage = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		loginModel ??= new LoginModel();
+		editContext = new EditContext(loginModel!);
+		StateHasChanged();
+
+	}
+	private async Task HandleLogin()
+	{
+		isLoading = true;
+		errorMessage = string.Empty;
+
+		try
+		{
+			if (editContext!.Validate())
+			{
+				var loginResponse = await ApiService.LoginAsync(loginModel);
+
+				if (loginResponse != null)
+				{
+					await LocalStorage.SetItemAsync("authToken", loginResponse.AccessToken);
+					await LocalStorage.SetItemAsync("refreshToken", loginResponse.RefreshToken);
+
+					if (AuthStateProvider is CustomAuthStateProvider authProvider)
+					{
+						await authProvider.NotifyUserAuthentication(loginResponse.AccessToken);
+					}
+
+					Navigation.NavigateTo("/", forceLoad: true);
+				}
+				else
+				{
+					errorMessage = "Login failed: Invalid response from server.";
+				}
+			}
+
+
+			
+		}
+		catch (HttpRequestException httpEx)
+		{
+			errorMessage = $"Login failed: {httpEx.Message}";
+		}
+		catch (Exception ex)
+		{
+			errorMessage = $"An unexpected error occurred: {ex.Message}";
+		}
+		finally
+		{
+			isLoading = false;
+		}
+	}
+} 

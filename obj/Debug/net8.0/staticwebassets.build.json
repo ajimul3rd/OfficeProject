@@ -1,0 +1,640 @@
+{
+  "Version": 1,
+  "Hash": "god+Qyld7WU2Y8THkOlzupo81YP0U8q2alVTv0JZdKk=",
+  "Source": "OfficeProject",
+  "BasePath": "_content/OfficeProject",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "OfficeProject\\wwwroot",
+      "Source": "OfficeProject",
+      "ContentRoot": "E:\\.Net Project\\OfficeProject\\wwwroot\\",
+      "BasePath": "_content/OfficeProject",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "E:\\.Net Project\\OfficeProject\\obj\\Debug\\net8.0\\scopedcss\\bundle\\OfficeProject.styles.css",
+      "SourceId": "OfficeProject",
+      "SourceType": "Computed",
+      "ContentRoot": "E:\\.Net Project\\OfficeProject\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
+      "BasePath": "_content/OfficeProject",
+      "RelativePath": "OfficeProject#[.{fingerprint}]?.styles.css",
+      "AssetKind": "All",
+      "AssetMode": "CurrentProject",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "ScopedCss",
+      "AssetTraitValue": "ApplicationBundle",
+      "Fingerprint": "hpbpeix09l",
+      "Integrity": "hW1Gc7hlrOsmrmAfHlwxf0otmCceKdVrCFKmkRUTopA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "E:\\.Net Project\\OfficeProject\\obj\\Debug\\net8.0\\scopedcss\\bundle\\OfficeProject.styles.css"
+    },
+    {
+      "Identity": "E:\\.Net Project\\OfficeProject\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\OfficeProject.bundle.scp.css",
+      "SourceId": "OfficeProject",
+      "SourceType": "Computed",
+      "ContentRoot": "E:\\.Net Project\\OfficeProject\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\",
+      "BasePath": "_content/OfficeProject",
+      "RelativePath": "OfficeProject#[.{fingerprint}]!.bundle.scp.css",
+      "AssetKind": "All",
+      "AssetMode": "Reference",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "ScopedCss",
+      "AssetTraitValue": "ProjectBundle",
+      "Fingerprint": "hpbpeix09l",
+      "Integrity": "hW1Gc7hlrOsmrmAfHlwxf0otmCceKdVrCFKmkRUTopA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "E:\\.Net Project\\OfficeProject\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\OfficeProject.bundle.scp.css"
+    },
+    {
+      "Identity": "E:\\.Net Project\\OfficeProject\\wwwroot\\app.css",
+      "SourceId": "OfficeProject",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\.Net Project\\OfficeProject\\wwwroot\\",
+      "BasePath": "_content/OfficeProject",
+      "RelativePath": "app#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "4vdnpl526e",
+      "Integrity": "8KImD9Zhk80UFs534txcIjxwx/6uCJxaAa97/kbzog4=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\app.css"
+    },
+    {
+      "Identity": "E:\\.Net Project\\OfficeProject\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "SourceId": "OfficeProject",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\.Net Project\\OfficeProject\\wwwroot\\",
+      "BasePath": "_content/OfficeProject",
+      "RelativePath": "bootstrap/bootstrap.min#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "wwrxke6brf",
+      "Integrity": "cEjUQs9qZ/T1GPt0cVDwIz7c8IrZ1HznQ38IeGk/nNY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Identity": "E:\\.Net Project\\OfficeProject\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "SourceId": "OfficeProject",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\.Net Project\\OfficeProject\\wwwroot\\",
+      "BasePath": "_content/OfficeProject",
+      "RelativePath": "bootstrap/bootstrap.min.css#[.{fingerprint}]?.map",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "8inm30yfxf",
+      "Integrity": "gBwg2tmA0Ci2u54gMF1jNCVku6vznarkLS6D76htNNQ=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Identity": "E:\\.Net Project\\OfficeProject\\wwwroot\\favicon.png",
+      "SourceId": "OfficeProject",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\.Net Project\\OfficeProject\\wwwroot\\",
+      "BasePath": "_content/OfficeProject",
+      "RelativePath": "favicon#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ifv42okdf2",
+      "Integrity": "4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\favicon.png"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "app.4vdnpl526e.css",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\wwwroot\\app.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2589"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"8KImD9Zhk80UFs534txcIjxwx/6uCJxaAa97/kbzog4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 18 Apr 2025 09:10:02 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "4vdnpl526e"
+        },
+        {
+          "Name": "label",
+          "Value": "app.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-8KImD9Zhk80UFs534txcIjxwx/6uCJxaAa97/kbzog4="
+        }
+      ]
+    },
+    {
+      "Route": "app.css",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\wwwroot\\app.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2589"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"8KImD9Zhk80UFs534txcIjxwx/6uCJxaAa97/kbzog4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 18 Apr 2025 09:10:02 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-8KImD9Zhk80UFs534txcIjxwx/6uCJxaAa97/kbzog4="
+        }
+      ]
+    },
+    {
+      "Route": "bootstrap/bootstrap.min.css",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "226890"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"cEjUQs9qZ/T1GPt0cVDwIz7c8IrZ1HznQ38IeGk/nNY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 03 May 2025 13:49:34 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-cEjUQs9qZ/T1GPt0cVDwIz7c8IrZ1HznQ38IeGk/nNY="
+        }
+      ]
+    },
+    {
+      "Route": "bootstrap/bootstrap.min.css.8inm30yfxf.map",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "449111"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/plain"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"gBwg2tmA0Ci2u54gMF1jNCVku6vznarkLS6D76htNNQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Mar 2025 08:40:44 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "8inm30yfxf"
+        },
+        {
+          "Name": "label",
+          "Value": "bootstrap/bootstrap.min.css.map"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-gBwg2tmA0Ci2u54gMF1jNCVku6vznarkLS6D76htNNQ="
+        }
+      ]
+    },
+    {
+      "Route": "bootstrap/bootstrap.min.css.map",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "449111"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/plain"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"gBwg2tmA0Ci2u54gMF1jNCVku6vznarkLS6D76htNNQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Mar 2025 08:40:44 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-gBwg2tmA0Ci2u54gMF1jNCVku6vznarkLS6D76htNNQ="
+        }
+      ]
+    },
+    {
+      "Route": "bootstrap/bootstrap.min.wwrxke6brf.css",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "226890"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"cEjUQs9qZ/T1GPt0cVDwIz7c8IrZ1HznQ38IeGk/nNY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 03 May 2025 13:49:34 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "wwrxke6brf"
+        },
+        {
+          "Name": "label",
+          "Value": "bootstrap/bootstrap.min.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-cEjUQs9qZ/T1GPt0cVDwIz7c8IrZ1HznQ38IeGk/nNY="
+        }
+      ]
+    },
+    {
+      "Route": "favicon.ifv42okdf2.png",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\wwwroot\\favicon.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1148"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Mar 2025 08:40:44 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ifv42okdf2"
+        },
+        {
+          "Name": "label",
+          "Value": "favicon.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg="
+        }
+      ]
+    },
+    {
+      "Route": "favicon.png",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\wwwroot\\favicon.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1148"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 25 Mar 2025 08:40:44 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg="
+        }
+      ]
+    },
+    {
+      "Route": "OfficeProject.bundle.scp.css",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\OfficeProject.bundle.scp.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6004"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"hW1Gc7hlrOsmrmAfHlwxf0otmCceKdVrCFKmkRUTopA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 17 May 2025 09:58:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-hW1Gc7hlrOsmrmAfHlwxf0otmCceKdVrCFKmkRUTopA="
+        }
+      ]
+    },
+    {
+      "Route": "OfficeProject.hpbpeix09l.bundle.scp.css",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\OfficeProject.bundle.scp.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6004"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"hW1Gc7hlrOsmrmAfHlwxf0otmCceKdVrCFKmkRUTopA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 17 May 2025 09:58:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "hpbpeix09l"
+        },
+        {
+          "Name": "label",
+          "Value": "OfficeProject.bundle.scp.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-hW1Gc7hlrOsmrmAfHlwxf0otmCceKdVrCFKmkRUTopA="
+        }
+      ]
+    },
+    {
+      "Route": "OfficeProject.hpbpeix09l.styles.css",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\obj\\Debug\\net8.0\\scopedcss\\bundle\\OfficeProject.styles.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6004"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"hW1Gc7hlrOsmrmAfHlwxf0otmCceKdVrCFKmkRUTopA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 17 May 2025 09:58:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "hpbpeix09l"
+        },
+        {
+          "Name": "label",
+          "Value": "OfficeProject.styles.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-hW1Gc7hlrOsmrmAfHlwxf0otmCceKdVrCFKmkRUTopA="
+        }
+      ]
+    },
+    {
+      "Route": "OfficeProject.styles.css",
+      "AssetFile": "E:\\.Net Project\\OfficeProject\\obj\\Debug\\net8.0\\scopedcss\\bundle\\OfficeProject.styles.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6004"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"hW1Gc7hlrOsmrmAfHlwxf0otmCceKdVrCFKmkRUTopA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 17 May 2025 09:58:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-hW1Gc7hlrOsmrmAfHlwxf0otmCceKdVrCFKmkRUTopA="
+        }
+      ]
+    }
+  ]
+}

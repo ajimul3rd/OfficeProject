@@ -1,0 +1,193 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OfficeProject
+build_property.RootNamespace = OfficeProject
+build_property.ProjectDir = E:\.Net Project\OfficeProject\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = E:\.Net Project\OfficeProject
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[E:/.Net Project/OfficeProject/Web/App.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXEFwcC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/AddClient.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXEFkZENsaWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/AddProduct/AddProducts.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXEFkZFByb2R1Y3RcQWRkUHJvZHVjdHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/ClientSourceList.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXENsaWVudFNvdXJjZUxpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/DesignTaskModel.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xEZXNpZ25UYXNrTW9kZWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/DevelopmentPhaseModel.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xEZXZlbG9wbWVudFBoYXNlTW9kZWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/DigitalMarketingProjectInfo.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xEaWdpdGFsTWFya2V0aW5nUHJvamVjdEluZm8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/MaintananceTaskModel.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xNYWludGFuYW5jZVRhc2tNb2RlbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/MarketingPhaseModel.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xNYXJrZXRpbmdQaGFzZU1vZGVsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/WebDevelopmentProjectInfoModel.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xXZWJEZXZlbG9wbWVudFByb2plY3RJbmZvTW9kZWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/AddMarketingPhaseDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXEFkZE1hcmtldGluZ1BoYXNlRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogAddProject.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ0FkZFByb2plY3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogAddWorkingRecord.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ0FkZFdvcmtpbmdSZWNvcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogClientList.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ0NsaWVudExpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogProductsList.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ1Byb2R1Y3RzTGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogUserList.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ1VzZXJMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/XAddProjectDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXFhBZGRQcm9qZWN0RGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/XDigitalMarketingTabPanDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXFhEaWdpdGFsTWFya2V0aW5nVGFiUGFuRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/XWebDevelopmentTabPanDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXFhXZWJEZXZlbG9wbWVudFRhYlBhbkRpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXEVycm9yLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXEhvbWUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXExvZ2luLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/Logout.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXExvZ291dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/ProjectList.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFByb2plY3RMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/RedirectToLogin.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFJlZGlyZWN0VG9Mb2dpbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/TappanDialog/TappanSeoOthServicess.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRhcHBhbkRpYWxvZ1xUYXBwYW5TZW9PdGhTZXJ2aWNlc3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/TappanDialog/TappanWorkingActivity.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRhcHBhbkRpYWxvZ1xUYXBwYW5Xb3JraW5nQWN0aXZpdHkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/Test/ParentTest.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRlc3RcUGFyZW50VGVzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/Test/TrackableInputSelect.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRlc3RcVHJhY2thYmxlSW5wdXRTZWxlY3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/UserActivity/AddWorkingActivity.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxBZGRXb3JraW5nQWN0aXZpdHkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/UserActivity/OthersServicesListModel.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxPdGhlcnNTZXJ2aWNlc0xpc3RNb2RlbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/UserActivity/SeoDetailListModel.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxTZW9EZXRhaWxMaXN0TW9kZWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/UserActivity/ServiceListModel.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxTZXJ2aWNlTGlzdE1vZGVsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/UserActivity/UserActivity.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxVc2VyQWN0aXZpdHkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/UserList.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/XClientsList.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFhDbGllbnRzTGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFJvdXRlcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXF9JbXBvcnRzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXExheW91dFxNYWluTGF5b3V0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-bn6y4ihmsp
+
+[E:/.Net Project/OfficeProject/Web/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXExheW91dFxOYXZNZW51LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-jkumxzyki3
