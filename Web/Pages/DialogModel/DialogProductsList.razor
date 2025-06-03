@@ -48,6 +48,14 @@
                             <ValidationMessage For="@(() => product.ProductsDescription)" />
                         </div>
 
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="productsCostingPrice">Costing Price:</label>
+                                <InputNumber @bind-Value="product.ProductsCostingPrice" id="productsCostingPrice" class="form-control"
+                                             @onblur="@(() => ValidateField(product, nameof(product.ProductsCostingPrice)))" />
+                                <ValidationMessage For="@(() => product.ProductsCostingPrice)" />
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -57,14 +65,7 @@
                                     <ValidationMessage For="@(() => product.ProductsSellingPrice)" />
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="productsCostingPrice">Costing Price:</label>
-                                    <InputNumber @bind-Value="product.ProductsCostingPrice" id="productsCostingPrice" class="form-control"
-                                    @onblur="@(() => ValidateField(product, nameof(product.ProductsCostingPrice)))" />
-                                    <ValidationMessage For="@(() => product.ProductsCostingPrice)" />
-                                </div>
-                            </div>
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Active:</label>

@@ -186,43 +186,10 @@ namespace OfficeProject.Servicess
                             };
 
                             // Optionally add WebDevelopment (if provided)
-                            if (projectDto.WebDevelopment != null)
-                            {
-                                project.WebDevelopment = new WebDevelopment
-                                {
-                                    ProjectIssueDate = projectDto.WebDevelopment.ProjectIssueDate,
-                                    ProjectDomainName = projectDto.WebDevelopment.ProjectDomainName,
-                                    ProjectHostingDate = projectDto.WebDevelopment.ProjectHostingDate,
-                                    ProjectHostingRenewalDate = projectDto.WebDevelopment.ProjectHostingRenewalDate,
-                                    ProjectHostingRenewalAmount = projectDto.WebDevelopment.ProjectHostingRenewalAmount,
-                                    ProjectServerFtpAssign = projectDto.WebDevelopment.ProjectServerFtpAssign,
-                                    ProjectServerIp = projectDto.WebDevelopment.ProjectServerIp,
-                                    ProjectServerUserId = projectDto.WebDevelopment.ProjectServerUserId,
-                                    ProjectServerPassword = projectDto.WebDevelopment.ProjectServerPassword,
-                                    ProjectHandledBy = projectDto.WebDevelopment.ProjectHandledBy,
-                                    ProjectStartDate = projectDto.WebDevelopment.ProjectStartDate,
-                                    ProjectDeadline = projectDto.WebDevelopment.ProjectDeadline,
-                                    ProjectExtendedDeadline = projectDto.WebDevelopment.ProjectExtendedDeadline,
-                                    ProjectIsActive = projectDto.WebDevelopment.ProjectIsActive,
-                                    ProjectRemarks = projectDto.WebDevelopment.ProjectRemarks,
-                                    ProjectIssueBy = projectDto.WebDevelopment.ProjectIssueBy
-                                };
-                            }
+                           
 
                             // Optionally add MarketingPhases (if provided)
-                            if (projectDto.MarketingPhase != null && projectDto.MarketingPhase.Any())
-                            {
-                                project.MarketingPhase = projectDto.MarketingPhase.Select(m => new MarketingPhase
-                                {                                                                     
-                                    WebsiteUrl = m.WebsiteUrl,
-                                    Title = m.Title,
-                                    Description = m.Description,
-                                    Status = m.Status,
-                                    Budget = m.Budget,
-                                    StartTime = m.StartTime,
 
-                                }).ToList();
-                            }
 
                             client.Projects.Add(project);
                         }

@@ -424,26 +424,26 @@ public class ApiService
         }
     }
 
-    //############################################### MarketingPhase Services ##################################################
+    ////############################################### MarketingPhase Services ##################################################
 
-    public async Task<MarketingPhaseDTO?> AddOrUpdateMaketingPhaseAsync(MarketingPhaseDTO marketingPhase)
-    {
-        await AddAuthHeaderAsync(); // Optional if your endpoint requires JWT auth
+    //public async Task<MarketingPhaseDTO?> AddOrUpdateMaketingPhaseAsync(MarketingPhaseDTO marketingPhase)
+    //{
+    //    await AddAuthHeaderAsync(); // Optional if your endpoint requires JWT auth
 
-        var response = await http.PostAsJsonAsync($"api/marketing/add-or-update", marketingPhase);
+    //    var response = await http.PostAsJsonAsync($"api/marketing/add-or-update", marketingPhase);
 
-        if (response.IsSuccessStatusCode)
-        {
-            return await response.Content.ReadFromJsonAsync<MarketingPhaseDTO>();
-        }
-        else
-        {
-            var error = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Error {response.StatusCode}: {error}");
-        }
+    //    if (response.IsSuccessStatusCode)
+    //    {
+    //        return await response.Content.ReadFromJsonAsync<MarketingPhaseDTO>();
+    //    }
+    //    else
+    //    {
+    //        var error = await response.Content.ReadAsStringAsync();
+    //        throw new Exception($"Error {response.StatusCode}: {error}");
+    //    }
 
 
-    }
+    //}
 
     //############################################### Products Services ##################################################
     // ✅ ADD PRODUCTS 

@@ -81,17 +81,7 @@ namespace OfficeProject.Models.DTO
         }
 
         [Required(ErrorMessage = "Project creation date is required")]
-        public DateTime ProjectCreatedAt { get; set; } = DateTime.UtcNow;
-
-
-        // Child DTO lists (optional, include only if needed)
-        // Optional: One project can have one WebDevelopment
-        [ValidateComplexType]
-        public WebDevelopmentDTO? WebDevelopment { get; set; }
-
-        // Optional: One project can have many DigitalMarketing assignments
-        [ValidateComplexType]
-        public List<MarketingPhaseDTO>? MarketingPhase { get; set; }
+        public DateTime ProjectCreatedAt { get; set; } = DateTime.UtcNow;       
 
         // Optional: One project can have AssignedUsers
         [ValidateComplexType]

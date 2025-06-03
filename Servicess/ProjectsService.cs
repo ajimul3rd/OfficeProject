@@ -267,153 +267,153 @@ namespace OfficeProject.Servicess
         }
 
 
-        public async Task<ProjectsDTO?> GetProjectByIdAsync(int projectId)
-        {
-            using (var context = dbContextFactory.CreateDbContext())
-            {
-                var project = await context.Projects
-                    .Include(p => p.Client)
-                    .Include(p => p.WebDevelopment)
-                        .ThenInclude(w => w.DesignPhase)
-                    .Include(p => p.WebDevelopment)
-                        .ThenInclude(w => w.DevelopmentPhase)
-                    .Include(p => p.WebDevelopment)
-                        .ThenInclude(w => w.MaintenancePhase)
-                    .Include(p => p.MarketingPhase!)
-                        .ThenInclude(w => w.SocialMediaHandling)
-                    .Include(p => p.MarketingPhase!)
-                        .ThenInclude(w => w.Seo)
-                    .FirstOrDefaultAsync(p => p.ProjectId == projectId);
+        //public async Task<ProjectsDTO?> GetProjectByIdAsync(int projectId)
+        //{
+        //    using (var context = dbContextFactory.CreateDbContext())
+        //    {
+        //        var project = await context.Projects
+        //            .Include(p => p.Client)
+        //            .Include(p => p.WebDevelopment)
+        //                .ThenInclude(w => w.DesignPhase)
+        //            .Include(p => p.WebDevelopment)
+        //                .ThenInclude(w => w.DevelopmentPhase)
+        //            .Include(p => p.WebDevelopment)
+        //                .ThenInclude(w => w.MaintenancePhase)
+        //            .Include(p => p.MarketingPhase!)
+        //                .ThenInclude(w => w.SocialMediaHandling)
+        //            .Include(p => p.MarketingPhase!)
+        //                .ThenInclude(w => w.Seo)
+        //            .FirstOrDefaultAsync(p => p.ProjectId == projectId);
 
-                if (project == null)
-                    return null;
+        //        if (project == null)
+        //            return null;
 
-                // Map to DTO
-                var projectDto = new ProjectsDTO
-                {
-                    ProjectId = project.ProjectId,
-                    ClientId = project.ClientId,
-                    ProjectName = project.ProjectName,
-                    ProjectStartDate = project.ProjectStartDate,
-                    ProjectCost = project.ProjectCost,
-                    ProjectType = project.ProjectType,
-                    ProjectCreatedAt = project.ProjectCreatedAt,
-                    IsActive=project.IsActive,
-                    Client = project.Client != null ? new ClientsDTO
-                    {
-                        ClientId = project.Client.ClientId,
-                        ClientName = project.Client.ClientName,
-                        ClientEmail1 = project.Client.ClientEmail1,
-                        ClientContact1 = project.Client.ClientContact1
-                        // Add more fields as needed
-                    } : null,
-                    WebDevelopment = project.WebDevelopment != null ? new WebDevelopmentDTO
-                    {
-                        WebDevelopmentId = project.WebDevelopment.WebDevelopmentId,
-                        ProjectIssueDate = project.WebDevelopment.ProjectIssueDate,
-                        ProjectDomainName = project.WebDevelopment.ProjectDomainName,
-                        ProjectHostingDate = (DateTime)project.WebDevelopment.ProjectHostingDate,
-                        ProjectHostingRenewalDate = (DateTime)project.WebDevelopment.ProjectHostingRenewalDate,
-                        ProjectHostingRenewalAmount = project.WebDevelopment.ProjectHostingRenewalAmount,
-                        ProjectServerFtpAssign = project.WebDevelopment.ProjectServerFtpAssign,
-                        ProjectServerIp = project.WebDevelopment.ProjectServerIp,
-                        ProjectServerUserId = project.WebDevelopment.ProjectServerUserId,
-                        ProjectServerPassword = project.WebDevelopment.ProjectServerPassword,
-                        ProjectHandledBy = project.WebDevelopment.ProjectHandledBy,
-                        ProjectStartDate = project.WebDevelopment.ProjectStartDate,
-                        ProjectDeadline = (DateTime)project.WebDevelopment.ProjectDeadline,
-                        ProjectExtendedDeadline = project.WebDevelopment.ProjectExtendedDeadline,
-                        ProjectIsActive = project.WebDevelopment.ProjectIsActive,
-                        ProjectRemarks = project.WebDevelopment.ProjectRemarks,
-                        ProjectIssueBy = project.WebDevelopment.ProjectIssueBy,
-                        DesignPhase = project.WebDevelopment.DesignPhase != null ? new DesignPhaseDTO
-                        {
-                            DesignTaskId = project.WebDevelopment.DesignPhase.DesignTaskId,
-                            WebDevelopmentId = project.WebDevelopment.DesignPhase.WebDevelopmentId,
-                            Title = project.WebDevelopment.DesignPhase.Title,
-                            Description = project.WebDevelopment.DesignPhase.Description,
-                            Status = project.WebDevelopment.DesignPhase.Status,
-                            DesignTool = project.WebDevelopment.DesignPhase.DesignTool,
-                            MockupLink = project.WebDevelopment.DesignPhase.MockupLink,
-                            FeedbackStatus = project.WebDevelopment.DesignPhase.FeedbackStatus,
-                            StartTime = project.WebDevelopment.DesignPhase.StartTime,
-                            EndTime = project.WebDevelopment.DesignPhase.EndTime,
-                            DeadlineDate = project.WebDevelopment.DesignPhase.DeadlineDate
-                        } : null,
-                        DevelopmentPhase = project.WebDevelopment.DevelopmentPhase != null ? new DevelopmentPhaseDTO
-                        {
-                            DevelopmentTaskId = project.WebDevelopment.DevelopmentPhase.DevelopmentTaskId,
-                            WebDevelopmentId = project.WebDevelopment.DevelopmentPhase.WebDevelopmentId,
-                            Title = project.WebDevelopment.DevelopmentPhase.Title,
-                            Description = project.WebDevelopment.DevelopmentPhase.Description,
-                            Status = project.WebDevelopment.DevelopmentPhase.Status,
-                            ProgrammingLanguage = project.WebDevelopment.DevelopmentPhase.ProgrammingLanguage,
-                            CodeRepoUrl = project.WebDevelopment.DevelopmentPhase.CodeRepoUrl,
-                            TestStatus = project.WebDevelopment.DevelopmentPhase.TestStatus,
-                            StartTime = project.WebDevelopment.DevelopmentPhase.StartTime,
-                            EndTime = project.WebDevelopment.DevelopmentPhase.EndTime,
-                            DeadlineDate = project.WebDevelopment.DevelopmentPhase.DeadlineDate
-                        } : null,
-                        MaintenancePhase = project.WebDevelopment.MaintenancePhase != null ? new MaintenancePhaseDTO
-                        {
-                            MaintenanceId = project.WebDevelopment.MaintenancePhase.MaintenanceId,
-                            WebDevelopmentId = project.WebDevelopment.MaintenancePhase.WebDevelopmentId,
-                            Title = project.WebDevelopment.MaintenancePhase.Title,
-                            Description = project.WebDevelopment.MaintenancePhase.Description,
-                            Status = project.WebDevelopment.MaintenancePhase.Status,
-                            IssueType = project.WebDevelopment.MaintenancePhase.IssueType,
-                            Priority = project.WebDevelopment.MaintenancePhase.Priority,
-                            SystemAffected = project.WebDevelopment.MaintenancePhase.SystemAffected,
-                            StartTime = (DateTime)project.WebDevelopment.MaintenancePhase.StartTime
-                        } : null,
-                    } : null,
-                    MarketingPhase = project.MarketingPhase?.Select(m => new MarketingPhaseDTO
-                    {
-                        MarketingTaskId = m.MarketingTaskId,
-                        ProjectId = m.ProjectId,
-                        MarketingTypes = m.MarketingTypes,
-                        WebsiteUrl = m.WebsiteUrl,
-                        Title = m.Title,
-                        Description = m.Description,
-                        Status = m.Status,
-                        Budget = m.Budget,
-                        StartTime = m.StartTime,
+        //        // Map to DTO
+        //        var projectDto = new ProjectsDTO
+        //        {
+        //            ProjectId = project.ProjectId,
+        //            ClientId = project.ClientId,
+        //            ProjectName = project.ProjectName,
+        //            ProjectStartDate = project.ProjectStartDate,
+        //            ProjectCost = project.ProjectCost,
+        //            ProjectType = project.ProjectType,
+        //            ProjectCreatedAt = project.ProjectCreatedAt,
+        //            IsActive=project.IsActive,
+        //            Client = project.Client != null ? new ClientsDTO
+        //            {
+        //                ClientId = project.Client.ClientId,
+        //                ClientName = project.Client.ClientName,
+        //                ClientEmail1 = project.Client.ClientEmail1,
+        //                ClientContact1 = project.Client.ClientContact1
+        //                // Add more fields as needed
+        //            } : null,
+        //            WebDevelopment = project.WebDevelopment != null ? new WebDevelopmentDTO
+        //            {
+        //                WebDevelopmentId = project.WebDevelopment.WebDevelopmentId,
+        //                ProjectIssueDate = project.WebDevelopment.ProjectIssueDate,
+        //                ProjectDomainName = project.WebDevelopment.ProjectDomainName,
+        //                ProjectHostingDate = (DateTime)project.WebDevelopment.ProjectHostingDate,
+        //                ProjectHostingRenewalDate = (DateTime)project.WebDevelopment.ProjectHostingRenewalDate,
+        //                ProjectHostingRenewalAmount = project.WebDevelopment.ProjectHostingRenewalAmount,
+        //                ProjectServerFtpAssign = project.WebDevelopment.ProjectServerFtpAssign,
+        //                ProjectServerIp = project.WebDevelopment.ProjectServerIp,
+        //                ProjectServerUserId = project.WebDevelopment.ProjectServerUserId,
+        //                ProjectServerPassword = project.WebDevelopment.ProjectServerPassword,
+        //                ProjectHandledBy = project.WebDevelopment.ProjectHandledBy,
+        //                ProjectStartDate = project.WebDevelopment.ProjectStartDate,
+        //                ProjectDeadline = (DateTime)project.WebDevelopment.ProjectDeadline,
+        //                ProjectExtendedDeadline = project.WebDevelopment.ProjectExtendedDeadline,
+        //                ProjectIsActive = project.WebDevelopment.ProjectIsActive,
+        //                ProjectRemarks = project.WebDevelopment.ProjectRemarks,
+        //                ProjectIssueBy = project.WebDevelopment.ProjectIssueBy,
+        //                DesignPhase = project.WebDevelopment.DesignPhase != null ? new DesignPhaseDTO
+        //                {
+        //                    DesignTaskId = project.WebDevelopment.DesignPhase.DesignTaskId,
+        //                    WebDevelopmentId = project.WebDevelopment.DesignPhase.WebDevelopmentId,
+        //                    Title = project.WebDevelopment.DesignPhase.Title,
+        //                    Description = project.WebDevelopment.DesignPhase.Description,
+        //                    Status = project.WebDevelopment.DesignPhase.Status,
+        //                    DesignTool = project.WebDevelopment.DesignPhase.DesignTool,
+        //                    MockupLink = project.WebDevelopment.DesignPhase.MockupLink,
+        //                    FeedbackStatus = project.WebDevelopment.DesignPhase.FeedbackStatus,
+        //                    StartTime = project.WebDevelopment.DesignPhase.StartTime,
+        //                    EndTime = project.WebDevelopment.DesignPhase.EndTime,
+        //                    DeadlineDate = project.WebDevelopment.DesignPhase.DeadlineDate
+        //                } : null,
+        //                DevelopmentPhase = project.WebDevelopment.DevelopmentPhase != null ? new DevelopmentPhaseDTO
+        //                {
+        //                    DevelopmentTaskId = project.WebDevelopment.DevelopmentPhase.DevelopmentTaskId,
+        //                    WebDevelopmentId = project.WebDevelopment.DevelopmentPhase.WebDevelopmentId,
+        //                    Title = project.WebDevelopment.DevelopmentPhase.Title,
+        //                    Description = project.WebDevelopment.DevelopmentPhase.Description,
+        //                    Status = project.WebDevelopment.DevelopmentPhase.Status,
+        //                    ProgrammingLanguage = project.WebDevelopment.DevelopmentPhase.ProgrammingLanguage,
+        //                    CodeRepoUrl = project.WebDevelopment.DevelopmentPhase.CodeRepoUrl,
+        //                    TestStatus = project.WebDevelopment.DevelopmentPhase.TestStatus,
+        //                    StartTime = project.WebDevelopment.DevelopmentPhase.StartTime,
+        //                    EndTime = project.WebDevelopment.DevelopmentPhase.EndTime,
+        //                    DeadlineDate = project.WebDevelopment.DevelopmentPhase.DeadlineDate
+        //                } : null,
+        //                MaintenancePhase = project.WebDevelopment.MaintenancePhase != null ? new MaintenancePhaseDTO
+        //                {
+        //                    MaintenanceId = project.WebDevelopment.MaintenancePhase.MaintenanceId,
+        //                    WebDevelopmentId = project.WebDevelopment.MaintenancePhase.WebDevelopmentId,
+        //                    Title = project.WebDevelopment.MaintenancePhase.Title,
+        //                    Description = project.WebDevelopment.MaintenancePhase.Description,
+        //                    Status = project.WebDevelopment.MaintenancePhase.Status,
+        //                    IssueType = project.WebDevelopment.MaintenancePhase.IssueType,
+        //                    Priority = project.WebDevelopment.MaintenancePhase.Priority,
+        //                    SystemAffected = project.WebDevelopment.MaintenancePhase.SystemAffected,
+        //                    StartTime = (DateTime)project.WebDevelopment.MaintenancePhase.StartTime
+        //                } : null,
+        //            } : null,
+        //            MarketingPhase = project.MarketingPhase?.Select(m => new MarketingPhaseDTO
+        //            {
+        //                MarketingTaskId = m.MarketingTaskId,
+        //                ProjectId = m.ProjectId,
+        //                MarketingTypes = m.MarketingTypes,
+        //                WebsiteUrl = m.WebsiteUrl,
+        //                Title = m.Title,
+        //                Description = m.Description,
+        //                Status = m.Status,
+        //                Budget = m.Budget,
+        //                StartTime = m.StartTime,
 
-                        SocialMediaHandling = m.SocialMediaHandling != null ? new SocialMediaHandlingDTO
-                        {
-                            SocialId = m.SocialMediaHandling.SocialId,
-                            MarketingTaskId = m.SocialMediaHandling.MarketingTaskId,
-                            StartTime = m.SocialMediaHandling.StartTime,
-                            TotalPosts = (int)m.SocialMediaHandling.TotalPosts,
-                            TotalFollowers = (int)m.SocialMediaHandling.TotalFollowers,
-                            TotalLikes = (int)m.SocialMediaHandling.TotalLikes,
-                            EngagementRate = (int)m.SocialMediaHandling.EngagementRate,
-                            IssuedBy = m.SocialMediaHandling.IssuedBy,
-                            ProgressStatus = m.SocialMediaHandling.ProgressStatus,
-                            Notes = m.SocialMediaHandling.Notes
-                        } : null,
+        //                SocialMediaHandling = m.SocialMediaHandling != null ? new SocialMediaHandlingDTO
+        //                {
+        //                    SocialId = m.SocialMediaHandling.SocialId,
+        //                    MarketingTaskId = m.SocialMediaHandling.MarketingTaskId,
+        //                    StartTime = m.SocialMediaHandling.StartTime,
+        //                    TotalPosts = (int)m.SocialMediaHandling.TotalPosts,
+        //                    TotalFollowers = (int)m.SocialMediaHandling.TotalFollowers,
+        //                    TotalLikes = (int)m.SocialMediaHandling.TotalLikes,
+        //                    EngagementRate = (int)m.SocialMediaHandling.EngagementRate,
+        //                    IssuedBy = m.SocialMediaHandling.IssuedBy,
+        //                    ProgressStatus = m.SocialMediaHandling.ProgressStatus,
+        //                    Notes = m.SocialMediaHandling.Notes
+        //                } : null,
 
-                        Seo = m.Seo != null ? new SeoDTO
-                        {
-                            SeoId = m.Seo.SeoId,
-                            MarketingTaskId = m.Seo.MarketingTaskId,
-                            StartTime = m.Seo.StartTime,
-                            TotalPosts = m.Seo.TotalPosts,
-                            Keyword = m.Seo.Keyword,
-                            Ranking = (int)m.Seo.Ranking,
-                            TotalFollowers = (int)m.Seo.TotalFollowers,
-                            TotalLikes = (int)m.Seo.TotalLikes,
-                            EngagementRate = (int)m.Seo.EngagementRate,
-                            IssuedBy = m.Seo.IssuedBy,
-                            ProgressStatus = m.Seo.ProgressStatus,
-                            Notes = m.Seo.Notes
-                        } : null
-                    }).ToList()
-                };
+        //                Seo = m.Seo != null ? new SeoDTO
+        //                {
+        //                    SeoId = m.Seo.SeoId,
+        //                    MarketingTaskId = m.Seo.MarketingTaskId,
+        //                    StartTime = m.Seo.StartTime,
+        //                    TotalPosts = m.Seo.TotalPosts,
+        //                    Keyword = m.Seo.Keyword,
+        //                    Ranking = (int)m.Seo.Ranking,
+        //                    TotalFollowers = (int)m.Seo.TotalFollowers,
+        //                    TotalLikes = (int)m.Seo.TotalLikes,
+        //                    EngagementRate = (int)m.Seo.EngagementRate,
+        //                    IssuedBy = m.Seo.IssuedBy,
+        //                    ProgressStatus = m.Seo.ProgressStatus,
+        //                    Notes = m.Seo.Notes
+        //                } : null
+        //            }).ToList()
+        //        };
 
-                return projectDto;
-            }
-        }
+        //        return projectDto;
+        //    }
+        //}
 
         public async Task<ProjectsDTO?> GetProjectDTOById(int id)
         {
@@ -705,7 +705,10 @@ namespace OfficeProject.Servicess
             }
         }
 
-
+        public Task<ProjectsDTO?> GetProjectByIdAsync(int projectId)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 

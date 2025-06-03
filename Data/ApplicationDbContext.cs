@@ -10,12 +10,7 @@ namespace OfficeProject.Data
         public DbSet<Users> Users { get; set; }
         public DbSet<Clients> Client { get; set; }
         public DbSet<Projects> Projects { get; set; }
-        public DbSet<MaintenancePhase> MaintenancePhase { get; set; }
-        public DbSet<WebDevelopment> WebDevelopment { get; set; }
-        public DbSet<DesignPhase> DesigningPhases { get; set; }
-        public DbSet<DevelopmentPhase> DevelopmentPhases { get; set; }       
-        public DbSet<MarketingPhase> MarketingPhases { get; set; }
-        public DbSet<SocialMediaHandling> SocialMediaHandling { get; set; }
+        public DbSet<WebDevelopment> WebDevelopment { get; set; } 
         public DbSet<Accounts> Accounts { get; set; }
         public DbSet<AssignedUsers> AssignedUsers { get; set; }
         public DbSet<OthersService> OthersService { get; set; }
@@ -24,7 +19,6 @@ namespace OfficeProject.Data
         public DbSet<Transactions> Transactions { get; set; }
         public DbSet<WorkRecords> WorkRecords { get; set; }
         public DbSet<WorkRecordsSeoDetails> WorkRecordsSeoDetails { get; set; }
-        public DbSet<Seo> Seo { get; set; }
         public DbSet<Products> Products { get; set; }
         public DbSet<Services> Services { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
@@ -36,11 +30,7 @@ namespace OfficeProject.Data
             base.OnModelCreating(modelBuilder);
 
 
-            modelBuilder.Entity<MarketingPhase>()
-                .HasOne(mp => mp.SocialMediaHandling)
-                .WithOne(smh => smh.MarketingPhase)
-                .HasForeignKey<SocialMediaHandling>(smh => smh.MarketingTaskId)
-                .OnDelete(DeleteBehavior.Cascade);
+          
 
             modelBuilder.Entity<AssignedUsers>()
             .HasOne(a => a.Users)
@@ -79,6 +69,7 @@ namespace OfficeProject.Data
                 .WithOne(s => s.Projects)
                 .HasForeignKey(s => s.ProjectId)
                 .OnDelete(DeleteBehavior.ClientNoAction);
+
             modelBuilder.Entity<Services>()
                 .HasOne(s => s.Products)
                 .WithMany()

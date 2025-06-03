@@ -1,374 +1,374 @@
-﻿@using System.ComponentModel.DataAnnotations
-@using OfficeProject.Models.DTO
-@using OfficeProject.Models.Enums
-@using System.Text.Json
-@using OfficeProject.Web.Pages.DialogModelComponents
-@inject ApiService apiService
+﻿@* @using System.ComponentModel.DataAnnotations *@
+@* @using OfficeProject.Models.DTO *@
+@* @using OfficeProject.Models.Enums *@
+@* @using System.Text.Json *@
+@* @using OfficeProject.Web.Pages.DialogModelComponents *@
+@* @inject ApiService apiService *@
 
 
-<div class="project-dialog-container">
-    <div class="modal @(showModal ? "show" : "")" tabindex="-1" style="display: @(showModal ? "block" : "none")">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">@ProjectTitle</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                </div>
+@* <div class="project-dialog-container"> *@
+@*     <div class="modal @(showModal ? "show" : "")" tabindex="-1" style="display: @(showModal ? "block" : "none")"> *@
+@*         <div class="modal-dialog modal-lg modal-dialog-centered"> *@
+@*             <div class="modal-content"> *@
+@*                 <div class="modal-header"> *@
+@*                     <h5 class="modal-title">@ProjectTitle</h5> *@
+@*                     <button type="button" class="btn-close" @onclick="CloseModal"></button> *@
+@*                 </div> *@
 
-                <div class="modal-body">
-                    <ul class="nav nav-tabs">
-                        <li class="nav-item">
-                            <button class="nav-link @(activeTab == "info" ? "active" : "")"
-                            @onclick="@(() => SwitchTab("info"))">
-                                Project Info
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link @(activeTab == "design" ? "active" : "")"
-                            @onclick="@(() => SwitchTab("design"))">
-                                Design Phase
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link @(activeTab == "development" ? "active" : "")"
-                            @onclick="@(() => SwitchTab("development"))">
-                                Development Phase
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link @(activeTab == "maintenance" ? "active" : "")"
-                            @onclick="@(() => SwitchTab("maintenance"))">
-                                Maintenance Phase
-                            </button>
-                        </li>
-                    </ul>
+@*                 <div class="modal-body"> *@
+@*                     <ul class="nav nav-tabs"> *@
+@*                         <li class="nav-item"> *@
+@*                             <button class="nav-link @(activeTab == "info" ? "active" : "")" *@
+@*                             @onclick="@(() => SwitchTab("info"))"> *@
+@*                                 Project Info *@
+@*                             </button> *@
+@*                         </li> *@
+@*                         <li class="nav-item"> *@
+@*                             <button class="nav-link @(activeTab == "design" ? "active" : "")" *@
+@*                             @onclick="@(() => SwitchTab("design"))"> *@
+@*                                 Design Phase *@
+@*                             </button> *@
+@*                         </li> *@
+@*                         <li class="nav-item"> *@
+@*                             <button class="nav-link @(activeTab == "development" ? "active" : "")" *@
+@*                             @onclick="@(() => SwitchTab("development"))"> *@
+@*                                 Development Phase *@
+@*                             </button> *@
+@*                         </li> *@
+@*                         <li class="nav-item"> *@
+@*                             <button class="nav-link @(activeTab == "maintenance" ? "active" : "")" *@
+@*                             @onclick="@(() => SwitchTab("maintenance"))"> *@
+@*                                 Maintenance Phase *@
+@*                             </button> *@
+@*                         </li> *@
+@*                     </ul> *@
 
-                    @if (isLoading)
-                    {
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    }
+@*                     @if (isLoading) *@
+@*                     { *@
+@*                         <div class="spinner-border text-primary" role="status"> *@
+@*                             <span class="visually-hidden">Loading...</span> *@
+@*                         </div> *@
+@*                     } *@
 
-                    else
+@*                     else *@
 
-                    {
-                        <div class="tab-content mt-3">
-                            <!-- Project Info Tab -->
-                            <div class="@GetTabPaneClass("info")">
-                                <WebDevelopmentProjectInfoModel OnSave="@HandleDevelopmentSave"
-                                                     projectId="@projectId"
-                                clientId="@clientId"/>
-                            </div>
+@*                     { *@
+@*                         <div class="tab-content mt-3"> *@
+@*                             <!-- Project Info Tab --> *@
+@*                             <div class="@GetTabPaneClass("info")"> *@
+@*                                 <WebDevelopmentProjectInfoModel OnSave="@HandleDevelopmentSave" *@
+@*                                                      projectId="@projectId" *@
+@*                                 clientId="@clientId"/> *@
+@*                             </div> *@
 
-                            <!-- Design Phase Tab -->
-                            <div class="@GetTabPaneClass("design")">
+@*                             <!-- Design Phase Tab --> *@
+@*                             <div class="@GetTabPaneClass("design")"> *@
 
-                                <DesignTaskModel OnSave="@HandleDevelopmentSave"
-                                ProjectId="@projectId"
-                                DesignId="@designId"
-                                WebDevelopmentId="@webDevelopmentId" />
-                            </div>
+@*                                 <DesignTaskModel OnSave="@HandleDevelopmentSave" *@
+@*                                 ProjectId="@projectId" *@
+@*                                 DesignId="@designId" *@
+@*                                 WebDevelopmentId="@webDevelopmentId" /> *@
+@*                             </div> *@
 
-                            <!-- development Phase Tab -->
-                            <div class="@GetTabPaneClass("development")">
-                                <DevelopmentPhaseModel OnSave="@HandleDevelopmentSave"
-                                ProjectId="@projectId"
-                                DevelopmentId="@developmentId"
-                                WebDevelopmentId="@webDevelopmentId" />
+@*                             <!-- development Phase Tab --> *@
+@*                             <div class="@GetTabPaneClass("development")"> *@
+@*                                 <DevelopmentPhaseModel OnSave="@HandleDevelopmentSave" *@
+@*                                 ProjectId="@projectId" *@
+@*                                 DevelopmentId="@developmentId" *@
+@*                                 WebDevelopmentId="@webDevelopmentId" /> *@
 
-                            </div>
+@*                             </div> *@
 
-                            <!-- development Phase Tab -->
-                            <div class="@GetTabPaneClass("maintenance")">
-                                <MaintananceTaskModel OnSave="@HandleDevelopmentSave"
-                                ProjectId="@projectId"
-                                MaintenanceId="@maintenanceId"
-                                WebDevelopmentId="@webDevelopmentId" />
-                            </div>
+@*                             <!-- development Phase Tab --> *@
+@*                             <div class="@GetTabPaneClass("maintenance")"> *@
+@*                                 <MaintananceTaskModel OnSave="@HandleDevelopmentSave" *@
+@*                                 ProjectId="@projectId" *@
+@*                                 MaintenanceId="@maintenanceId" *@
+@*                                 WebDevelopmentId="@webDevelopmentId" /> *@
+@*                             </div> *@
 
-                        </div>
+@*                         </div> *@
 
-                    }
-
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-@code {
-
-    [Parameter]
-    public bool showModal { get; set; } = false;
-
-    [Parameter]
-    public EventCallback<bool> ShowModalChanged { get; set; }
-
-    [Parameter]
-    public string ProjectTitle { get; set; } = "New Project";
-
-    [Parameter]
-    public int clientId { get; set; } = 0;
-
-    [Parameter]
-    public int projectId { get; set; } = 0;
-
-    [Parameter]
-    public EventCallback<bool> OnSave { get; set; }
-
-    // [Parameter]
-    // public bool isNewProject { get; set; } = false;
+@*                     } *@
 
 
-    public int webDevelopmentId { get; set; } = 0;
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
 
-    public int developmentId { get; set; } = 0;
+@* @code { *@
 
-    public int designId { get; set; } = 0;
+@*     [Parameter] *@
+@*     public bool showModal { get; set; } = false; *@
 
-    public int maintenanceId { get; set; } = 0;
+@*     [Parameter] *@
+@*     public EventCallback<bool> ShowModalChanged { get; set; } *@
 
-    public string message { get; set; } = "not assign";
+@*     [Parameter] *@
+@*     public string ProjectTitle { get; set; } = "New Project"; *@
 
-    public ProjectsDTO Project { get; set; } = new ProjectsDTO();
+@*     [Parameter] *@
+@*     public int clientId { get; set; } = 0; *@
 
-    private string activeTab = "info";
+@*     [Parameter] *@
+@*     public int projectId { get; set; } = 0; *@
 
-    private bool isLoading = false; 
+@*     [Parameter] *@
+@*     public EventCallback<bool> OnSave { get; set; } *@
 
-    private bool showPassword = false; 
-
-    private void TogglePasswordVisibility()
-    {
-        showPassword = !showPassword; 
-    }
-
-    private async Task<ProjectsDTO> GetProjectById(int id) => await apiService.GetProjectById(id);
-
-    private async Task  InitializationData()
-    {
-        if (showModal && projectId > 0)
-        {
-            isLoading = true;
-            StateHasChanged();
-
-            try
-            {
-                Project = await GetProjectById(projectId) ?? new ProjectsDTO();
-
-                // Ensure WebDevelopment and its phases are initialized
-                Project.WebDevelopment ??= new WebDevelopmentDTO()
-                    {
-                        WebDevelopmentId = (int)0,
-                    };
-                Project.WebDevelopment.DesignPhase ??= new DesignPhaseDTO()
-                    {
-                        DesignTaskId = (int)0,
-                        WebDevelopmentId = Project.WebDevelopment.WebDevelopmentId
-                    };
-                Project.WebDevelopment.DevelopmentPhase ??= new DevelopmentPhaseDTO()
-                    {
-                        DevelopmentTaskId = (int)0,
-                        WebDevelopmentId = Project.WebDevelopment.WebDevelopmentId
-                    };
-                Project.WebDevelopment.MaintenancePhase ??= new MaintenancePhaseDTO()
-                    {
-                        MaintenanceId = (int)0,
-                        WebDevelopmentId = Project.WebDevelopment.WebDevelopmentId
-                    };
-
-                await idInitializer();
+@*     // [Parameter] *@
+@*     // public bool isNewProject { get; set; } = false; *@
 
 
-            }
-            catch (Exception ex)
-            {
-                message = $"Error loading project: {ex.Message}";
-            }
-            finally
-            {
-                isLoading = false;
-                StateHasChanged();
-            }
-        }
-        else
-        {
-            Project ??= new ProjectsDTO()
-                {
-                    ProjectId = (int)0,
-                    ClientId = (int)clientId,
-                    WebDevelopment = new WebDevelopmentDTO()
-                    {
-                        WebDevelopmentId = (int)0,
-                        ProjectIsActive = true,
-                        ProjectIssueDate = DateTime.Now,
-                        ProjectStartDate = DateTime.Now.AddDays(1),
-                        ProjectDeadline = DateTime.Now.AddMonths(3),
-                        DesignPhase = new DesignPhaseDTO()
-                        {
-                            WebDevelopmentId = (int)0,
-                            DesignTaskId = (int)0
-                        },
-                        DevelopmentPhase = new DevelopmentPhaseDTO()
-                        {
-                            WebDevelopmentId = (int)0,
-                            DevelopmentTaskId = (int)0
+@*     public int webDevelopmentId { get; set; } = 0; *@
+
+@*     public int developmentId { get; set; } = 0; *@
+
+@*     public int designId { get; set; } = 0; *@
+
+@*     public int maintenanceId { get; set; } = 0; *@
+
+@*     public string message { get; set; } = "not assign"; *@
+
+@*     public ProjectsDTO Project { get; set; } = new ProjectsDTO(); *@
+
+@*     private string activeTab = "info"; *@
+
+@*     private bool isLoading = false;  *@
+
+@*     private bool showPassword = false;  *@
+
+@*     private void TogglePasswordVisibility() *@
+@*     { *@
+@*         showPassword = !showPassword;  *@
+@*     } *@
+
+@*     private async Task<ProjectsDTO> GetProjectById(int id) => await apiService.GetProjectById(id); *@
+
+@*     private async Task  InitializationData() *@
+@*     { *@
+@*         if (showModal && projectId > 0) *@
+@*         { *@
+@*             isLoading = true; *@
+@*             StateHasChanged(); *@
+
+@*             try *@
+@*             { *@
+@*                 Project = await GetProjectById(projectId) ?? new ProjectsDTO(); *@
+
+@*                 // Ensure WebDevelopment and its phases are initialized *@
+@*                 Project.WebDevelopment ??= new WebDevelopmentDTO() *@
+@*                     { *@
+@*                         WebDevelopmentId = (int)0, *@
+@*                     }; *@
+@*                 Project.WebDevelopment.DesignPhase ??= new DesignPhaseDTO() *@
+@*                     { *@
+@*                         DesignTaskId = (int)0, *@
+@*                         WebDevelopmentId = Project.WebDevelopment.WebDevelopmentId *@
+@*                     }; *@
+@*                 Project.WebDevelopment.DevelopmentPhase ??= new DevelopmentPhaseDTO() *@
+@*                     { *@
+@*                         DevelopmentTaskId = (int)0, *@
+@*                         WebDevelopmentId = Project.WebDevelopment.WebDevelopmentId *@
+@*                     }; *@
+@*                 Project.WebDevelopment.MaintenancePhase ??= new MaintenancePhaseDTO() *@
+@*                     { *@
+@*                         MaintenanceId = (int)0, *@
+@*                         WebDevelopmentId = Project.WebDevelopment.WebDevelopmentId *@
+@*                     }; *@
+
+@*                 await idInitializer(); *@
 
 
-                        },
-                        MaintenancePhase = new MaintenancePhaseDTO()
-                        {
-                            WebDevelopmentId = (int)0,
-                            MaintenanceId = (int)0
+@*             } *@
+@*             catch (Exception ex) *@
+@*             { *@
+@*                 message = $"Error loading project: {ex.Message}"; *@
+@*             } *@
+@*             finally *@
+@*             { *@
+@*                 isLoading = false; *@
+@*                 StateHasChanged(); *@
+@*             } *@
+@*         } *@
+@*         else *@
+@*         { *@
+@*             Project ??= new ProjectsDTO() *@
+@*                 { *@
+@*                     ProjectId = (int)0, *@
+@*                     ClientId = (int)clientId, *@
+@*                     WebDevelopment = new WebDevelopmentDTO() *@
+@*                     { *@
+@*                         WebDevelopmentId = (int)0, *@
+@*                         ProjectIsActive = true, *@
+@*                         ProjectIssueDate = DateTime.Now, *@
+@*                         ProjectStartDate = DateTime.Now.AddDays(1), *@
+@*                         ProjectDeadline = DateTime.Now.AddMonths(3), *@
+@*                         DesignPhase = new DesignPhaseDTO() *@
+@*                         { *@
+@*                             WebDevelopmentId = (int)0, *@
+@*                             DesignTaskId = (int)0 *@
+@*                         }, *@
+@*                         DevelopmentPhase = new DevelopmentPhaseDTO() *@
+@*                         { *@
+@*                             WebDevelopmentId = (int)0, *@
+@*                             DevelopmentTaskId = (int)0 *@
 
-                        }
-                    }
-                };
-            await idInitializer();
-        }
+
+@*                         }, *@
+@*                         MaintenancePhase = new MaintenancePhaseDTO() *@
+@*                         { *@
+@*                             WebDevelopmentId = (int)0, *@
+@*                             MaintenanceId = (int)0 *@
+
+@*                         } *@
+@*                     } *@
+@*                 }; *@
+@*             await idInitializer(); *@
+@*         } *@
        
-    }
+@*     } *@
 
-    protected override async Task OnParametersSetAsync()
-    {
+@*     protected override async Task OnParametersSetAsync() *@
+@*     { *@
         
-        await InitializationData();
-    }
+@*         await InitializationData(); *@
+@*     } *@
 
-    private async Task idInitializer()
-    {
-        projectId = Project?.ProjectId ?? 0;
-        webDevelopmentId = Project?.WebDevelopment?.WebDevelopmentId ?? 0;
-        designId= Project?.WebDevelopment?.DesignPhase?.DesignTaskId ?? 0;
-        developmentId = Project?.WebDevelopment?.DevelopmentPhase?.DevelopmentTaskId ?? 0;
-        maintenanceId = Project?.WebDevelopment?.MaintenancePhase?.MaintenanceId ?? 0;
-    }
+@*     private async Task idInitializer() *@
+@*     { *@
+@*         projectId = Project?.ProjectId ?? 0; *@
+@*         webDevelopmentId = Project?.WebDevelopment?.WebDevelopmentId ?? 0; *@
+@*         designId= Project?.WebDevelopment?.DesignPhase?.DesignTaskId ?? 0; *@
+@*         developmentId = Project?.WebDevelopment?.DevelopmentPhase?.DevelopmentTaskId ?? 0; *@
+@*         maintenanceId = Project?.WebDevelopment?.MaintenancePhase?.MaintenanceId ?? 0; *@
+@*     } *@
 
-    private bool showDesignTask = false;
+@*     private bool showDesignTask = false; *@
 
-    private string designPhaseMessage;
+@*     private string designPhaseMessage; *@
 
-    private bool designPhaseIsError;
+@*     private bool designPhaseIsError; *@
 
-    private void ToggleDesignEditMode()
-    {
-        showDesignTask = !showDesignTask;
-    }
+@*     private void ToggleDesignEditMode() *@
+@*     { *@
+@*         showDesignTask = !showDesignTask; *@
+@*     } *@
 
-    private void CancelDesignTask()
-    {
-        showDesignTask = false;
+@*     private void CancelDesignTask() *@
+@*     { *@
+@*         showDesignTask = false; *@
 
-    }
+@*     } *@
 
-    private void FocusToDesignTask()
-    {
-        showDesignTask = true;
-    }
+@*     private void FocusToDesignTask() *@
+@*     { *@
+@*         showDesignTask = true; *@
+@*     } *@
 
-    private string GetDesignAlertClass()
-    {
-        return designPhaseIsError ? "alert-danger" : "alert-success";
-    }
+@*     private string GetDesignAlertClass() *@
+@*     { *@
+@*         return designPhaseIsError ? "alert-danger" : "alert-success"; *@
+@*     } *@
 
-    private DevelopmentPhaseDTO developmentPhaseDTO = new DevelopmentPhaseDTO();
+@*     private DevelopmentPhaseDTO developmentPhaseDTO = new DevelopmentPhaseDTO(); *@
 
-    private async Task HandleDevelopmentSave(bool isSuccess)
-    {
-        // Handle when development phase is saved
-        if (isSuccess){   
-            await OnSave.InvokeAsync(true);
-            await InitializationData();       
+@*     private async Task HandleDevelopmentSave(bool isSuccess) *@
+@*     { *@
+@*         // Handle when development phase is saved *@
+@*         if (isSuccess){    *@
+@*             await OnSave.InvokeAsync(true); *@
+@*             await InitializationData();        *@
                    
-        }
-        else
-        {
-            await OnSave.InvokeAsync(false);
-        }
-    }
+@*         } *@
+@*         else *@
+@*         { *@
+@*             await OnSave.InvokeAsync(false); *@
+@*         } *@
+@*     } *@
 
-    private string GetTabPaneClass(string tabName) =>
-        activeTab == tabName ? "tab-pane active" : "tab-pane";
+@*     private string GetTabPaneClass(string tabName) => *@
+@*         activeTab == tabName ? "tab-pane active" : "tab-pane"; *@
 
-    private async Task CloseModal()
-    {      
-        Project = new ProjectsDTO();
-        projectId = 0;
-        clientId = 0;
-        showModal = false;
-        await ShowModalChanged.InvokeAsync(showModal);
-    }
+@*     private async Task CloseModal() *@
+@*     {       *@
+@*         Project = new ProjectsDTO(); *@
+@*         projectId = 0; *@
+@*         clientId = 0; *@
+@*         showModal = false; *@
+@*         await ShowModalChanged.InvokeAsync(showModal); *@
+@*     } *@
 
-    private void SwitchTab(string tab) => activeTab = tab;
+@*     private void SwitchTab(string tab) => activeTab = tab; *@
 
   
-}
+@* } *@
 
-<style>
-    .project-dialog-container {
-        position: relative;
-    }
+@* <style> *@
+@*     .project-dialog-container { *@
+@*         position: relative; *@
+@*     } *@
 
-    .modal {
-        background-color: rgba(0, 0, 0, 0.5);
-    }
+@*     .modal { *@
+@*         background-color: rgba(0, 0, 0, 0.5); *@
+@*     } *@
 
-    .modal-content {
-        border-radius: 0.5rem;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    }
+@*     .modal-content { *@
+@*         border-radius: 0.5rem; *@
+@*         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); *@
+@*     } *@
 
-    .modal-header {
-        border-bottom: 1px solid #dee2e6;
-        padding: 1rem 1.5rem;
-    }
+@*     .modal-header { *@
+@*         border-bottom: 1px solid #dee2e6; *@
+@*         padding: 1rem 1.5rem; *@
+@*     } *@
 
-    .modal-title {
-        font-weight: 600;
-        color: #2c3e50;
-    }
+@*     .modal-title { *@
+@*         font-weight: 600; *@
+@*         color: #2c3e50; *@
+@*     } *@
 
-    .modal-body {
-        padding: 1.5rem;
-    }
+@*     .modal-body { *@
+@*         padding: 1.5rem; *@
+@*     } *@
 
-    .nav-tabs {
-        border-bottom: 1px solid #dee2e6;
-    }
+@*     .nav-tabs { *@
+@*         border-bottom: 1px solid #dee2e6; *@
+@*     } *@
 
-        .nav-tabs .nav-link {
-            color: #495057;
-            border: none;
-            padding: 0.75rem 1.25rem;
-            font-weight: 500;
-        }
+@*         .nav-tabs .nav-link { *@
+@*             color: #495057; *@
+@*             border: none; *@
+@*             padding: 0.75rem 1.25rem; *@
+@*             font-weight: 500; *@
+@*         } *@
 
-            .nav-tabs .nav-link.active {
-                color: #0d6efd;
-                background-color: transparent;
-                border-bottom: 2px solid #0d6efd;
-            }
+@*             .nav-tabs .nav-link.active { *@
+@*                 color: #0d6efd; *@
+@*                 background-color: transparent; *@
+@*                 border-bottom: 2px solid #0d6efd; *@
+@*             } *@
 
-            .nav-tabs .nav-link:hover {
-                border-color: transparent;
-                color: #0d6efd;
-            }
+@*             .nav-tabs .nav-link:hover { *@
+@*                 border-color: transparent; *@
+@*                 color: #0d6efd; *@
+@*             } *@
 
-    .form-group {
-        margin-bottom: 1.25rem;
-    }
+@*     .form-group { *@
+@*         margin-bottom: 1.25rem; *@
+@*     } *@
 
-        .form-group label {
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
+@*         .form-group label { *@
+@*             font-weight: 500; *@
+@*             margin-bottom: 0.5rem; *@
+@*             display: block; *@
+@*         } *@
 
-    .validation-message {
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-</style>
+@*     .validation-message { *@
+@*         color: #dc3545; *@
+@*         font-size: 0.875rem; *@
+@*         margin-top: 0.25rem; *@
+@*     } *@
+@* </style> *@

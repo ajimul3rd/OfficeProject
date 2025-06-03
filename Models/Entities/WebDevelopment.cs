@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using OfficeProject.Models.Enums;
 using System.Text.Json.Serialization;
 
 namespace OfficeProject.Models.Entities
@@ -9,71 +8,51 @@ namespace OfficeProject.Models.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int WebDevelopmentId { get; set; }   
+        public int WebDevelopmentId { get; set; }
 
         [Required]
-        [ForeignKey(nameof(Projects))]
+        [ForeignKey(nameof(Services))]
         public int ProjectId { get; set; }
 
-   
-        [DataType(DataType.Date)]
-        public DateTime ProjectIssueDate { get; set; }= DateTime.Now;
+        public string? DomainName { get; set; }
 
+        public DateTime? HostingDate { get; set; }
 
-        public  string? ProjectDomainName { get; set; }
-
- 
-        public DateTime? ProjectHostingDate { get; set; }
-
-
-        public DateTime? ProjectHostingRenewalDate { get; set; }
+        public DateTime? HostingRenewalDate { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal ProjectHostingRenewalAmount { get; set; }
+        public decimal? HostingRenewalAmount { get; set; }
 
+        public string? ServerFtpAssign { get; set; }
 
-        public string? ProjectServerFtpAssign { get; set; } 
+        public string? ServerIp { get; set; }
 
+        public string? ServerUserId { get; set; }
 
-        public string? ProjectServerIp { get; set; } 
+        public string? ServerPassword { get; set; }
 
+        public string? DesignTools { get; set; }
 
-        public string? ProjectServerUserId { get; set; } 
+        public string? MackupLink { get; set; }
 
+        public string? Languages { get; set; }
 
-        public string? ProjectServerPassword { get; set; }
-
-
-        public string? ProjectHandledBy { get; set; } 
-
-
-        [DataType(DataType.Date)]
-        public DateTime ProjectStartDate { get; set; }=DateTime.Now;
-
+        public bool IsActive { get; set; } = true;
 
         [DataType(DataType.Date)]
-        public DateTime? ProjectDeadline { get; set; }
+        public DateTime StartDate { get; set; } = DateTime.Now;
 
         [DataType(DataType.Date)]
-        public DateTime? ProjectExtendedDeadline { get; set; }
+        public DateTime IssueDate { get; set; } = DateTime.Now;
 
-        public bool ProjectIsActive { get; set; } = true;
+        [DataType(DataType.Date)]
+        public DateTime? Deadline { get; set; }
 
+        public string? Remarks { get; set; }
 
-        public string? ProjectRemarks { get; set; }
+        public string? Note { get; set; }
 
-
-        public string? ProjectIssueBy { get; set; }
-
-        
-        // Navigation properties
         [JsonIgnore]
-        public Projects Projects { get; set; } = null!;
-
-        public DesignPhase? DesignPhase { get; set; }
-        public DevelopmentPhase? DevelopmentPhase { get; set; }
-        public MaintenancePhase? MaintenancePhase { get; set; }
+        public Services Services { get; set; } = null!;
     }
-
 }
-

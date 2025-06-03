@@ -11,8 +11,8 @@ namespace OfficeProject.Models.Entities
         public int ScheduleId { get; set; }
 
         [Required]
-        [ForeignKey(nameof(Project))]
-        public int ProjectId { get; set; }
+        [ForeignKey(nameof(Services))]
+        public int ServiceId { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -31,6 +31,6 @@ namespace OfficeProject.Models.Entities
 
         // Navigation property
         [JsonIgnore]
-        public Projects Project { get; set; } = null!;
+        public Services Services { get; set; } = null!;
     }
 }

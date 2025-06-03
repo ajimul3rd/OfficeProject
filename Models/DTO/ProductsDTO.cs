@@ -66,18 +66,12 @@ namespace OfficeProject.Models.DTO
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            Console.WriteLine("ProductsSellingPrice < ProductsCostingPrice");
-
-            if (  ProductsCostingPrice >= ProductsSellingPrice)
+            if (ProductsSellingPrice > ProductsCostingPrice) // Only error if Selling > MRP
             {
-                
-                if (!(ProductsSellingPrice == 0 && ProductsCostingPrice == 0))
-                {
-                    yield return new ValidationResult(
-                        "Selling price cannot exceed the cost price.",
-                        new[] { nameof(ProductsSellingPrice), nameof(ProductsCostingPrice) }
-                    );
-                }
+                yield return new ValidationResult(
+                    "Selling price cannot exceed the MRP (Costing Price).",
+                    new[] { nameof(ProductsSellingPrice), nameof(ProductsCostingPrice) }
+                );
             }
         }
 

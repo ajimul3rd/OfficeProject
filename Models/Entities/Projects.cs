@@ -47,9 +47,6 @@ namespace OfficeProject.Models.Entities
         public List<AssignedUsers>? AssignedUsers { get; set; } = null!;
         public List<PaymentSchedule>? PaymentSchedule { get; set; } = null!;
         public List<Services>? Services { get; set; } = null!;
-        public WebDevelopment? WebDevelopment { get; set; }
-        public List<MarketingPhase>? MarketingPhase { get; set; }
-
         //Navigation Property
         //[JsonIgnore]
         public Clients Client { get; set; } = null!;
