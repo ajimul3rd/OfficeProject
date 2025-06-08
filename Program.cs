@@ -103,15 +103,17 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IProjectsService, ProjectsService>();
 //builder.Services.AddScoped<IDesignPhaseServices, DesignPhaseServices>();
 //builder.Services.AddScoped<IDevelopmentPhaseServices, DevelopmentPhaseServices>();
-//builder.Services.AddScoped<IMaintenancePhaseServices, MaintenancePhaseServices>();
+builder.Services.AddScoped<IUserWorkingActivityServices, UserWorkingActivityServices>();
+
 builder.Services.AddScoped<IProductsService, ProductsService>();
+builder.Services.AddScoped<IUserActivityMasterService, UserActivityMasterService>();
 builder.Services.AddScoped<IUserRolesService, UserRolesService>();
 builder.Services.AddScoped<IAssignedUsersService, AssignedUsersService>();
 builder.Services.AddScoped<IProductVsServices, ProductVsServices>();
 builder.Services.AddScoped<IOthersServices, OthersServices>();
+builder.Services.AddScoped<IWebDevelopmentService, WebDevelopmentService>();
 builder.Services.AddScoped<ISeoServicess, SeoServicess>();
 builder.Services.AddScoped<CustomAuthStateProvider>();
-//builder.Services.AddScoped<IMarketingPhaseService, MarketingPhaseService>();
 builder.Services.AddScoped<IClientSources, ClientSourcesService>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
     provider.GetRequiredService<CustomAuthStateProvider>()); 

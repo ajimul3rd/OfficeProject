@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace OfficeProject.Models.Entities
 {
@@ -15,9 +16,11 @@ namespace OfficeProject.Models.Entities
         public int ClientId { get; set; }
 
         [Required]
+        [Precision(18, 2)]
         public decimal Balance { get; set; } = 0;
 
         [Required]
+        [Precision(18, 2)]
         public decimal TotalPaymentsMade { get; set; } = 0;
 
         public List<Transactions>? Transactions { get; set; }

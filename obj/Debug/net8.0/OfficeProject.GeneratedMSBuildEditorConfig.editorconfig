@@ -68,10 +68,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xXZWJEZXZlbG9wbWVudFByb2plY3RJbmZvTW9kZWwucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/AddMarketingPhaseDialog.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXEFkZE1hcmtldGluZ1BoYXNlRGlhbG9nLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogAddProject.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ0FkZFByb2plY3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -88,8 +84,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ1Byb2R1Y3RzTGlzdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogUserActivityMaster.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ1VzZXJBY3Rpdml0eU1hc3Rlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogUserList.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ1VzZXJMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/XAddMarketingPhaseDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXFhBZGRNYXJrZXRpbmdQaGFzZURpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/.Net Project/OfficeProject/Web/Pages/DialogModel/XAddProjectDialog.razor]
@@ -142,6 +146,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [E:/.Net Project/OfficeProject/Web/Pages/Test/TrackableInputSelect.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRlc3RcVHJhY2thYmxlSW5wdXRTZWxlY3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/UserActivityMasterList.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eU1hc3Rlckxpc3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/.Net Project/OfficeProject/Web/Pages/UserActivity/AddWorkingActivity.razor]

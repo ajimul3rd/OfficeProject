@@ -7,68 +7,59 @@ namespace OfficeProject.Models.DTO
 {
     public class WebDevelopmentDTO
     {
-        public int? WebDevelopmentId { get; set; } = 0;
 
-        [JsonIgnore]
-        public int? ProjectId { get; set; }
+        public int? WebDevelopmentId { get; set; }
 
-        [Required(ErrorMessage = "Project issue date is required")]
-        public DateTime ProjectIssueDate { get; set; } = DateTime.UtcNow;
+        public int ServiceId { get; set; }
 
         [Required(ErrorMessage = "Domain name is required")]
-        public string ProjectDomainName { get; set; } = string.Empty;
+        public string? DomainName { get; set; }
 
         [Required(ErrorMessage = "Hosting date is required")]
-        public DateTime ProjectHostingDate { get; set; }
+        public DateTime? HostingDate { get; set; }
 
-        [Required(ErrorMessage = "Hosting renewal date is required")]
-        public DateTime ProjectHostingRenewalDate { get; set; }
+        [Required(ErrorMessage = "Renewal date is required")]
+        [DataType(DataType.Date)]
+        public DateTime? HostingRenewalDate { get; set; }
 
-        [Required(ErrorMessage = "Hosting renewal amount is required")]
-        public decimal ProjectHostingRenewalAmount { get; set; }
+        [Required(ErrorMessage = "Hosting Limitation is required")]
+        public string? HostingLimit { get; set; } = "1 Year";
 
-        [Required(ErrorMessage = "FTP assignment is required")]
-        public string ProjectServerFtpAssign { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Renewal amount is required")]
+        public decimal? HostingRenewalAmount { get; set; }
+
+        public string? ServerFtpAssign { get; set; }
 
         [Required(ErrorMessage = "Server IP is required")]
         [RegularExpression(@"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",
-            ErrorMessage = "Invalid IP address format")]
-        public string ProjectServerIp { get; set; } = string.Empty;
+                    ErrorMessage = "Invalid IP address format")]
+        public string ServerIp { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Server username is required")]
-        public string ProjectServerUserId { get; set; } = string.Empty;
+        public string? ServerUserId { get; set; }
 
-        [Required(ErrorMessage = "Server password is required")]
-        public string ProjectServerPassword { get; set; } = string.Empty;
+        public string? ServerPassword { get; set; }
 
-        [Required(ErrorMessage = "Project handler is required")]
-        public string ProjectHandledBy { get; set; } = string.Empty;
+        public string? DesignTools { get; set; }
 
-        [Required(ErrorMessage = "Start date is required")]
-        public DateTime ProjectStartDate { get; set; } = DateTime.UtcNow;
+        public string? MackupLink { get; set; }
 
-        [Required(ErrorMessage = "Deadline is required")]
-        public DateTime ProjectDeadline { get; set; } = DateTime.UtcNow;
+        public string? Languages { get; set; }
 
-        [DataType(DataType.Date, ErrorMessage = "Invalid date format")]
-        public DateTime? ProjectExtendedDeadline { get; set; } = DateTime.UtcNow;
+        public bool IsActive { get; set; } = true;
 
-        public bool ProjectIsActive { get; set; } = true;
+        [DataType(DataType.Date)]
+        public DateTime StartDate { get; set; } = DateTime.Now;
 
-        [StringLength(500, ErrorMessage = "Remarks cannot exceed 500 characters")]
-        public string? ProjectRemarks { get; set; }
+        [Required(ErrorMessage = "Dead line is required")]
+        public DateTime? Deadline { get; set; }
 
-        [Required(ErrorMessage = "Issued by field is required")]
-        public string ProjectIssueBy { get; set; } = string.Empty;
+        public string? Remarks { get; set; }
 
-        // Nested DTOs with validation
-        [ValidateComplexType]
-        public DesignPhaseDTO? DesignPhase { get; set; }
+        public string? Note { get; set; }
 
-        [ValidateComplexType]
-        public DevelopmentPhaseDTO? DevelopmentPhase { get; set; }
+        [JsonIgnore]
+        public string? ServiceName { get; set; }
 
-        [ValidateComplexType]
-        public MaintenancePhaseDTO? MaintenancePhase { get; set; }
+        
     }
 }

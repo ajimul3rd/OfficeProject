@@ -63,6 +63,7 @@ namespace OfficeProject.Models.Entities
         public List<SeoServiceDetails>? SeoServiceDetails { get; set; }
         public List<OthersService>? OthersServices { get; set; }
         public List<WorkRecords>? WorkRecords { get; set; }
+        public List<WebDevelopment>? WebDevelopment { get; set; }
 
         // Navigation properties
         [JsonIgnore]

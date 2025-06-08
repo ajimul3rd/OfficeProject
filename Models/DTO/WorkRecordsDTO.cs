@@ -47,6 +47,8 @@ namespace OfficeProject.Models.DTO
         public string? ExtraField7 { get; set; }
 
         // Optionally include child DTOs if needed
+
+        [ValidateComplexType]
         public List<WorkRecordsSeoDetailsDTO>? WorkRecordsSeoDetails { get; set; }
     }
 }

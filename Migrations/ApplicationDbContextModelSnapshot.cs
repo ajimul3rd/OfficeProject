@@ -31,12 +31,14 @@ namespace OfficeProject.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AccountId"));
 
                     b.Property<decimal>("Balance")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalPaymentsMade")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("AccountId");
@@ -490,6 +492,23 @@ namespace OfficeProject.Migrations
                     b.ToTable("Transactions");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.UserActivityMaster", b =>
+                {
+                    b.Property<int>("MasterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MasterId"));
+
+                    b.Property<string>("MasterActivityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("MasterId");
+
+                    b.ToTable("UserWorkingActivityList");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.UserRoles", b =>
                 {
                     b.Property<int>("RoleId")
@@ -513,6 +532,28 @@ namespace OfficeProject.Migrations
                     b.HasIndex("UsersUserId");
 
                     b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("OfficeProject.Models.Entities.UserWorkingActivity", b =>
+                {
+                    b.Property<int>("workingActivityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("workingActivityId"));
+
+                    b.Property<int>("ProductsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WorkingActivityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("workingActivityId");
+
+                    b.HasIndex("ProductsId");
+
+                    b.ToTable("UserWorkingActivity");
                 });
 
             modelBuilder.Entity("OfficeProject.Models.Entities.Users", b =>
@@ -591,6 +632,9 @@ namespace OfficeProject.Migrations
                     b.Property<DateTime?>("HostingDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("HostingLimit")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal?>("HostingRenewalAmount")
                         .HasColumnType("decimal(18,2)");
 
@@ -600,9 +644,6 @@ namespace OfficeProject.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("IssueDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Languages")
                         .HasColumnType("nvarchar(max)");
 
@@ -611,9 +652,6 @@ namespace OfficeProject.Migrations
 
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
@@ -630,12 +668,15 @@ namespace OfficeProject.Migrations
                     b.Property<string>("ServerUserId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("WebDevelopmentId");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("WebDevelopment");
                 });
@@ -890,11 +931,22 @@ namespace OfficeProject.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.UserWorkingActivity", b =>
+                {
+                    b.HasOne("OfficeProject.Models.Entities.Products", "Products")
+                        .WithMany("UserWorkingActivity")
+                        .HasForeignKey("ProductsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.WebDevelopment", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Services", "Services")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
+                        .WithMany("WebDevelopment")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -935,6 +987,11 @@ namespace OfficeProject.Migrations
                     b.Navigation("Projects");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.Products", b =>
+                {
+                    b.Navigation("UserWorkingActivity");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.Projects", b =>
                 {
                     b.Navigation("AssignedUsers");
@@ -949,6 +1006,8 @@ namespace OfficeProject.Migrations
                     b.Navigation("OthersServices");
 
                     b.Navigation("SeoServiceDetails");
+
+                    b.Navigation("WebDevelopment");
 
                     b.Navigation("WorkRecords");
                 });

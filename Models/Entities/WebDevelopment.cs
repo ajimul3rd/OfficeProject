@@ -12,13 +12,15 @@ namespace OfficeProject.Models.Entities
 
         [Required]
         [ForeignKey(nameof(Services))]
-        public int ProjectId { get; set; }
+        public int ServiceId { get; set; }
 
         public string? DomainName { get; set; }
 
         public DateTime? HostingDate { get; set; }
 
         public DateTime? HostingRenewalDate { get; set; }
+
+        public string? HostingLimit { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? HostingRenewalAmount { get; set; }
@@ -41,9 +43,6 @@ namespace OfficeProject.Models.Entities
 
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; } = DateTime.Now;
-
-        [DataType(DataType.Date)]
-        public DateTime IssueDate { get; set; } = DateTime.Now;
 
         [DataType(DataType.Date)]
         public DateTime? Deadline { get; set; }

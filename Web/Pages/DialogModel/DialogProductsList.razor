@@ -221,60 +221,60 @@
     [Parameter]
     public List<ServicesDTO> callerSelectedProducts { get; set; }
 
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     product = new ProductsDTO();
-    //     product.UserId = 0;
-    //     editContext = new EditContext(product);
-    //     await LoadProducts();
-
-    //     selectedProducts.Clear(); Reset
-
-    //     if (callerSelectedProducts != null && tableData != null)
-    //     {
-    //         selectedProducts = tableData
-    //             .Where(p => callerSelectedProducts.Any(csp => csp.ProductsId == p.ProductsId))
-    //             .ToList();
-    //     }
-    // }
-
     protected override async Task OnInitializedAsync()
     {
         product = new ProductsDTO();
         product.UserId = 0;
         editContext = new EditContext(product);
         await LoadProducts();
-        ResetSelectedProducts();
-    }
 
-    protected override async Task OnParametersSetAsync()
-    {
-        if (showModal) // Only reset when modal is being shown
+        selectedProducts.Clear(); //Reset
+
+        if (callerSelectedProducts != null && tableData != null)
         {
-            await LoadProducts();
-            ResetSelectedProducts();
+            selectedProducts = tableData
+                .Where(p => callerSelectedProducts.Any(csp => csp.ProductsId == p.ProductsId))
+                .ToList();
         }
     }
 
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     product = new ProductsDTO();
+    //     product.UserId = 0;
+    //     editContext = new EditContext(product);
+    //     await LoadProducts();
+    //     ResetSelectedProducts();
+    // }
+
     // protected override async Task OnParametersSetAsync()
     // {
-    //     if (callerSelectedProducts != null && tableData != null)
+    //     if (showModal) Only reset when modal is being shown
     //     {
-    //         Reset selectedProducts if callerSelectedProducts is empty
-    //         if (!callerSelectedProducts.Any())
-    //         {
-    //             selectedProducts.Clear();
-    //         }
-
-    //         var newSelections = tableData
-    //             .Where(p => callerSelectedProducts.Any(csp => csp.ProductsId == p.ProductsId) &&
-    //                         !selectedProducts.Any(sp => sp.ProductsId == p.ProductsId))
-    //             .ToList();
-
-    //         selectedProducts.AddRange(newSelections);
-    //         StateHasChanged();
+    //         await LoadProducts();
+    //         ResetSelectedProducts();
     //     }
     // }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (callerSelectedProducts != null && tableData != null)
+        {
+           // Reset selectedProducts if callerSelectedProducts is empty
+            if (!callerSelectedProducts.Any())
+            {
+                selectedProducts.Clear();
+            }
+
+            var newSelections = tableData
+                .Where(p => callerSelectedProducts.Any(csp => csp.ProductsId == p.ProductsId) &&
+                            !selectedProducts.Any(sp => sp.ProductsId == p.ProductsId))
+                .ToList();
+
+            selectedProducts.AddRange(newSelections);
+            StateHasChanged();
+        }
+    }
     //private List<ProductsDTO> selectedProducts = new(); // Store selected users
    
 

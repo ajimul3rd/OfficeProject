@@ -30,9 +30,13 @@ namespace OfficeProject.Models.Entities
         public DateTime? ProductsEntryDate { get; set; } = DateTime.Now;
 
         public DateTime? ProductsModificationDate { get; set; }
+
+        public List<UserWorkingActivity> UserWorkingActivity { get; set; }
         //naviget property
         [JsonIgnore]
         public Users User { get; set; }
+
+
 
 
     }

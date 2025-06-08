@@ -23,8 +23,11 @@ namespace OfficeProject.Data
         public DbSet<Services> Services { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
         public DbSet<ClientSources> clientSources { get; set; }
+        public DbSet<UserWorkingActivity> UserWorkingActivity {  get; set; }
+        public DbSet<UserActivityMaster> UserWorkingActivityList { get; set; }
 
-        
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -145,11 +145,11 @@ showModal="@showProjectModal" />
         data = project; //Load existing project data
         showProjectModal = true;
         iSNewFormData = false;
-        string json = JsonSerializer.Serialize(project, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-        Console.WriteLine("EditProject:" + json);
+        // string json = JsonSerializer.Serialize(project, new JsonSerializerOptions
+        //     {
+        //         WriteIndented = true
+        //     });
+        // Console.WriteLine("EditProject:" + json);
 
         StateHasChanged();
     }

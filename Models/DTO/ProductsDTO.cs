@@ -60,20 +60,34 @@ namespace OfficeProject.Models.DTO
         [Required]
         public int UserId { get; set; }
 
+
+        [ValidateComplexType]
+        public List<UserWorkingActivityDto> UserWorkingActivity { get; set; }
+
+
         // ✅ Custom validation rule
         [JsonIgnore]
         public Action<ProductsDTO>? OnPriceChanged { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (ProductsSellingPrice > ProductsCostingPrice) // Only error if Selling > MRP
+            if (ProductsSellingPrice < 0)
             {
                 yield return new ValidationResult(
-                    "Selling price cannot exceed the MRP (Costing Price).",
-                    new[] { nameof(ProductsSellingPrice), nameof(ProductsCostingPrice) }
+                    "Selling price cannot be negative.",
+                    new[] { nameof(ProductsSellingPrice) }
+                );
+            }
+
+            if (ProductsCostingPrice < 0)
+            {
+                yield return new ValidationResult(
+                    "Costing price cannot be negative.",
+                    new[] { nameof(ProductsCostingPrice) }
                 );
             }
         }
+
 
     }
 }

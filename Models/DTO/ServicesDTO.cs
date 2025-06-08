@@ -1,4 +1,5 @@
-﻿using OfficeProject.Models.Enums;
+﻿using OfficeProject.Models.Entities;
+using OfficeProject.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -51,10 +52,18 @@ namespace OfficeProject.Models.DTO
         [MaxLength(250)]
         public string? ExtraField3 { get; set; }
 
+        [ValidateComplexType]
         public List<SeoServiceDetailsDTO>? SeoServiceDetails { get; set; }
 
+        [ValidateComplexType]
         public List<OthersServiceDTO>? OthersServices { get; set; }
 
+        [ValidateComplexType]
         public List<WorkRecordsDTO>? WorkRecords { get; set; }
+
+        [ValidateComplexType]
+        public List<WebDevelopmentDTO>? WebDevelopment { get; set; }
+
+        public bool IsDesignationMatched { get; set; }
     }
 }

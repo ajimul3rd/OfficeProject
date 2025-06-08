@@ -317,6 +317,7 @@
 
     private bool IsUserAssigned(UserDTO user)
     {
+       
         return assignedUsers?.Any(a => a.UserId == user.UserId) ?? false;
     }
 

@@ -68,10 +68,10 @@ else
 ></TappanWorkingActivity>
 
 
-                     
+
 <style>
     .hover-row:hover {
-        background-color: #f5f5f5;
+    background-color: #f5f5f5;
     }
 </style>
 
@@ -103,7 +103,15 @@ else
     {
         try
         {
+            projects ??= new List<ProjectsDTO>();
             projects = await api.GetProjectPerUserAsync();
+
+            // Optional: Check if first project has no services, then clear the whole list
+            if (projects.Count > 0 && (projects[0].Services == null || projects[0].Services.Count == 0))
+            {
+                projects = new List<ProjectsDTO>();
+            }
+
         }
         catch (Exception ex)
         {

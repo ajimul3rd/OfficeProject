@@ -20,7 +20,7 @@ public class MapingProfile:Profile
         CreateMap<ProjectsDTO, Projects>().ReverseMap();
         //CreateMap<MarketingPhaseDTO, MarketingPhase>().ReverseMap();
         //CreateMap<SeoDTO, Seo>().ReverseMap();
-        //CreateMap<SocialMediaHandlingDTO, SocialMediaHandling>().ReverseMap();
+        CreateMap<UserActivityMasterDto, UserActivityMaster>().ReverseMap();
         CreateMap<RegisterModel,Users>().ReverseMap();
         CreateMap<UserDTO, RegisterModel>().ReverseMap();
         CreateMap<UserWithClientsDto, Users>().ReverseMap(); 
