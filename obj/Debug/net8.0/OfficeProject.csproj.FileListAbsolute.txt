@@ -1,3 +1,10 @@
+E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.csproj.AssemblyReference.cache
+E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.GeneratedMSBuildEditorConfig.editorconfig
+E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.AssemblyInfoInputs.cache
+E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.AssemblyInfo.cs
+E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.csproj.CoreCompileInputs.cache
+E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.MvcApplicationPartsAssemblyInfo.cache
+E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.sourcelink.json
 E:\.Net Project\OfficeProject\bin\Debug\net8.0\appsettings.Development.json
 E:\.Net Project\OfficeProject\bin\Debug\net8.0\appsettings.json
 E:\.Net Project\OfficeProject\bin\Debug\net8.0\OfficeProject.staticwebassets.runtime.json
@@ -153,13 +160,6 @@ E:\.Net Project\OfficeProject\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Ru
 E:\.Net Project\OfficeProject\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 E:\.Net Project\OfficeProject\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 E:\.Net Project\OfficeProject\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
-E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.csproj.AssemblyReference.cache
-E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.GeneratedMSBuildEditorConfig.editorconfig
-E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.AssemblyInfoInputs.cache
-E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.AssemblyInfo.cs
-E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.csproj.CoreCompileInputs.cache
-E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.MvcApplicationPartsAssemblyInfo.cache
-E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.sourcelink.json
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\scopedcss\Web\Layout\MainLayout.razor.rz.scp.css
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\scopedcss\Web\Layout\NavMenu.razor.rz.scp.css
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\scopedcss\bundle\OfficeProject.styles.css
@@ -173,10 +173,10 @@ E:\.Net Project\OfficeProject\obj\Debug\net8.0\staticwebassets\msbuild.build.Off
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.OfficeProject.props
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.OfficeProject.props
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\staticwebassets.pack.json
+E:\.Net Project\OfficeProject\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficePr.EA02841C.Up2Date
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.dll
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\refint\OfficeProject.dll
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.pdb
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\OfficeProject.genruntimeconfig.cache
 E:\.Net Project\OfficeProject\obj\Debug\net8.0\ref\OfficeProject.dll
-E:\.Net Project\OfficeProject\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

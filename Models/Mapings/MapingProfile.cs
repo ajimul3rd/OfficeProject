@@ -25,12 +25,17 @@ public class MapingProfile:Profile
         CreateMap<UserDTO, RegisterModel>().ReverseMap();
         CreateMap<UserWithClientsDto, Users>().ReverseMap(); 
         CreateMap<UserDTO, Users>().ReverseMap();
+        CreateMap<UserDesignation, UserDesignationDto>().ReverseMap();
+        CreateMap<Users, UserDTO>()
+            .ForMember(dest => dest.UserDesignation, opt => opt.MapFrom(src => src.UserDesignation))
+            .ReverseMap();
+
         CreateMap<ServicesDTO, Services>().ReverseMap();
         CreateMap<ProductsDTO, Products>().ReverseMap();
-        CreateMap<WorkRecordsDTO, WorkRecords>().ReverseMap();
+        CreateMap<WorkingRecordsDTO, WorkingRecords>().ReverseMap();
         CreateMap<OthersServiceDTO, OthersService>().ReverseMap();
         CreateMap<SeoServiceDetailsDTO, SeoServiceDetails>().ReverseMap();
-        CreateMap<WorkRecordsSeoDetailsDTO, WorkRecordsSeoDetails>().ReverseMap();
+        CreateMap<WorkRecordsSeoDetailsDTO, SeoTaskDetails>().ReverseMap();
         CreateMap<AssignedUsersDTO, AssignedUsers>()
     .ForMember(dest => dest.Projects, opt => opt.Ignore()) // Ignoring navigation properties
     .ForMember(dest => dest.Users, opt => opt.Ignore())    // Ignoring navigation properties

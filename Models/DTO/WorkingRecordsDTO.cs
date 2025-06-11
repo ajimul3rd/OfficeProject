@@ -2,7 +2,7 @@
 
 namespace OfficeProject.Models.DTO
 {
-    public class WorkRecordsDTO
+    public class WorkingRecordsDTO
     {
         public int? WorkRecordId { get; set; }
 

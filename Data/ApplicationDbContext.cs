@@ -8,6 +8,7 @@ namespace OfficeProject.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
         public DbSet<Users> Users { get; set; }
+        public DbSet<UserDesignation> UserDesignation { get; set; }
         public DbSet<Clients> Client { get; set; }
         public DbSet<Projects> Projects { get; set; }
         public DbSet<WebDevelopment> WebDevelopment { get; set; } 
@@ -17,8 +18,8 @@ namespace OfficeProject.Data
         public DbSet<PaymentSchedule> PaymentSchedule { get; set; }
         public DbSet<SeoServiceDetails> SeoServiceDetails { get; set; }
         public DbSet<Transactions> Transactions { get; set; }
-        public DbSet<WorkRecords> WorkRecords { get; set; }
-        public DbSet<WorkRecordsSeoDetails> WorkRecordsSeoDetails { get; set; }
+        public DbSet<WorkingRecords> WorkRecords { get; set; }
+        public DbSet<SeoTaskDetails> WorkRecordsSeoDetails { get; set; }
         public DbSet<Products> Products { get; set; }
         public DbSet<Services> Services { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }

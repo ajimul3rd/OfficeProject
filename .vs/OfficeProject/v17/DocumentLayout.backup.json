@@ -3,12 +3,20 @@
   "WorkspaceRootPath": "E:\\.Net Project\\OfficeProject\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\web\\pages\\dialogmodel\\dialogproductslist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:web\\pages\\dialogmodel\\dialogproductslist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\web\\pages\\addproduct\\addproducts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:web\\pages\\addproduct\\addproducts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\models\\entities\\accounts.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:models\\entities\\accounts.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\web\\pages\\tappandialog\\tappanworkingactivity.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:web\\pages\\tappandialog\\tappanworkingactivity.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\web\\pages\\useractivity\\servicelistmodel.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:web\\pages\\useractivity\\servicelistmodel.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\web\\pages\\useractivity\\useractivity.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -19,52 +27,12 @@
       "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:servicess\\projectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\models\\dto\\servicesdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:models\\dto\\servicesdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\models\\entities\\userdesignation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:models\\entities\\userdesignation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\models\\dto\\userworkingactivitydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:models\\dto\\userworkingactivitydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\models\\entities\\products.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:models\\entities\\products.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\models\\dto\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:models\\dto\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\controller\\projectcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:controller\\projectcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\controller\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:controller\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\web\\services\\apiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:web\\services\\apiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\models\\dto\\productsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:models\\dto\\productsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\web\\pages\\dialogmodel\\dialoguseractivitymaster.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:web\\pages\\dialogmodel\\dialoguseractivitymaster.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\web\\pages\\useractivitymasterlist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:web\\pages\\useractivitymasterlist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|e:\\.net project\\officeproject\\models\\entities\\users.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C90A1CC9-023A-4162-8B27-CE35A1CEC0A2}|OfficeProject.csproj|solutionrelative:models\\entities\\users.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -74,206 +42,115 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 14,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Accounts.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Models\\Entities\\Accounts.cs",
-              "RelativeDocumentMoniker": "Models\\Entities\\Accounts.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Models\\Entities\\Accounts.cs",
-              "RelativeToolTip": "Models\\Entities\\Accounts.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAkAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-08T05:09:09.644Z",
+              "DocumentIndex": 0,
+              "Title": "DialogProductsList.razor",
+              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\DialogModel\\DialogProductsList.razor",
+              "RelativeDocumentMoniker": "Web\\Pages\\DialogModel\\DialogProductsList.razor",
+              "ToolTip": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\DialogModel\\DialogProductsList.razor",
+              "RelativeToolTip": "Web\\Pages\\DialogModel\\DialogProductsList.razor",
+              "ViewState": "AgIAAMkAAAAAAAAAAAAAAN8AAAB7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-11T14:15:16.222Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "TappanWorkingActivity.razor",
+              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\TappanDialog\\TappanWorkingActivity.razor",
+              "RelativeDocumentMoniker": "Web\\Pages\\TappanDialog\\TappanWorkingActivity.razor",
+              "ToolTip": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\TappanDialog\\TappanWorkingActivity.razor",
+              "RelativeToolTip": "Web\\Pages\\TappanDialog\\TappanWorkingActivity.razor",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAADUAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-11T13:40:11.962Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ServiceListModel.razor",
+              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\UserActivity\\ServiceListModel.razor",
+              "RelativeDocumentMoniker": "Web\\Pages\\UserActivity\\ServiceListModel.razor",
+              "ToolTip": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\UserActivity\\ServiceListModel.razor",
+              "RelativeToolTip": "Web\\Pages\\UserActivity\\ServiceListModel.razor",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAADcAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-11T13:36:27.046Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "ServicesDTO.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Models\\DTO\\ServicesDTO.cs",
-              "RelativeDocumentMoniker": "Models\\DTO\\ServicesDTO.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Models\\DTO\\ServicesDTO.cs",
-              "RelativeToolTip": "Models\\DTO\\ServicesDTO.cs",
-              "ViewState": "AgIAADQAAAAAAAAAAAAxwEIAAAA2AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T11:56:57.373Z"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "UserWorkingActivityDto.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Models\\DTO\\UserWorkingActivityDto.cs",
-              "RelativeDocumentMoniker": "Models\\DTO\\UserWorkingActivityDto.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Models\\DTO\\UserWorkingActivityDto.cs",
-              "RelativeToolTip": "Models\\DTO\\UserWorkingActivityDto.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABIAAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T11:24:47.749Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Products.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Models\\Entities\\Products.cs",
-              "RelativeDocumentMoniker": "Models\\Entities\\Products.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Models\\Entities\\Products.cs",
-              "RelativeToolTip": "Models\\Entities\\Products.cs",
-              "ViewState": "AgIAABoAAAAAAAAAAAAuwCEAAAAnAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T11:10:26.67Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "UserDTO.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Models\\DTO\\UserDTO.cs",
-              "RelativeDocumentMoniker": "Models\\DTO\\UserDTO.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Models\\DTO\\UserDTO.cs",
-              "RelativeToolTip": "Models\\DTO\\UserDTO.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAuwDIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T11:03:14.079Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ProjectsService.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Servicess\\ProjectsService.cs",
-              "RelativeDocumentMoniker": "Servicess\\ProjectsService.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Servicess\\ProjectsService.cs",
-              "RelativeToolTip": "Servicess\\ProjectsService.cs",
-              "ViewState": "AgIAADsAAAAAAAAAAAAAAMQAAAAzAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T11:01:38.466Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "ProjectController.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Controller\\ProjectController.cs",
-              "RelativeDocumentMoniker": "Controller\\ProjectController.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Controller\\ProjectController.cs",
-              "RelativeToolTip": "Controller\\ProjectController.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAowCUAAAA+AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T11:01:12.589Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "ApiService.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Web\\Services\\ApiService.cs",
-              "RelativeDocumentMoniker": "Web\\Services\\ApiService.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Web\\Services\\ApiService.cs",
-              "RelativeToolTip": "Web\\Services\\ApiService.cs",
-              "ViewState": "AgIAAOoAAAAAAAAAAAASwPsAAAA/AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T10:59:26.853Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "UserController.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Controller\\UserController.cs",
-              "RelativeDocumentMoniker": "Controller\\UserController.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Controller\\UserController.cs",
-              "RelativeToolTip": "Controller\\UserController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAACoAAAAnAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T11:00:16.119Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
               "Title": "UserActivity.razor",
               "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\UserActivity\\UserActivity.razor",
               "RelativeDocumentMoniker": "Web\\Pages\\UserActivity\\UserActivity.razor",
               "ToolTip": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\UserActivity\\UserActivity.razor",
               "RelativeToolTip": "Web\\Pages\\UserActivity\\UserActivity.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAiAAAAAAAAAA==",
+              "ViewState": "AgIAADMAAAAAAAAAAAAcwEIAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-06T10:59:11.037Z",
+              "WhenOpened": "2025-06-11T13:34:16.569Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "ProductsDTO.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Models\\DTO\\ProductsDTO.cs",
-              "RelativeDocumentMoniker": "Models\\DTO\\ProductsDTO.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Models\\DTO\\ProductsDTO.cs",
-              "RelativeToolTip": "Models\\DTO\\ProductsDTO.cs",
-              "ViewState": "AgIAADwAAAAAAAAAAAA3wFMAAAAyAAAAAAAAAA==",
+              "DocumentIndex": 6,
+              "Title": "UserDesignation.cs",
+              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Models\\Entities\\UserDesignation.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\UserDesignation.cs",
+              "ToolTip": "E:\\.Net Project\\OfficeProject\\Models\\Entities\\UserDesignation.cs",
+              "RelativeToolTip": "Models\\Entities\\UserDesignation.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBEAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T10:48:20.495Z"
+              "WhenOpened": "2025-06-11T12:55:22.632Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "ApplicationDbContext.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Data\\ApplicationDbContext.cs",
-              "RelativeDocumentMoniker": "Data\\ApplicationDbContext.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Data\\ApplicationDbContext.cs",
-              "RelativeToolTip": "Data\\ApplicationDbContext.cs",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAcwBkAAABMAAAAAAAAAA==",
+              "DocumentIndex": 7,
+              "Title": "Users.cs",
+              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Models\\Entities\\Users.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\Users.cs",
+              "ToolTip": "E:\\.Net Project\\OfficeProject\\Models\\Entities\\Users.cs",
+              "RelativeToolTip": "Models\\Entities\\Users.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAjwBwAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T10:04:48.955Z"
+              "WhenOpened": "2025-06-11T12:53:06.805Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "UserActivityMasterList.razor",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\UserActivityMasterList.razor",
-              "RelativeDocumentMoniker": "Web\\Pages\\UserActivityMasterList.razor",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\UserActivityMasterList.razor",
-              "RelativeToolTip": "Web\\Pages\\UserActivityMasterList.razor",
-              "ViewState": "AgIAAPcAAAAAAAAAAAAvwBEBAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-06T09:34:26.476Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "AddProducts.razor",
               "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\AddProduct\\AddProducts.razor",
               "RelativeDocumentMoniker": "Web\\Pages\\AddProduct\\AddProducts.razor",
               "ToolTip": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\AddProduct\\AddProducts.razor",
               "RelativeToolTip": "Web\\Pages\\AddProduct\\AddProducts.razor",
-              "ViewState": "AgIAAEQAAAAAAAAAAADgv1MAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAALwAAAAAAAAAAAAlwNkAAABWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-06T07:35:44.708Z",
+              "WhenOpened": "2025-06-11T12:47:53.64Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "DialogUserActivityMaster.razor",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\DialogModel\\DialogUserActivityMaster.razor",
-              "RelativeDocumentMoniker": "Web\\Pages\\DialogModel\\DialogUserActivityMaster.razor",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Web\\Pages\\DialogModel\\DialogUserActivityMaster.razor",
-              "RelativeToolTip": "Web\\Pages\\DialogModel\\DialogUserActivityMaster.razor",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABUAAABEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-05T13:21:01.628Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Program.cs",
-              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "E:\\.Net Project\\OfficeProject\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAFgAAAAAAAAAAAAcwG4AAABKAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "ProjectsService.cs",
+              "DocumentMoniker": "E:\\.Net Project\\OfficeProject\\Servicess\\ProjectsService.cs",
+              "RelativeDocumentMoniker": "Servicess\\ProjectsService.cs",
+              "ToolTip": "E:\\.Net Project\\OfficeProject\\Servicess\\ProjectsService.cs",
+              "RelativeToolTip": "Servicess\\ProjectsService.cs",
+              "ViewState": "AgIAALsAAAAAAAAAAAAnwM0AAABLAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T09:35:20.976Z"
+              "WhenOpened": "2025-06-11T12:45:33.724Z",
+              "EditorCaption": ""
             }
           ]
         }

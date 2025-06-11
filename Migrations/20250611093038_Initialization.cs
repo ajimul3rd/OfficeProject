@@ -6,11 +6,24 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OfficeProject.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initialization : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "clientSources",
+                columns: table => new
+                {
+                    ClientSourcesId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClientSourcesName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_clientSources", x => x.ClientSourcesId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -28,12 +41,24 @@ namespace OfficeProject.Migrations
                     CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Designation = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     JoiningDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserWorkingActivityList",
+                columns: table => new
+                {
+                    MasterId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MasterActivityName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserWorkingActivityList", x => x.MasterId);
                 });
 
             migrationBuilder.CreateTable(
@@ -97,6 +122,26 @@ namespace OfficeProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserDesignation",
+                columns: table => new
+                {
+                    DesignationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    User_Id = table.Column<int>(type: "int", nullable: false),
+                    Designation = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserDesignation", x => x.DesignationId);
+                    table.ForeignKey(
+                        name: "FK_UserDesignation_Users_User_Id",
+                        column: x => x.User_Id,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserRoles",
                 columns: table => new
                 {
@@ -123,8 +168,8 @@ namespace OfficeProject.Migrations
                     AccountId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClientId = table.Column<int>(type: "int", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalPaymentsMade = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    TotalPaymentsMade = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -177,6 +222,26 @@ namespace OfficeProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserWorkingActivity",
+                columns: table => new
+                {
+                    workingActivityId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductsId = table.Column<int>(type: "int", nullable: false),
+                    WorkingActivityName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserWorkingActivity", x => x.workingActivityId);
+                    table.ForeignKey(
+                        name: "FK_UserWorkingActivity_Products_ProductsId",
+                        column: x => x.ProductsId,
+                        principalTable: "Products",
+                        principalColumn: "ProductsId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AssignedUsers",
                 columns: table => new
                 {
@@ -205,55 +270,6 @@ namespace OfficeProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MarketingPhases",
-                columns: table => new
-                {
-                    MarketingTaskId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProjectId = table.Column<int>(type: "int", nullable: false),
-                    WebsiteUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MarketingTypes = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MarketingPhases", x => x.MarketingTaskId);
-                    table.ForeignKey(
-                        name: "FK_MarketingPhases_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "ProjectId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PaymentSchedule",
-                columns: table => new
-                {
-                    ScheduleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProjectId = table.Column<int>(type: "int", nullable: false),
-                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PaidDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PaymentSchedule", x => x.ScheduleId);
-                    table.ForeignKey(
-                        name: "FK_PaymentSchedule_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "ProjectId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Services",
                 columns: table => new
                 {
@@ -264,18 +280,17 @@ namespace OfficeProject.Migrations
                     ServiceName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     BillingType = table.Column<string>(type: "nvarchar(50)", nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    FinalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    FinalPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalPost = table.Column<int>(type: "int", nullable: false),
                     TotalReels = table.Column<int>(type: "int", nullable: false),
-                    AdsBudget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AdsBudget = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     DeadLine = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExtraField1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     ExtraField2 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    ExtraField3 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    ProjectsProjectId = table.Column<int>(type: "int", nullable: true)
+                    ExtraField3 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -284,19 +299,89 @@ namespace OfficeProject.Migrations
                         name: "FK_Services_Products_ProductsId",
                         column: x => x.ProductsId,
                         principalTable: "Products",
-                        principalColumn: "ProductsId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "ProductsId");
                     table.ForeignKey(
                         name: "FK_Services_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "ProjectId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "ProjectId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OthersService",
+                columns: table => new
+                {
+                    OthersId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    LableName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Post = table.Column<int>(type: "int", nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ExtraField1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    ExtraField2 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OthersService", x => x.OthersId);
                     table.ForeignKey(
-                        name: "FK_Services_Projects_ProjectsProjectId",
+                        name: "FK_OthersService_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "ServiceId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaymentSchedule",
+                columns: table => new
+                {
+                    ScheduleId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PaidDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProjectsProjectId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentSchedule", x => x.ScheduleId);
+                    table.ForeignKey(
+                        name: "FK_PaymentSchedule_Projects_ProjectsProjectId",
                         column: x => x.ProjectsProjectId,
                         principalTable: "Projects",
                         principalColumn: "ProjectId");
+                    table.ForeignKey(
+                        name: "FK_PaymentSchedule_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "ServiceId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SeoServiceDetails",
+                columns: table => new
+                {
+                    SeoServiceDetailsId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    KeyWord = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Rank = table.Column<int>(type: "int", nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ExtraField1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    ExtraField2 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SeoServiceDetails", x => x.SeoServiceDetailsId);
+                    table.ForeignKey(
+                        name: "FK_SeoServiceDetails_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "ServiceId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -305,88 +390,68 @@ namespace OfficeProject.Migrations
                 {
                     WebDevelopmentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProjectId = table.Column<int>(type: "int", nullable: false),
-                    ProjectIssueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProjectDomainName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProjectHostingDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ProjectHostingRenewalDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ProjectHostingRenewalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ProjectServerFtpAssign = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProjectServerIp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProjectServerUserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProjectServerPassword = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProjectHandledBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProjectStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProjectDeadline = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ProjectExtendedDeadline = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ProjectIsActive = table.Column<bool>(type: "bit", nullable: false),
-                    ProjectRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProjectIssueBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    DomainName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HostingDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    HostingRenewalDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    HostingLimit = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HostingRenewalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    ServerFtpAssign = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ServerIp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ServerUserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ServerPassword = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DesignTools = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MackupLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Languages = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deadline = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WebDevelopment", x => x.WebDevelopmentId);
                     table.ForeignKey(
-                        name: "FK_WebDevelopment_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "ProjectId",
+                        name: "FK_WebDevelopment_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "ServiceId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Seo",
+                name: "WorkRecords",
                 columns: table => new
                 {
-                    SeoId = table.Column<int>(type: "int", nullable: false)
+                    WorkRecordId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MarketingTaskId = table.Column<int>(type: "int", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalPosts = table.Column<int>(type: "int", nullable: false),
-                    Keyword = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Ranking = table.Column<int>(type: "int", nullable: true),
-                    TotalFollowers = table.Column<int>(type: "int", nullable: true),
-                    TotalLikes = table.Column<int>(type: "int", nullable: true),
-                    EngagementRate = table.Column<double>(type: "float", nullable: true),
-                    IssuedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProgressStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    WorkDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProjectName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ServiceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SharedPost = table.Column<int>(type: "int", nullable: false),
+                    CreatedReels = table.Column<int>(type: "int", nullable: false),
+                    UsedAdsBudget = table.Column<int>(type: "int", nullable: false),
+                    Task = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ExtraField1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    ExtraField2 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    ExtraField3 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    ExtraField4 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    ExtraField5 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    ExtraField6 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    ExtraField7 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Seo", x => x.SeoId);
+                    table.PrimaryKey("PK_WorkRecords", x => x.WorkRecordId);
                     table.ForeignKey(
-                        name: "FK_Seo_MarketingPhases_MarketingTaskId",
-                        column: x => x.MarketingTaskId,
-                        principalTable: "MarketingPhases",
-                        principalColumn: "MarketingTaskId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SocialMediaHandling",
-                columns: table => new
-                {
-                    SocialId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MarketingTaskId = table.Column<int>(type: "int", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalPosts = table.Column<int>(type: "int", nullable: true),
-                    TotalFollowers = table.Column<int>(type: "int", nullable: true),
-                    TotalLikes = table.Column<int>(type: "int", nullable: true),
-                    EngagementRate = table.Column<double>(type: "float", nullable: true),
-                    IssuedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProgressStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SocialMediaHandling", x => x.SocialId);
-                    table.ForeignKey(
-                        name: "FK_SocialMediaHandling_MarketingPhases_MarketingTaskId",
-                        column: x => x.MarketingTaskId,
-                        principalTable: "MarketingPhases",
-                        principalColumn: "MarketingTaskId",
+                        name: "FK_WorkRecords_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "ServiceId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -420,181 +485,19 @@ namespace OfficeProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OthersService",
-                columns: table => new
-                {
-                    OthersId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
-                    LableName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Post = table.Column<int>(type: "int", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ExtraField1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    ExtraField2 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OthersService", x => x.OthersId);
-                    table.ForeignKey(
-                        name: "FK_OthersService_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "ServiceId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SeoServiceDetails",
-                columns: table => new
-                {
-                    SeoServiceDetailsId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
-                    KeyWord = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Rank = table.Column<int>(type: "int", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ExtraField1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    ExtraField2 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SeoServiceDetails", x => x.SeoServiceDetailsId);
-                    table.ForeignKey(
-                        name: "FK_SeoServiceDetails_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "ServiceId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WorkRecords",
-                columns: table => new
-                {
-                    WorkRecordId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
-                    WorkDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Post = table.Column<int>(type: "int", nullable: false),
-                    Reels = table.Column<int>(type: "int", nullable: false),
-                    Ads = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ExtraField1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    ExtraField2 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    ExtraField3 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    ExtraField4 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    ExtraField5 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    ExtraField6 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    ExtraField7 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WorkRecords", x => x.WorkRecordId);
-                    table.ForeignKey(
-                        name: "FK_WorkRecords_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "ServiceId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DesigningPhases",
-                columns: table => new
-                {
-                    DesignTaskId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    WebDevelopmentId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    DesignTool = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MockupLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FeedbackStatus = table.Column<string>(type: "nvarchar(20)", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeadlineDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DesigningPhases", x => x.DesignTaskId);
-                    table.ForeignKey(
-                        name: "FK_DesigningPhases_WebDevelopment_WebDevelopmentId",
-                        column: x => x.WebDevelopmentId,
-                        principalTable: "WebDevelopment",
-                        principalColumn: "WebDevelopmentId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DevelopmentPhases",
-                columns: table => new
-                {
-                    DevelopmentTaskId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    WebDevelopmentId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    ProgrammingLanguage = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CodeRepoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TestStatus = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeadlineDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DevelopmentPhases", x => x.DevelopmentTaskId);
-                    table.ForeignKey(
-                        name: "FK_DevelopmentPhases_WebDevelopment_WebDevelopmentId",
-                        column: x => x.WebDevelopmentId,
-                        principalTable: "WebDevelopment",
-                        principalColumn: "WebDevelopmentId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MaintenancePhase",
-                columns: table => new
-                {
-                    MaintenanceId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    WebDevelopmentId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    IssueType = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Priority = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    SystemAffected = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MaintenancePhase", x => x.MaintenanceId);
-                    table.ForeignKey(
-                        name: "FK_MaintenancePhase_WebDevelopment_WebDevelopmentId",
-                        column: x => x.WebDevelopmentId,
-                        principalTable: "WebDevelopment",
-                        principalColumn: "WebDevelopmentId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "WorkRecordsSeoDetails",
                 columns: table => new
                 {
-                    WorkRecordsSeoId = table.Column<int>(type: "int", nullable: false)
+                    SeoTaskId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     WorkRecordId = table.Column<int>(type: "int", nullable: false),
                     KeyWord = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Rank = table.Column<int>(type: "int", nullable: false),
+                    CurrentRank = table.Column<int>(type: "int", nullable: false),
                     Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkRecordsSeoDetails", x => x.WorkRecordsSeoId);
+                    table.PrimaryKey("PK_WorkRecordsSeoDetails", x => x.SeoTaskId);
                     table.ForeignKey(
                         name: "FK_WorkRecordsSeoDetails_WorkRecords_WorkRecordId",
                         column: x => x.WorkRecordId,
@@ -625,37 +528,19 @@ namespace OfficeProject.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DesigningPhases_WebDevelopmentId",
-                table: "DesigningPhases",
-                column: "WebDevelopmentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DevelopmentPhases_WebDevelopmentId",
-                table: "DevelopmentPhases",
-                column: "WebDevelopmentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MaintenancePhase_WebDevelopmentId",
-                table: "MaintenancePhase",
-                column: "WebDevelopmentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MarketingPhases_ProjectId",
-                table: "MarketingPhases",
-                column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_OthersService_ServiceId",
                 table: "OthersService",
                 column: "ServiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PaymentSchedule_ProjectId",
+                name: "IX_PaymentSchedule_ProjectsProjectId",
                 table: "PaymentSchedule",
-                column: "ProjectId");
+                column: "ProjectsProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentSchedule_ServiceId",
+                table: "PaymentSchedule",
+                column: "ServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_UserId",
@@ -673,12 +558,6 @@ namespace OfficeProject.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Seo_MarketingTaskId",
-                table: "Seo",
-                column: "MarketingTaskId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SeoServiceDetails_ServiceId",
                 table: "SeoServiceDetails",
                 column: "ServiceId");
@@ -694,17 +573,6 @@ namespace OfficeProject.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Services_ProjectsProjectId",
-                table: "Services",
-                column: "ProjectsProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SocialMediaHandling_MarketingTaskId",
-                table: "SocialMediaHandling",
-                column: "MarketingTaskId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Transactions_AccountId",
                 table: "Transactions",
                 column: "AccountId");
@@ -715,15 +583,24 @@ namespace OfficeProject.Migrations
                 column: "ScheduleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserDesignation_User_Id",
+                table: "UserDesignation",
+                column: "User_Id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_UsersUserId",
                 table: "UserRoles",
                 column: "UsersUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WebDevelopment_ProjectId",
+                name: "IX_UserWorkingActivity_ProductsId",
+                table: "UserWorkingActivity",
+                column: "ProductsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WebDevelopment_ServiceId",
                 table: "WebDevelopment",
-                column: "ProjectId",
-                unique: true);
+                column: "ServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkRecords_ServiceId",
@@ -743,40 +620,34 @@ namespace OfficeProject.Migrations
                 name: "AssignedUsers");
 
             migrationBuilder.DropTable(
-                name: "DesigningPhases");
-
-            migrationBuilder.DropTable(
-                name: "DevelopmentPhases");
-
-            migrationBuilder.DropTable(
-                name: "MaintenancePhase");
+                name: "clientSources");
 
             migrationBuilder.DropTable(
                 name: "OthersService");
 
             migrationBuilder.DropTable(
-                name: "Seo");
-
-            migrationBuilder.DropTable(
                 name: "SeoServiceDetails");
-
-            migrationBuilder.DropTable(
-                name: "SocialMediaHandling");
 
             migrationBuilder.DropTable(
                 name: "Transactions");
 
             migrationBuilder.DropTable(
+                name: "UserDesignation");
+
+            migrationBuilder.DropTable(
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "WorkRecordsSeoDetails");
+                name: "UserWorkingActivity");
+
+            migrationBuilder.DropTable(
+                name: "UserWorkingActivityList");
 
             migrationBuilder.DropTable(
                 name: "WebDevelopment");
 
             migrationBuilder.DropTable(
-                name: "MarketingPhases");
+                name: "WorkRecordsSeoDetails");
 
             migrationBuilder.DropTable(
                 name: "Accounts");

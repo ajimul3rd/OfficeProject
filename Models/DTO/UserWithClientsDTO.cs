@@ -1,4 +1,5 @@
-﻿using OfficeProject.Models.Enums;
+﻿using OfficeProject.Models.Entities;
+using OfficeProject.Models.Enums;
 
 namespace OfficeProject.Models.DTO
 {
@@ -9,7 +10,7 @@ namespace OfficeProject.Models.DTO
         public string UserContact { get; set; }
         public string? CompanyName { get; set; }
         public string? Address { get; set; }
-        public string? Designation { get; set; }
+        public List<UserDesignationDto>? UserDesignationDto { get; set; }
         public DateTime? JoiningDate { get; set; }
         public UserRole Role { get; set; } = UserRole.USER;
 

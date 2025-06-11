@@ -8,6 +8,7 @@
 @inject ApiService apiService
 @using OfficeProject.Models.Enums;
 @using System.Text.Json
+@using OfficeProject.Web.Pages.DialogModel
 
 
 <h3>User Management</h3>
@@ -91,10 +92,81 @@ else
                         <ValidationMessage For="@(() => registerModel.Address)" />
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label>Designation:</label>
-                        <InputText class="form-control" @bind-Value="@registerModel.Designation" />
-                        <ValidationMessage For="@(() => registerModel.Designation)" />
+                    <div class="col-12">
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0"><i class="fas fa-cogs me-2"></i>Select User Working Activity</h6>
+                                <span class="badge bg-primary">
+                                    @(registerModel.UserDesignation?.Count ?? 0) @(registerModel.UserDesignation?.Count == 1 ? "activity" : "activitices")
+                                </span>
+                            </div>
+                            @if (validationErrors.Any())
+                            {
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0">
+                                        @foreach (var error in validationErrors)
+                                        {
+                                            <li>@error</li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                            <ValidationMessage For="@(() => registerModel.UserDesignation)" />
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold d-block mb-2">
+                                    <i class="fas fa-box-open me-2"></i>Select Activities
+                                </label>
+
+                                <div class="input-group">
+                                    <div class="form-control p-2 @(registerModel.UserDesignation == null || !registerModel.UserDesignation.Any() ? "border-danger" : "border-primary")"
+                                         style="min-height: 42px; cursor: pointer;"
+                                         @onclick="getUserWorkingActivity">
+
+                                        @if (registerModel.UserDesignation == null || !registerModel.UserDesignation.Any())
+                                        {
+                                            <div class="text-muted d-flex align-items-center h-100">
+                                                <i class="fas fa-search me-2"></i>
+                                                <span>Click to browse user working activity</span>
+                                            </div>
+
+                                        }
+                                        else
+                                        {
+                                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                                @if (registerModel.UserDesignation?.Any() == true)
+                                                {
+                                                    @foreach (var a in registerModel.UserDesignation)
+                                                    {
+                                                        @if (!string.IsNullOrEmpty(a.Designation))
+                                                        {
+                                                            <span class="badge bg-primary rounded-pill d-flex align-items-center py-2 px-3">
+                                                                @a.Designation
+                                                                <button class="btn-close btn-close-white btn-sm ms-2 p-0"
+                                                                        @onclick="@(async (e) => await RemoveActivity(a))"
+                                                                @onclick:stopPropagation
+                                                                @onclick:preventDefault
+                                                                        aria-label="Remove"
+                                                                        style="font-size: 0.6rem; opacity: 0.8;">
+                                                                </button>
+                                                            </span>
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="text-muted d-flex align-items-center h-100">
+                                                        <i class="fas fa-search me-2"></i>
+                                                        <span>Click to browse user working activity</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
 
                     <div class="form-group mb-3">
@@ -124,52 +196,66 @@ else
     <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
         <table class="table table-bordered table-sm custom-tight-table mb-0">
             <thead class="table-info sticky-header">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Contact</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Contact</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <td>@user.UserName</td>
+                        <td>@user.UserEmail</td>
+                        <td>@user.UserContact</td>
+                        <td>@user.Role</td>
+                        <td>
+                            <button class="btn btn-sm @(user.IsActive ? "btn-success" : "btn-danger")"
+                            @onclick="() => ToggleUserStatus(user.UserId, !user.IsActive)">
+                                @(user.IsActive ? "Active" : "Inactive")
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info" @onclick="() => EditUser(user.UserId)">Edit</button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var user in users)
-                    {
-                        <tr>
-                            <td>@user.UserName</td>
-                            <td>@user.UserEmail</td>
-                            <td>@user.UserContact</td>
-                            <td>@user.Role</td>
-                            <td>
-                                <button class="btn btn-sm @(user.IsActive ? "btn-success" : "btn-danger")"
-                                @onclick="() => ToggleUserStatus(user.UserId, !user.IsActive)">
-                                    @(user.IsActive ? "Active" : "Inactive")
-                                </button>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-info" @onclick="() => EditUser(user.UserId)">Edit</button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            </div>
+                }
+            </tbody>
+        </table>
+    </div>
 
- }
+}
+@if (showServiceModal)
+{
+    <div class="activity-dialog-backdrop fade show"></div>
+    <div class="modal fade show d-block activity-dialog-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <DialogUserActivityMaster OnSelectedMaster="HandleSelectedMaster"
+                CallerSelectedData="@data"
+                showModalChanged="@((value) => showServiceModal = value)"
+                showModal="@showServiceModal" />
+            </div>
+        </div>
+    </div>
+}
 
 <style>
     .table-responsive {
-        max-height: 500px;
-        overflow-y: auto;
-        position: relative;
+    max-height: 500px;
+    overflow-y: auto;
+    position: relative;
     }
 
     .sticky-header th {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background-color: #e0f3ff; /* Same color as you set */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #e0f3ff; /* Same color as you set */
     }
 </style>
 
@@ -180,10 +266,11 @@ else
 }
 
 
+
 <p>@message</p>
 
 @code {
-
+ @inject IUserDesignationService userDesignationService;
 
     private EditContext? editContext;
 
@@ -201,11 +288,22 @@ else
 
     private RegisterModel? registerModel;
 
+    public List<string> validationErrors = new List<string>();
+
+    private string statusMessage = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
             users = await apiService.GetAllUsersDTOAsync();
+
+            // Log for debugging
+            // string json = JsonSerializer.Serialize(users, new JsonSerializerOptions
+            //     {
+            //         WriteIndented = true
+            //     });
+            // Console.WriteLine($"GetAllUsersDTOAsync: {json}");
         }
         catch (Exception ex)
         {
@@ -215,13 +313,19 @@ else
         {
             isLoading = false;
         }
+        
     }
 
 
     private void ShowAddForm()
     {
-        registerModel ??= new RegisterModel();
+        registerModel ??= new RegisterModel
+            {
+                UserDesignation = new List<UserDesignation>() // Initialize here
+            };
         showAddForm = true;
+        isUpdate = false;
+        registerModel = new RegisterModel();
         editContext = new EditContext(registerModel!);
         StateHasChanged();
 
@@ -233,9 +337,6 @@ else
         {
             isUpdate = true;
             var user = await userService.GetUserDTOById((int)userId!);
-
-
-
             if (user != null)
             {	
                 registerModel ??= new RegisterModel();
@@ -248,7 +349,7 @@ else
                 registerModel.IsActive = user.IsActive;
                 registerModel.CompanyName = user.CompanyName;
                 registerModel.Address = user.Address;
-                registerModel.Designation = user.Designation;
+                registerModel.UserDesignation = user.UserDesignation ?? new List<UserDesignation>();
                 registerModel.JoiningDate = user.JoiningDate;
                 registerModel.UserId = user.UserId;
 
@@ -266,6 +367,8 @@ else
     }
     private async Task SaveUser()
     {
+        validationErrors.Clear(); // Clear previous errors
+        editContext?.MarkAsUnmodified();
         try
         {
             if (registerModel == null) // Add this check
@@ -275,79 +378,218 @@ else
             }
 
             errorMessage = string.Empty;
-
-            if (registerModel.UserId == 0)
+            if (registerModel.UserDesignation == null || !registerModel.UserDesignation.Any())
             {
+                validationErrors.Add("Assigned User Designations");
+                editContext.NotifyValidationStateChanged();
+                StateHasChanged();
+            }
 
-                var response = await apiService.RegisterUserAsync(registerModel);
-
-                if (response.IsSuccessStatusCode)
+            if (editContext?.Validate() == true && registerModel.UserDesignation != null && registerModel.UserDesignation.Any())
+            {
+                if (registerModel.UserId == 0)
                 {
 
-                    users = await apiService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
-                    showAddForm = false;
+                    await DeleteActivityAsync();
+                    var response = await apiService.RegisterUserAsync(registerModel);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                        users = await apiService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
+                        showAddForm = false;
+                    }
+                    else
+                    {
+                        errorMessage = await response.Content.ReadAsStringAsync();
+                    }
                 }
                 else
                 {
-                    errorMessage = await response.Content.ReadAsStringAsync();
-                }
-            }
-            else
-            {
-                // message = JsonSerializer.Serialize(registerModel, new JsonSerializerOptions { WriteIndented = true });
-                // For existing users, call update API
 
-                var userDto = new UserDTO
-                    {
-                        UserId = registerModel.UserId, // or handle null as needed
-                        UserName = registerModel.UserName,
-                        UserEmail = registerModel.UserEmail,
-                        UserContact = registerModel.UserContact,
-                        Role = registerModel.Role,
-                        IsActive = registerModel.IsActive,
-                        CompanyName = registerModel.CompanyName,
-                        Address = registerModel.Address,
-                        Designation = registerModel.Designation,
-                        JoiningDate = registerModel.JoiningDate
-                    };
-                // message = JsonSerializer.Serialize(userDto, new JsonSerializerOptions { WriteIndented = true });
-                await apiService.UpdateUserDTOAsync(userDto, (int)userDto.UserId!);
-                users = await apiService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
-                showAddForm = false;
+                    var userDto = new UserDTO
+                        {
+                            UserId = registerModel.UserId, // or handle null as needed
+                            UserName = registerModel.UserName,
+                            UserEmail = registerModel.UserEmail,
+                            UserContact = registerModel.UserContact,
+                            Role = registerModel.Role,
+                            IsActive = registerModel.IsActive,
+                            CompanyName = registerModel.CompanyName,
+                            Address = registerModel.Address,
+                            UserDesignation = registerModel.UserDesignation,
+                            JoiningDate = registerModel.JoiningDate
+                        };
+                    await DeleteActivityAsync();
+                    await apiService.UpdateUserDTOAsync(userDto, (int)userDto.UserId!);
+                    users = await apiService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
+                    showAddForm = false;
+
+                }
+
                 
             }
-            registerModel = new RegisterModel();
-		}
-		catch (Exception ex)
-		{
-			errorMessage = $"Error saving user: {ex.Message}";
-			Console.WriteLine(ex.ToString()); // Better logging
-		}
-	}
 
-	
-	private void CancelEdit()
-	{
-		showAddForm = false;
-		errorMessage = string.Empty;
+           
+            registerModel = new RegisterModel();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving user: {ex.Message}";
+            Console.WriteLine(ex.ToString()); // Better logging
+        }
+    }
+
+
+    private void CancelEdit()
+    {
+        showAddForm = false;
+        errorMessage = string.Empty;
         registerModel = new RegisterModel();
-	}
-	private async Task ToggleUserStatus(int? userId, bool newStatus)
-	{
-		try
-		{
-			var user = await userService.GetUserDTOById((int)userId!);
-			if (user != null)
-			{
-				user.IsActive = newStatus;
-				await userService.UpdateUserAsync(user);
-				users = await userService.GetAllUsersDTOAsync();
-			}
-		}
-		catch (Exception ex)
-		{
-			errorMessage = $"Error updating user status: {ex.Message}";
-		}
-	}
+    }
+
+
+    private async Task ToggleUserStatus(int? userId, bool newStatus)
+    {
+        try
+        {
+            var user = await userService.GetUserDTOById((int)userId!);
+            if (user != null)
+            {
+                user.IsActive = newStatus;
+                await userService.UpdateUserAsync(user);
+                users = await userService.GetAllUsersDTOAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error updating user status: {ex.Message}";
+        }
+    }
+
+
+    private List<UserWorkingActivityDto> data { get; set; }
+    private bool showServiceModal { get; set; } = false;
+
+    private List<UserActivityMasterDto> workingActivity { get; set; } = new();
+
+    private void getUserWorkingActivity()
+    {
+        // Ensure registerModel and UserDesignation are initialized
+        registerModel ??= new RegisterModel();
+        registerModel.UserDesignation ??= new List<UserDesignation>();
+
+        data = registerModel.UserDesignation
+            .Where(d => d != null && !string.IsNullOrEmpty(d.Designation))
+            .Select(d => new UserWorkingActivityDto
+                {
+                    WorkingActivityId = 0,
+                    WorkingActivityName = d.Designation
+                })
+            .ToList();
+
+        showServiceModal = true;
+    }
+
+    private void HandleSelectedMaster(List<UserActivityMasterDto> model)
+    {
+        try
+        {
+            // Safely initialize collections
+            workingActivity = model ?? new List<UserActivityMasterDto>();
+            registerModel ??= new RegisterModel();
+            registerModel.UserDesignation ??= new List<UserDesignation>();
+
+            foreach (var activity in workingActivity)
+            {
+
+                if (activity == null || string.IsNullOrWhiteSpace(activity.MasterActivityName))
+                    continue;
+
+
+                bool alreadyExists = registerModel.UserDesignation.Any(s =>
+                    s.Designation?.Equals(activity.MasterActivityName, StringComparison.OrdinalIgnoreCase) == true);
+
+                if (!alreadyExists)
+                {
+                    var newActivity = new UserDesignation
+                        {
+                            DesignationId = 0, // If new
+                            Designation = activity.MasterActivityName
+                        };
+
+                    registerModel.UserDesignation.Add(newActivity);
+                }
+            }
+
+            // Log for debugging
+            // string json = JsonSerializer.Serialize(product.UserWorkingActivity, new JsonSerializerOptions
+            //     {
+            //         WriteIndented = true
+            //     });
+            // Console.WriteLine($"HandleSelectedMaster: {json}");
+            validationErrors.Clear();
+            statusMessage = "";
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in HandleSelectedMaster: {ex}");
+            errorMessage = "Failed to add activities. Please try again.";
+        }
+    }
+    private List<int> activityDeleteList = new List<int>();
+
+    private async Task RemoveActivity(UserDesignation service)
+    {
+        if (registerModel!.UserDesignation == null&&service.DesignationId!=0||service.DesignationId==null ) return;
+        if (!activityDeleteList.Contains(service.DesignationId))
+        {
+            activityDeleteList.Add(service.DesignationId);
+        }
+        registerModel.UserDesignation.Remove(service);
+        await InvokeAsync(StateHasChanged);
+    }
+
+        private async Task DeleteActivityAsync()
+    {
+        try
+        {
+            if (activityDeleteList?.Count > 0 && registerModel.UserDesignation != null)
+            {
+                foreach (var Id in activityDeleteList)
+                {
+                    await userDesignationService.Delete(Id);
+                }
+                activityDeleteList.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting others ervices: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
+    }
+    // private async Task RemoveActivity(UserDesignation service)
+    // {
+    //     if (registerModel?.UserDesignation == null) return;
+
+    //     if (service.DesignationId != 0) Only add to delete list if it has an ID
+    //     {
+    //         activityDeleteList.Add(service.DesignationId);
+    //         Log for debugging
+    //         string json = JsonSerializer.Serialize(activityDeleteList, new JsonSerializerOptions
+    //             {
+    //                 WriteIndented = true
+    //             });
+    //         Console.WriteLine($"RemoveActivity: {json}");
+    //     }
+    //     registerModel.UserDesignation.Remove(service);
+    //     await InvokeAsync(StateHasChanged);
+       
+    // }
+
 }
 

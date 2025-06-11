@@ -64,7 +64,10 @@ else
     </div>
 }
 
-<TappanWorkingActivity IsVisible="@ShowDialog" IsVisibleChanged="@((bool val) => ShowDialog = val)"
+<TappanWorkingActivity 
+IsVisible="@ShowDialog" 
+projects="@data"
+IsVisibleChanged="@((bool val) => ShowDialog = val)"
 ></TappanWorkingActivity>
 
 
@@ -89,12 +92,15 @@ else
     }
     private void OpenDialog(ProjectsDTO project)
     {
+        data ??= new ProjectsDTO();
+        data = project;
         ShowDialog=true;
     }
 
 
     private string message { get; set; }
     private List<ProjectsDTO> projects;
+    private ProjectsDTO data{ get; set; }
     private bool isLoading = true;
     private bool loadFailed = false;
     private CancellationTokenSource cts = new();
@@ -103,6 +109,7 @@ else
     {
         try
         {
+            data ??= new ProjectsDTO();
             projects ??= new List<ProjectsDTO>();
             projects = await api.GetProjectPerUserAsync();
 

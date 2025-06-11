@@ -59,7 +59,7 @@ namespace OfficeProject.Models.DTO
         public List<OthersServiceDTO>? OthersServices { get; set; }
 
         [ValidateComplexType]
-        public List<WorkRecordsDTO>? WorkRecords { get; set; }
+        public List<WorkingRecordsDTO>? WorkRecords { get; set; }
 
         [ValidateComplexType]
         public List<WebDevelopmentDTO>? WebDevelopment { get; set; }

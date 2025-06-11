@@ -24,6 +24,6 @@ namespace OfficeProject.Models.DTO
 
         // Navigation property
         [JsonIgnore]
-        public WorkRecords? WorkRecords { get; set; } = null!;
+        public WorkingRecords? WorkRecords { get; set; } = null!;
     }
 }

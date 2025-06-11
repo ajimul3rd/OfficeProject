@@ -4,11 +4,11 @@ using System.Text.Json.Serialization;
 
 namespace OfficeProject.Models.Entities
 {
-    public class WorkRecordsSeoDetails
+    public class SeoTaskDetails
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int WorkRecordsSeoId { get; set; }
+        public int SeoTaskId { get; set; }
 
         [Required]
         [ForeignKey(nameof(WorkRecords))]
@@ -19,13 +19,13 @@ namespace OfficeProject.Models.Entities
         public string KeyWord { get; set; }
 
         [Required]
-        public int Rank { get; set; }
+        public int CurrentRank { get; set; }
 
         [MaxLength(500)]
         public string? Note { get; set; }
 
         // Navigation property
         [JsonIgnore]
-        public WorkRecords? WorkRecords { get; set; } = null!;
+        public WorkingRecords? WorkRecords { get; set; } = null!;
     }
 }

@@ -65,7 +65,7 @@ namespace OfficeProject.Servicess
                 {
                     // Get user with designation
                     var user = await context.Users
-                        .Include(u => u.UserRoles)
+                        .Include(u => u.UserDesignation)
                         .FirstOrDefaultAsync(u => u.UserId == userId);
 
                     if (user == null)
@@ -73,10 +73,10 @@ namespace OfficeProject.Servicess
                         throw new UnauthorizedAccessException("User not found.");
                     }
 
-                    var userDesignations = user.Designation?
-                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(d => d.Trim())
-                        .ToList() ?? new List<string>();
+                    //var userDesignations = user.UserDesignation?? new List<UserDesignation>();
+                    var designationNames = user.UserDesignation?.Select(d => d.Designation).ToHashSet() ?? new HashSet<string>();
+
+
 
                     var projects = await context.Projects
                         .Include(p => p.Client)
@@ -132,7 +132,7 @@ namespace OfficeProject.Servicess
                             .Where(service =>
                                 service.Products?.UserWorkingActivity != null &&
                                 service.Products.UserWorkingActivity.Any(ua =>
-                                    userDesignations.Contains(ua.WorkingActivityName)))
+                                designationNames.Contains(ua.WorkingActivityName)))
                             .Select(service => new ServicesDTO
                             {
                                 ServiceId = service.ServiceId,
@@ -199,7 +199,11 @@ namespace OfficeProject.Servicess
                             }).ToList()
 
                     }).Where(p => p.Services != null && p.Services.Any()).ToList(); // Filter out projects with no matching services
-
+                    //string json = JsonSerializer.Serialize(projectDTOs, new JsonSerializerOptions
+                    //{
+                    //    WriteIndented = true
+                    //});
+                    //Console.WriteLine($"GetProjectPerUserAsync: {json}");
                     return projectDTOs;
                 }
             }
@@ -209,9 +213,6 @@ namespace OfficeProject.Servicess
                 throw;
             }
         }
-
-
-
 
         //public async Task<List<ProjectsDTO?>> GetProjectPerUserAsync()
         //{

@@ -36,10 +36,10 @@ namespace OfficeProject.Models.DTO
 
             public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-            [Required(ErrorMessage = "Designation must be under 50 characters")]
-            public string? Designation { get; set; }
+            [Required(ErrorMessage = "Designation is Request")]
+        public List<UserDesignation> UserDesignation { get; set; }
 
-            [Required(ErrorMessage = "Invalid date format")]
+        [Required(ErrorMessage = "Invalid date format")]
             [DataType(DataType.Date)]
             public DateTime? JoiningDate { get; set; } = DateTime.UtcNow;
 

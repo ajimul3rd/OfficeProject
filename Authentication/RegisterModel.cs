@@ -39,8 +39,8 @@ namespace OfficeProject.Authentication
         [Required(ErrorMessage = "Address must be under 200 characters")]
         public string? Address { get; set; }
 
-        [Required(ErrorMessage = "Designation must be under 50 characters")]
-        public string? Designation { get; set; }
+        [Required(ErrorMessage = "Designation is Request")]
+        public List<UserDesignation> UserDesignation { get; set; }
 
         [Required(ErrorMessage = "Invalid date format")]
         [DataType(DataType.Date)]

@@ -51,51 +51,76 @@ else
 @code {
     private List<ServicesDTO> Services = new();
     private bool ShowActivityDialog = false;
+    private ServicesDTO? SelectedService;
+
+    [Parameter] public ProjectsDTO projects { get; set; }
 
     protected override void OnInitialized()
     {
-        Services = new List<ServicesDTO>
-        {
-            new ServicesDTO
-            {
-                ServiceId = 1,
-                ServiceName = "SEO Optimization",
-                TotalPost = 8,
-                TotalReels = 8,
-                BillingType =Models.Enums.BillingType.Monthly,                
-                AdsBudget = 2000,
-                DeadLine = DateTime.Today
-            },
-            new ServicesDTO
-            {
-                ServiceId = 2,
-                ServiceName = "Social Media Marketing",
-                TotalPost = 12,
-                TotalReels = 10,
-                BillingType =Models.Enums.BillingType.Monthly,
-                AdsBudget = 3500,
-                DeadLine =  DateTime.Today
-            },
-            new ServicesDTO
-            {
-                ServiceId = 3,
-                ServiceName = "Google Ads",
-                TotalPost = 5,
-                TotalReels = 3,
-                BillingType =Models.Enums.BillingType.Monthly,
-                AdsBudget = 1500,
-                DeadLine = DateTime.Today
-            }
-        };
+        Services ??= new List<ServicesDTO>();
     }
+
+    protected override void OnParametersSet()
+    {
+        if (projects.Services != null)
+        {
+            Services = projects.Services;
+        }
+        base.OnParametersSet();
+    }
+
     private void OpenDialog(ServicesDTO services)
     {
+        SelectedService = services;
         ShowActivityDialog = true;
     }
-    private void AddWorkRecord()
-    {
-      
 
+    private void CloseDialog()
+    {
+        ShowActivityDialog = false;
+        SelectedService = null;
     }
 
+    private void AddWorkRecord()
+    {
+        if (SelectedService != null)
+        {
+            // Your logic here
+            Console.WriteLine($"Adding work record for: {SelectedService.ServiceName}");
+        }
+    }
 }
+
+@* @code { *@
+@*     private List<ServicesDTO> Services = new(); *@
+@*     private bool ShowActivityDialog = false; *@
+
+@*     [Parameter] public ProjectsDTO projects { get; set; } *@
+
+
+@*     protected override void OnInitialized() *@
+@*     { *@
+@*         Services ??= new List<ServicesDTO>(); *@
+        
+
+
+@*     } *@
+@*     protected override void OnParametersSet() *@
+@*     { *@
+@*         if (projects.Services != null) *@
+@*         { *@
+@*             Services = projects.Services; *@
+@*         } *@
+@*         base.OnParametersSet(); *@
+@*     } *@
+@*     private void OpenDialog(ServicesDTO services) *@
+@*     { *@
+@*         ShowActivityDialog = true; *@
+@*     } *@
+@*     private void AddWorkRecord() *@
+@*     { *@
+      
+
+@*     } *@
+
+@* } *@

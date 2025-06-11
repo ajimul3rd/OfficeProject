@@ -380,6 +380,36 @@ namespace OfficeProject.Migrations
                     b.ToTable("SeoServiceDetails");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.SeoTaskDetails", b =>
+                {
+                    b.Property<int>("SeoTaskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SeoTaskId"));
+
+                    b.Property<int>("CurrentRank")
+                        .HasColumnType("int");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("WorkRecordId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SeoTaskId");
+
+                    b.HasIndex("WorkRecordId");
+
+                    b.ToTable("WorkRecordsSeoDetails");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.Services", b =>
                 {
                     b.Property<int>("ServiceId")
@@ -509,6 +539,28 @@ namespace OfficeProject.Migrations
                     b.ToTable("UserWorkingActivityList");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.UserDesignation", b =>
+                {
+                    b.Property<int>("DesignationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DesignationId"));
+
+                    b.Property<string>("Designation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("User_Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("DesignationId");
+
+                    b.HasIndex("User_Id");
+
+                    b.ToTable("UserDesignation");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.UserRoles", b =>
                 {
                     b.Property<int>("RoleId")
@@ -572,9 +624,6 @@ namespace OfficeProject.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Designation")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -681,7 +730,7 @@ namespace OfficeProject.Migrations
                     b.ToTable("WebDevelopment");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkRecords", b =>
+            modelBuilder.Entity("OfficeProject.Models.Entities.WorkingRecords", b =>
                 {
                     b.Property<int>("WorkRecordId")
                         .ValueGeneratedOnAdd()
@@ -689,7 +738,7 @@ namespace OfficeProject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WorkRecordId"));
 
-                    b.Property<int>("Ads")
+                    b.Property<int>("CreatedReels")
                         .HasColumnType("int");
 
                     b.Property<string>("ExtraField1")
@@ -720,11 +769,9 @@ namespace OfficeProject.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<int>("Post")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Reels")
-                        .HasColumnType("int");
+                    b.Property<string>("ProjectName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(500)
@@ -733,10 +780,24 @@ namespace OfficeProject.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ServiceName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SharedPost")
+                        .HasColumnType("int");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Task")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UsedAdsBudget")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("WorkDate")
                         .HasColumnType("datetime2");
@@ -746,36 +807,6 @@ namespace OfficeProject.Migrations
                     b.HasIndex("ServiceId");
 
                     b.ToTable("WorkRecords");
-                });
-
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkRecordsSeoDetails", b =>
-                {
-                    b.Property<int>("WorkRecordsSeoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WorkRecordsSeoId"));
-
-                    b.Property<string>("KeyWord")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("Rank")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WorkRecordId")
-                        .HasColumnType("int");
-
-                    b.HasKey("WorkRecordsSeoId");
-
-                    b.HasIndex("WorkRecordId");
-
-                    b.ToTable("WorkRecordsSeoDetails");
                 });
 
             modelBuilder.Entity("OfficeProject.Models.Entities.Accounts", b =>
@@ -886,6 +917,17 @@ namespace OfficeProject.Migrations
                     b.Navigation("Services");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.SeoTaskDetails", b =>
+                {
+                    b.HasOne("OfficeProject.Models.Entities.WorkingRecords", "WorkRecords")
+                        .WithMany("SeoTaskDetails")
+                        .HasForeignKey("WorkRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkRecords");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.Services", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Products", "Products")
@@ -922,6 +964,17 @@ namespace OfficeProject.Migrations
                     b.Navigation("PaymentSchedule");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.UserDesignation", b =>
+                {
+                    b.HasOne("OfficeProject.Models.Entities.Users", "Users")
+                        .WithMany("UserDesignation")
+                        .HasForeignKey("User_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.UserRoles", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Users", "Users")
@@ -953,7 +1006,7 @@ namespace OfficeProject.Migrations
                     b.Navigation("Services");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkRecords", b =>
+            modelBuilder.Entity("OfficeProject.Models.Entities.WorkingRecords", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Services", "Services")
                         .WithMany("WorkRecords")
@@ -962,17 +1015,6 @@ namespace OfficeProject.Migrations
                         .IsRequired();
 
                     b.Navigation("Services");
-                });
-
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkRecordsSeoDetails", b =>
-                {
-                    b.HasOne("OfficeProject.Models.Entities.WorkRecords", "WorkRecords")
-                        .WithMany("WorkRecordsSeoDetails")
-                        .HasForeignKey("WorkRecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("WorkRecords");
                 });
 
             modelBuilder.Entity("OfficeProject.Models.Entities.Accounts", b =>
@@ -1016,12 +1058,14 @@ namespace OfficeProject.Migrations
                 {
                     b.Navigation("Clients");
 
+                    b.Navigation("UserDesignation");
+
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkRecords", b =>
+            modelBuilder.Entity("OfficeProject.Models.Entities.WorkingRecords", b =>
                 {
-                    b.Navigation("WorkRecordsSeoDetails");
+                    b.Navigation("SeoTaskDetails");
                 });
 #pragma warning restore 612, 618
         }

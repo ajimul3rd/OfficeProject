@@ -111,10 +111,19 @@
             }
             else
             {
-                loginModel = new LoginModel();
+                // loginModel = new LoginModel();
                 StateHasChanged();
             }
         }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("OnInitializedAsync");
+        loginModel = new LoginModel
+            {
+                UserPassword = "admin123"  // Set default password here
+            };
+        await base.OnInitializedAsync();
     }
 
     private async Task HandleLogin()

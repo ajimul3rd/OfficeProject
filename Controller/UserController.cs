@@ -34,6 +34,7 @@ namespace OfficeProject.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDTO>> GetUserDTOById(int id)
         {
+            //Console.WriteLine("UpdateUser");
             var user = await userService.GetUserDTOById(id);
             if (user == null) return NotFound();
             return Ok(user);
@@ -57,16 +58,16 @@ namespace OfficeProject.Controllers
             return CreatedAtAction(nameof(GetUserDTOById), new { id = user.UserId }, user);
         }
 
-
         // ✅ Update user
         [HttpPut("{id}")]
         [Authorize(Policy = "AdminOrManager")]
-        public async Task<IActionResult>  UpdateUser(int id, [FromBody] UserDTO user)        {
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDTO user)
+        {
             if (id != user.UserId) return BadRequest("ID mismatch");
             await userService.UpdateUserAsync(user);
             return NoContent();
-           
-        }       
+
+        }
 
         // ✅ Update Refresh Token
         [HttpPost("update-refresh-token")]

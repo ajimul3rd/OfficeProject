@@ -58,7 +58,7 @@ namespace OfficeProject.Controller.Authentication
                 Role = model.Role,
                 CompanyName = model.CompanyName,
                 Address = model.Address,
-                Designation = model.Designation,
+                UserDesignation = model.UserDesignation,
                 JoiningDate = model.JoiningDate,
                 IsActive = true
 

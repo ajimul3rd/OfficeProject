@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @using System.ComponentModel.DataAnnotations;
 @using OfficeProject.Models.DTO;
+@using OfficeProject.Models.Entities
 @using OfficeProject.Models.Enums;
 @using System.Linq.Expressions;
 @using System.Globalization;
@@ -107,12 +108,81 @@
                                             <ValidationMessage For="@(() => Model.Address)" class="text-danger small" />
                                         </div>
 
-                                        <div class="mb-3">
-                                            <label class="form-label required">Designation</label>
-                                            <InputText @bind-Value="Model.Designation"
-                                            @onfocus="() => MarkAsTouched(() => Model.Designation)"
-                                            class="form-control" />
-                                            <ValidationMessage For="@(() => Model.Designation)" class="text-danger small" />
+                                        <div class="col-12">
+                                            <div class="card mb-4 border-0 shadow-sm">
+                                                <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
+                                                    <h6 class="mb-0"><i class="fas fa-cogs me-2"></i>Select User Working Activity</h6>
+                                                    <span class="badge bg-primary">
+                                                        @(Model.UserDesignation?.Count ?? 0) @(Model.UserDesignation?.Count == 1 ? "activity" : "activitices")
+                                                    </span>
+                                                </div>
+                                                @if (validationErrors.Any())
+                                                {
+                                                    <div class="alert alert-danger">
+                                                        <ul class="mb-0">
+                                                            @foreach (var error in validationErrors)
+                                                            {
+                                                                <li>@error</li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                }
+                                                <ValidationMessage For="@(() => Model.UserDesignation)" />
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-semibold d-block mb-2">
+                                                        <i class="fas fa-box-open me-2"></i>Select Activities
+                                                    </label>
+
+                                                    <div class="input-group">
+                                                        <div class="form-control p-2 @(Model.UserDesignation == null || !Model.UserDesignation.Any() ? "border-danger" : "border-primary")"
+                                                             style="min-height: 42px; cursor: pointer;"
+                                                             @onclick="getUserWorkingActivity">
+
+                                                            @if (Model.UserDesignation == null || !Model.UserDesignation.Any())
+                                                            {
+                                                                <div class="text-muted d-flex align-items-center h-100">
+                                                                    <i class="fas fa-search me-2"></i>
+                                                                    <span>Click to browse user working activity</span>
+                                                                </div>
+
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="d-flex flex-wrap gap-2 align-items-center">
+                                                                    @if (Model.UserDesignation?.Any() == true)
+                                                                    {
+                                                                        @foreach (var a in Model.UserDesignation)
+                                                                        {
+                                                                            @if (!string.IsNullOrEmpty(a.Designation))
+                                                                            {
+                                                                                <span class="badge bg-primary rounded-pill d-flex align-items-center py-2 px-3">
+                                                                                    @a.Designation
+                                                                                    <button class="btn-close btn-close-white btn-sm ms-2 p-0"
+                                                                                            @onclick="@(async (e) => await RemoveActivity(a))"
+                                                                                    @onclick:stopPropagation
+                                                                                    @onclick:preventDefault
+                                                                                            aria-label="Remove"
+                                                                                            style="font-size: 0.6rem; opacity: 0.8;">
+                                                                                    </button>
+                                                                                </span>
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <div class="text-muted d-flex align-items-center h-100">
+                                                                            <i class="fas fa-search me-2"></i>
+                                                                            <span>Click to browse user working activity</span>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            }
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
                                         </div>
 
                                         <div class="mb-3">
@@ -214,7 +284,7 @@
                                     <td>@user.UserContact</td>
                                     <td>@user.UserEmail</td>
                                     <td>@user.IsActive</td>
-                                    <td>@user.Designation</td>
+                                    @* <td>@user.UserDesignation.ToArray</td> *@
                                     <td>
                                         <button class="btn btn-sm @(user.IsActive ? "btn-success" : "btn-danger")">
                                             @(user.IsActive ? "Active" : "Inactive")
@@ -240,6 +310,20 @@
         </div>
     </div>
 
+}
+@if (showServiceModal)
+{
+    <div class="activity-dialog-backdrop fade show"></div>
+    <div class="modal fade show d-block activity-dialog-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <DialogUserActivityMaster OnSelectedMaster="HandleSelectedMaster"
+                                          CallerSelectedData="@data"
+                                          showModalChanged="@((value) => showServiceModal = value)"
+                                          showModal="@showServiceModal" />
+            </div>
+        </div>
+    </div>
 }
 
 <style>
@@ -437,17 +521,28 @@
 
     private async Task Submit()
     {
+        validationErrors.Clear(); // Clear previous errors
+        editContext?.MarkAsUnmodified();
         try
         {
 
-            string json = JsonSerializer.Serialize(Model, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
-            Console.WriteLine(json);
-            if (editContext!.Validate())
+            // string json = JsonSerializer.Serialize(Model, new JsonSerializerOptions
+            //     {
+            //         WriteIndented = true
+            //     });
+            // Console.WriteLine(json);
+            errorMessage = string.Empty;
+            if (Model.UserDesignation == null || !Model.UserDesignation.Any())
             {
+                validationErrors.Add("Assigned User Designations");
+                editContext.NotifyValidationStateChanged();
+                StateHasChanged();
+            }
 
+            if (editContext?.Validate() == true && Model.UserDesignation != null && Model.UserDesignation.Any())
+            {
+            
+                await DeleteActivityAsync();
 
                 var response = await ApiService.RegisterUserAsync(Model!);
 
@@ -487,5 +582,110 @@
             };
 
         editContext = new EditContext(Model);
+    }
+    public List<string> validationErrors = new List<string>();
+    private bool showServiceModal { get; set; } = false;
+    private List<UserWorkingActivityDto> data { get; set; }
+    private List<UserActivityMasterDto> workingActivity { get; set; } = new();
+    private string errorMessage = string.Empty;
+    @inject IUserDesignationService userDesignationService;
+    private void getUserWorkingActivity()
+    {
+        // Ensure registerModel and UserDesignation are initialized
+        Model ??= new RegisterModel();
+        Model.UserDesignation ??= new List<UserDesignation>();
+
+        data = Model.UserDesignation
+            .Where(d => d != null && !string.IsNullOrEmpty(d.Designation))
+            .Select(d => new UserWorkingActivityDto
+                {
+                    WorkingActivityId = 0,
+                    WorkingActivityName = d.Designation
+                })
+            .ToList();
+
+        showServiceModal = true;
+    }
+
+    private void HandleSelectedMaster(List<UserActivityMasterDto> model)
+    {
+        try
+        {
+            // Safely initialize collections
+            workingActivity = model ?? new List<UserActivityMasterDto>();
+            Model ??= new RegisterModel();
+            Model.UserDesignation ??= new List<UserDesignation>();
+
+            foreach (var activity in workingActivity)
+            {
+
+                if (activity == null || string.IsNullOrWhiteSpace(activity.MasterActivityName))
+                    continue;
+
+
+                bool alreadyExists = Model.UserDesignation.Any(s =>
+                    s.Designation?.Equals(activity.MasterActivityName, StringComparison.OrdinalIgnoreCase) == true);
+
+                if (!alreadyExists)
+                {
+                    var newActivity = new UserDesignation
+                        {
+                            DesignationId = 0, // If new
+                            Designation = activity.MasterActivityName
+                        };
+
+                    Model.UserDesignation.Add(newActivity);
+                }
+            }
+
+            // Log for debugging
+            // string json = JsonSerializer.Serialize(product.UserWorkingActivity, new JsonSerializerOptions
+            //     {
+            //         WriteIndented = true
+            //     });
+            // Console.WriteLine($"HandleSelectedMaster: {json}");
+            validationErrors.Clear();
+            statusMessage = "";
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in HandleSelectedMaster: {ex}");
+            errorMessage = "Failed to add activities. Please try again.";
+        }
+    }
+    private List<int> activityDeleteList = new List<int>();
+
+    private async Task RemoveActivity(UserDesignation service)
+    {
+        if (Model!.UserDesignation == null && service.DesignationId != 0 || service.DesignationId == null) return;
+        if (!activityDeleteList.Contains(service.DesignationId))
+        {
+            activityDeleteList.Add(service.DesignationId);
+        }
+        Model.UserDesignation.Remove(service);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteActivityAsync()
+    {
+        try
+        {
+            if (activityDeleteList?.Count > 0 && Model.UserDesignation != null)
+            {
+                foreach (var Id in activityDeleteList)
+                {
+                    await userDesignationService.Delete(Id);
+                }
+                activityDeleteList.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting others ervices: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OfficeProject.Models.Entities
 {
-    public class WorkRecords
+    public class WorkingRecords
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,11 +18,17 @@ namespace OfficeProject.Models.Entities
         [DataType(DataType.Date)]
         public DateTime WorkDate { get; set; }
 
-        public int Post { get; set; }
+        public string ProjectName {  get; set; }
 
-        public int Reels { get; set; }
+        public string ServiceName { get; set; }
 
-        public int Ads { get; set; }
+        public int SharedPost { get; set; }
+
+        public int CreatedReels { get; set; }
+
+        public int UsedAdsBudget { get; set; }
+
+        public string Task { get; set; }
 
         [MaxLength(50)]
         public string Status { get; set; }
@@ -55,6 +61,6 @@ namespace OfficeProject.Models.Entities
         [JsonIgnore]
         public Services Services { get; set; } = null!;
 
-        public List<WorkRecordsSeoDetails>? WorkRecordsSeoDetails { get; set; }
+        public List<SeoTaskDetails>? SeoTaskDetails { get; set; }
     }
 }

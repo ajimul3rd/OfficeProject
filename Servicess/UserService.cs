@@ -1,4 +1,7 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text.Json;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using OfficeProject.Data;
@@ -24,13 +27,57 @@ namespace OfficeProject.Servicess
 
         // ✅ Get All Users and UsersDTO
 
+        //public async Task<List<UserDTO>> GetAllUsersDTOAsync()
+        //{
+        //    using (var context = dbContextFactory.CreateDbContext())
+        //    {
+        //        return Mapper.Map<List<UserDTO>>(await context.Users.ToListAsync());
+        //    }
+        //}
+
+        //public async Task<List<UserDTO>> GetAllUsersDTOAsync()
+        //{
+        //    using (var context = dbContextFactory.CreateDbContext())
+        //    {
+        //        return Mapper.Map<List<UserDTO>>(await context.Users
+        //            .Include(u => u.UserDesignation) // Include UserDesignation
+        //            .ToListAsync());
+        //    }
+        //}
+
         public async Task<List<UserDTO>> GetAllUsersDTOAsync()
         {
             using (var context = dbContextFactory.CreateDbContext())
             {
-                return Mapper.Map<List<UserDTO>>(await context.Users.ToListAsync());
+                var users = await context.Users
+                    .Include(u => u.UserDesignation)
+                    .ToListAsync();
+
+                var userDtos = users.Select(user => new UserDTO
+                {
+                    UserId = user.UserId,
+                    UserName = user.UserName,
+                    UserEmail = user.UserEmail,
+                    UserContact = user.UserContact,
+                    Role = user.Role,
+                    IsActive = user.IsActive,
+                    CompanyName = user.CompanyName,
+                    Address = user.Address,
+                    CreatedAt = (DateTime)user.CreatedAt!,
+                    JoiningDate = user.JoiningDate,
+                    UserDesignation = user.UserDesignation?.Select(d => new UserDesignation
+                    {
+                        DesignationId = d.DesignationId,
+                        User_Id = d.User_Id,
+                        Designation = d.Designation
+                    }).ToList() ?? new List<UserDesignation>(),
+                    Clients = null // Add mapping for Clients if needed
+                }).ToList();
+
+                return userDtos;
             }
         }
+
 
         public async Task<List<Users>> GetAllUsersAsync()
         {
@@ -41,14 +88,48 @@ namespace OfficeProject.Servicess
         }
 
         // ✅ Get UserDTO By Id 
+        //public async Task<UserDTO?> GetUserDTOById(int id)
+        //{
+        //    using (var context = dbContextFactory.CreateDbContext())
+        //    {
+        //        var user = await context.Users.FindAsync(id); // Pass the 'id' parameter
+        //        return user == null ? null : Mapper.Map<UserDTO>(user);
+        //    }
+        //}
         public async Task<UserDTO?> GetUserDTOById(int id)
         {
             using (var context = dbContextFactory.CreateDbContext())
             {
-                var user = await context.Users.FindAsync(id); // Pass the 'id' parameter
-                return user == null ? null : Mapper.Map<UserDTO>(user);
+                var user = await context.Users
+                    .Include(u => u.UserDesignation)
+                    .FirstOrDefaultAsync(u => u.UserId == id);
+
+                if (user == null)
+                    return null;
+
+                return new UserDTO
+                {
+                    UserId = user.UserId,
+                    UserName = user.UserName,
+                    UserEmail = user.UserEmail,
+                    UserContact = user.UserContact,
+                    Role = user.Role,
+                    IsActive = user.IsActive,
+                    CompanyName = user.CompanyName,
+                    Address = user.Address,
+                    CreatedAt = user.CreatedAt ?? DateTime.UtcNow,
+                    JoiningDate = user.JoiningDate,
+                    UserDesignation = user.UserDesignation?.Select(d => new UserDesignation
+                    {
+                        DesignationId = d.DesignationId,
+                        User_Id = d.User_Id,
+                        Designation = d.Designation
+                    }).ToList() ?? new List<UserDesignation>(),
+                    Clients = null // Add mapping for Clients if needed
+                };
             }
         }
+
 
         // ✅ Get User By Id 
         public async Task<Users?> GetUserById(int id)
@@ -100,37 +181,142 @@ namespace OfficeProject.Servicess
         }
 
         // ✅ Update User
+
+
+        //public async Task UpdateUserAsync(UserDTO user)
+        //{
+
+
+
+        //    using (var context = dbContextFactory.CreateDbContext())
+        //    {
+
+        //        var existingUser = await context.Users.FindAsync(user.UserId);
+        //        if (existingUser != null)
+        //        {
+        //            Console.WriteLine("activity:");
+        //            // Update all non-sensitive fields
+        //            existingUser.UserName = user.UserName;
+        //            existingUser.UserEmail = user.UserEmail;
+        //            existingUser.UserContact = user.UserContact;
+        //            existingUser.Role = user.Role;
+        //            existingUser.IsActive = user.IsActive;
+        //            existingUser.CompanyName = user.CompanyName;
+        //            existingUser.Address = user.Address;
+        //            existingUser.JoiningDate = user.JoiningDate;
+        //            await context.SaveChangesAsync();
+
+        //            string json = JsonSerializer.Serialize(user, new JsonSerializerOptions
+        //            {
+        //                WriteIndented = true
+        //            });
+        //            Console.WriteLine($"existingUser.UserDesignation: {json}");
+
+        //            foreach (var activity in user.UserDesignation ?? [])
+        //            {
+
+        //                try
+        //                {
+        //                    var existingActivity = await context.UserDesignation
+        //                        .FirstOrDefaultAsync(x => x.DesignationId == activity.DesignationId);
+
+        //                    if (existingActivity == null)
+        //                    {
+
+        //                        var newActivity = new UserDesignation
+        //                        {
+        //                            DesignationId = existingUser.UserId, // Now we have a valid ProductId
+        //                            Designation = activity.Designation
+        //                        };
+        //                        context.UserDesignation.Add(newActivity);
+        //                    }
+        //                    else
+        //                    {
+        //                        existingActivity.Designation = activity.Designation;
+        //                        context.UserDesignation.Update(existingActivity);
+        //                    }
+
+        //                    await context.SaveChangesAsync();
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    Console.WriteLine($"Error saving UserDesignation: {ex.Message}");
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+        // ✅ UpdateRefreshToken
         public async Task UpdateUserAsync(UserDTO user)
         {
             using (var context = dbContextFactory.CreateDbContext())
             {
-                var existingUser = await context.Users.FindAsync(user.UserId);
-                if (existingUser != null)
+                // Load the user along with their existing designations (if needed)
+                var existingUser = await context.Users
+                    .Include(u => u.UserDesignation) // Include if you want to check existing designations
+                    .FirstOrDefaultAsync(u => u.UserId == user.UserId);
+
+                if (existingUser == null)
                 {
-                    // Update all non-sensitive fields
-                    existingUser.UserName = user.UserName;
-                    existingUser.UserEmail = user.UserEmail;
-                    existingUser.UserContact = user.UserContact;
-                    existingUser.Role = user.Role;
-                    existingUser.IsActive = user.IsActive;
-                    existingUser.CompanyName = user.CompanyName;
-                    existingUser.Address = user.Address;
-                    existingUser.Designation = user.Designation;
-                    existingUser.JoiningDate = user.JoiningDate;
+                    throw new Exception("User not found");
+                }
 
-                    // Never update these fields directly from DTO:
-                    // - UserPassword (handle separately with hashing)
-                    // - RefreshToken (managed by auth system)
-                    // - RefreshTokenExpiry (managed by auth system)
-                    // - CreatedAt (should never change)
-                    // - Clients (navigation property, update separately if needed)
+                // Update basic user details
+                existingUser.UserName = user.UserName;
+                existingUser.UserEmail = user.UserEmail;
+                existingUser.UserContact = user.UserContact;
+                existingUser.Role = user.Role;
+                existingUser.IsActive = user.IsActive;
+                existingUser.CompanyName = user.CompanyName;
+                existingUser.Address = user.Address;
+                existingUser.JoiningDate = user.JoiningDate;
 
-                    await context.SaveChangesAsync();
+                await context.SaveChangesAsync(); // Save user changes first
+
+                // Process UserDesignation updates
+                if (user.UserDesignation != null)
+                {
+                    foreach (var activity in user.UserDesignation)
+                    {
+                        try
+                        {
+                            // If DesignationId is 0 or null → INSERT new record
+                            if (activity.DesignationId == 0 || activity.DesignationId == null)
+                            {
+                                var newDesignation = new UserDesignation
+                                {
+                                    User_Id = existingUser.UserId, // Link to the user
+                                    Designation = activity.Designation
+                                };
+                                context.UserDesignation.Add(newDesignation);
+                            }
+                            else // If DesignationId has a value → UPDATE existing record
+                            {
+                                var existingDesignation = await context.UserDesignation
+                                    .FirstOrDefaultAsync(x => x.DesignationId == activity.DesignationId);
+
+                                if (existingDesignation != null)
+                                {
+                                    existingDesignation.Designation = activity.Designation;
+                                    context.UserDesignation.Update(existingDesignation);
+                                }
+                                else
+                                {
+                                    // Handle case where DesignationId was provided but not found
+                                    Console.WriteLine($"Designation with ID {activity.DesignationId} not found.");
+                                }
+                            }
+
+                            await context.SaveChangesAsync(); // Save changes per iteration
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error saving UserDesignation: {ex.Message}");
+                        }
+                    }
                 }
             }
         }
-       
-        // ✅ UpdateRefreshToken
         public async Task UpdateRefreshToken(int userId, string refreshToken)
         {
             using var context = dbContextFactory.CreateDbContext();
@@ -160,7 +346,19 @@ namespace OfficeProject.Servicess
         {
             using (var context = dbContextFactory.CreateDbContext())
             {
-                // Map DTO to Entity
+                var Designation = new List<UserDesignation>();
+
+                foreach (var data in userWithClientsDto.UserDesignationDto)
+                {
+                    Designation.Add(new UserDesignation
+                    {
+                        DesignationId = (int)data.DesignationId!,
+                        Designation = data.Designation
+                    });
+                }
+
+
+                // Map DTO to Entity 
                 var user = new Users
                 {
                     UserName = userWithClientsDto.UserName,
@@ -168,7 +366,8 @@ namespace OfficeProject.Servicess
                     UserContact = userWithClientsDto.UserContact,
                     CompanyName = userWithClientsDto.CompanyName,
                     Address = userWithClientsDto.Address,
-                    Designation = userWithClientsDto.Designation,
+                    //Designation = userWithClientsDto.Designation,
+                    UserDesignation= Designation,
                     JoiningDate = userWithClientsDto.JoiningDate,
                     Role = userWithClientsDto.Role,
                     Clients = userWithClientsDto.Clients.Select(c => new Clients

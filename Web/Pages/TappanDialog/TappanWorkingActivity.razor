@@ -1,4 +1,5 @@
 ﻿@using OfficeProject.Web.Pages.UserActivity
+@using OfficeProject.Models.DTO
 
 @if (IsVisible)
 {
@@ -28,7 +29,7 @@
 
                     <div class="tab-content mt-3">
                         <div class="@GetTabPaneClass("servicelist")">
-                            <ServiceListModel />
+                            <ServiceListModel projects="@projects" />
                         </div>
                         <div class="@GetTabPaneClass("workrecord")">
                             <AddWorkingActivity />
@@ -45,8 +46,12 @@
 }
 
 @code {
+
     [Parameter] public bool IsVisible { get; set; }
+
     [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter] public ProjectsDTO projects { get; set; }
 
     private string activeTab = "servicelist";
 
@@ -60,4 +65,11 @@
         IsVisible = false;
         await IsVisibleChanged.InvokeAsync(false);
     }
+    
+    protected override void OnParametersSet()
+    {
+
+        base.OnParametersSet();
+    }
+
 }

@@ -25,7 +25,8 @@ namespace OfficeProject.Models.Entities
         public string? CompanyName { get; set; }
         public string? Address { get; set; }
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-        public string? Designation { get; set; }
+
+        public List<UserDesignation>? UserDesignation { get; set; }
         public DateTime? JoiningDate { get; set; }
 
         // Navigation

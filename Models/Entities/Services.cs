@@ -62,7 +62,7 @@ namespace OfficeProject.Models.Entities
         public Products Products { get; set; } = null!;
         public List<SeoServiceDetails>? SeoServiceDetails { get; set; }
         public List<OthersService>? OthersServices { get; set; }
-        public List<WorkRecords>? WorkRecords { get; set; }
+        public List<WorkingRecords>? WorkRecords { get; set; }
         public List<WebDevelopment>? WebDevelopment { get; set; }
 
         // Navigation properties

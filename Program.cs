@@ -21,9 +21,9 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-
         // Add enum converter to accept string names case-insensitively
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: true));
+        //options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
     });
 
 // Razor Components
@@ -104,7 +104,7 @@ builder.Services.AddScoped<IProjectsService, ProjectsService>();
 //builder.Services.AddScoped<IDesignPhaseServices, DesignPhaseServices>();
 //builder.Services.AddScoped<IDevelopmentPhaseServices, DevelopmentPhaseServices>();
 builder.Services.AddScoped<IUserWorkingActivityServices, UserWorkingActivityServices>();
-
+builder.Services.AddScoped<IUserDesignationService, UserDesignationService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
 builder.Services.AddScoped<IUserActivityMasterService, UserActivityMasterService>();
 builder.Services.AddScoped<IUserRolesService, UserRolesService>();

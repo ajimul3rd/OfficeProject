@@ -12,144 +12,154 @@
 <!-- Add Button (Only visible when form is hidden) -->
 @if (!showForm)
 {
-        <div class="mb-3">
-            <button class="btn btn-success" @onclick="ToggleForm">Add Product</button>
-        </div>
+    <div class="mb-3">
+        <button class="btn btn-success" @onclick="ToggleForm">Add Product</button>
+    </div>
 }
 <!-- Form Section -->
 @if (showForm)
 {
-        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" role="dialog">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">@((product.ProductsId.HasValue ? "Edit Product" : "Add New Product"))</h5>
-                        <button type="button" class="btn-close" @onclick="CancelForm" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@((product.ProductsId.HasValue ? "Edit Product" : "Add New Product"))</h5>
+                    <button type="button" class="btn-close" @onclick="CancelForm" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
-                                <div class="alert alert-danger">@errorMessage</div>
+                        <div class="alert alert-danger">@errorMessage</div>
                     }
-                        <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
-                            <ObjectGraphDataAnnotationsValidator />
+                    <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+                        <ObjectGraphDataAnnotationsValidator />
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label>Alias Name:</label>
-                                    <InputText @bind-Value="product.ProductsAlias" class="form-control"
-                                               @onblur="@(() => ValidateField(product, nameof(product.ProductsAlias)))" />
-                                    <ValidationMessage For="@(() => product.ProductsAlias)" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Product Name:</label>
-                                    <InputText @bind-Value="product.ProductsName" class="form-control"
-                                               @onblur="@(() => ValidateField(product, nameof(product.ProductsName)))" />
-                                    <ValidationMessage For="@(() => product.ProductsName)" />
-                                </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Alias Name:</label>
+                                <InputText @bind-Value="product.ProductsAlias" class="form-control"
+                                @onblur="@(() => ValidateField(product, nameof(product.ProductsAlias)))" />
+                                <ValidationMessage For="@(() => product.ProductsAlias)" />
                             </div>
-
-                            <div class="form-group mt-3">
-                                <label>Description:</label>
-                                <InputTextArea @bind-Value="product.ProductsDescription" class="form-control"
-                                               @onblur="@(() => ValidateField(product, nameof(product.ProductsDescription)))" />
-                                <ValidationMessage For="@(() => product.ProductsDescription)" />
+                            <div class="col-md-6">
+                                <label>Product Name:</label>
+                                <InputText @bind-Value="product.ProductsName" class="form-control"
+                                @onblur="@(() => ValidateField(product, nameof(product.ProductsName)))" />
+                                <ValidationMessage For="@(() => product.ProductsName)" />
                             </div>
+                        </div>
 
-                            <div class="row mt-3">
-                                <div class="col-md-6">
-                                    <label>Selling Price:</label>
-                                    <InputNumber @bind-Value="product.ProductsSellingPrice" class="form-control"
-                                                 @oninput="@(() => editContext?.Validate())" />
-                                    <ValidationMessage For="@(() => product.ProductsSellingPrice)" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Costing Price:</label>
-                                    <InputNumber @bind-Value="product.ProductsCostingPrice" class="form-control"
-                                                 @oninput="@(() => editContext?.Validate())" />
-                                    <ValidationMessage For="@(() => product.ProductsCostingPrice)" />
-                                </div>
+                        <div class="form-group mt-3">
+                            <label>Description:</label>
+                            <InputTextArea @bind-Value="product.ProductsDescription" class="form-control"
+                            @onblur="@(() => ValidateField(product, nameof(product.ProductsDescription)))" />
+                            <ValidationMessage For="@(() => product.ProductsDescription)" />
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label>Selling Price:</label>
+                                <InputNumber @bind-Value="product.ProductsSellingPrice" class="form-control"
+                                @oninput="@(() => editContext?.Validate())" />
+                                <ValidationMessage For="@(() => product.ProductsSellingPrice)" />
                             </div>
-
-                            <div class="row mt-3">
-                                <div class="col-md-6">
-                                    <label>Active:</label><br />
-                                    <InputCheckbox class="form-check-input" @bind-Value="product.ProductsStatus" />
-                                </div>
+                            <div class="col-md-6">
+                                <label>Costing Price:</label>
+                                <InputNumber @bind-Value="product.ProductsCostingPrice" class="form-control"
+                                @oninput="@(() => editContext?.Validate())" />
+                                <ValidationMessage For="@(() => product.ProductsCostingPrice)" />
                             </div>
-                            @* <div class="dialog-backdrop" style="position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); z-index: 1055;"> *@
-                            @*     <div class="dialog-content" style="z-index: 1060; position: relative;"> *@
-                            @*         <!-- Your dialog content --> *@
-                            @*     </div> *@
-                            @* </div> *@
+                        </div>
 
-                            <div class="col-12">
-                                <div class="card mb-4 border-0 shadow-sm">
-                                    <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-0"><i class="fas fa-cogs me-2"></i>Select User Working Activity</h6>
-                                        <span class="badge bg-primary">
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label>Active:</label><br />
+                                <InputCheckbox class="form-check-input" @bind-Value="product.ProductsStatus" />
+                            </div>
+                        </div>
+
+
+                        <div class="col-12">
+                            <div class="card mb-4 border-0 shadow-sm">
+                                <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0"><i class="fas fa-cogs me-2"></i>Select User Working Activity</h6>
+                                    <span class="badge bg-primary">
                                         @(product.UserWorkingActivity?.Count ?? 0) @(product.UserWorkingActivity?.Count == 1 ? "activity" : "activitices")
-                                        </span>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label class="form-label fw-semibold d-block mb-2">
-                                                <i class="fas fa-box-open me-2"></i>Select Activities
-                                            </label>
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    @* Custom Validation *@
+                                    @if (validationErrors.Any())
+                                    {
+                                        <div class="alert alert-danger">
+                                            <ul class="mb-0">
+                                                @foreach (var error in validationErrors)
+                                                {
+                                                    <li>@error</li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
+                                    <ValidationMessage For="@(() => product.UserWorkingActivity)" class="text-danger mb-2" />
 
-                                            <div class="input-group">
-                                                <div class="form-control p-2 @(product.UserWorkingActivity == null || !product.UserWorkingActivity.Any() ? "border-danger" : "border-primary")"
-                                                     style="min-height: 42px; cursor: pointer;"
-                                                     @onclick="getUserWorkingActivity">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold d-block mb-2">
+                                            <i class="fas fa-box-open me-2"></i>Select Activities
+                                        </label>
+
+                                        <div class="input-group">
+                                            <div class="form-control p-2 @(product.UserWorkingActivity == null || !product.UserWorkingActivity.Any() ? "border-danger" : "border-primary")"
+                                            style="min-height: 42px; cursor: pointer;"
+                                            @onclick="getUserWorkingActivity">
 
                                                 @if (product.UserWorkingActivity == null || !product.UserWorkingActivity.Any())
                                                 {
-                                                            <div class="text-muted d-flex align-items-center h-100">
-                                                                <i class="fas fa-search me-2"></i>
-                                                                <span>Click to browse user working activity</span>
-                                                            </div>
+                                                    <div class="text-muted d-flex align-items-center h-100">
+                                                        <i class="fas fa-search me-2"></i>
+                                                        <span>Click to browse user working activity</span>
+                                                    </div>
                                                 }
                                                 else
                                                 {
-                                                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                                    <div class="d-flex flex-wrap gap-2 align-items-center">
                                                         @for (int i = 0; i < product.UserWorkingActivity?.Count; i++)
                                                         {
                                                             var a = product.UserWorkingActivity[i];
-                                                                        <span class="badge bg-primary rounded-pill d-flex align-items-center py-2 px-3">
+                                                            <span class="badge bg-primary rounded-pill d-flex align-items-center py-2 px-3">
                                                                 @a.WorkingActivityName
-                                                                            <button class="btn-close btn-close-white btn-sm ms-2 p-0"
-                                                                                    @onclick="@(async (e) => {await RemoveActivity(a);})"
+                                                                <button class="btn-close btn-close-white btn-sm ms-2 p-0"
+                                                                @onclick="@(async (e) => {await RemoveActivity(a);})"
                                                                 @onclick:stopPropagation
                                                                 @onclick:preventDefault
-                                                                                    aria-label="Remove"
-                                                                                    style="font-size: 0.6rem; opacity: 0.8;">
-                                                                            </button>
-                                                                        </span>
+                                                                aria-label="Remove"
+                                                                style="font-size: 0.6rem; opacity: 0.8;">
+                                                                </button>
+                                                            </span>
                                                         }
-                                                            </div>
+                                                    </div>
                                                 }
-                                                </div>
-
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer mt-4">
-                                <button type="submit" class="btn btn-primary">
+                        </div>
+                        <div class="modal-footer mt-4">
+                            <button type="submit" class="btn btn-primary">
                                 @(product.ProductsId.HasValue ? "Update" : "Save")
-                                </button>
-                                <button type="button" class="btn btn-secondary" @onclick="CancelForm">Cancel</button>
-                            </div>
-                        </EditForm>
-                    </div>
+                            </button>
+                            <button type="button" class="btn btn-secondary" @onclick="CancelForm">Cancel</button>
+                        </div>
+                    </EditForm>
                 </div>
             </div>
         </div>
+    </div>
 }
 <style>
     body.modal-open {
-        overflow: hidden;
+    overflow: hidden;
     }
 </style>
 
@@ -159,7 +169,7 @@
         <h5 class="mb-0">Product List</h5>
         <div class="d-flex">
             <input type="text" class="form-control me-2" placeholder="Search..." @bind="searchText"
-                   @bind:event="oninput" style="width: 200px;" />
+            @bind:event="oninput" style="width: 200px;" />
             <select class="form-select" @bind="selectedFilter" style="width: 150px;">
                 <option value="all">All Products</option>
                 <option value="active">Active</option>
@@ -170,131 +180,131 @@
     <div class="card-body">
         @if (tableData == null || !tableData.Any())
         {
-                <div class="alert alert-info">No products found</div>
+            <div class="alert alert-info">No products found</div>
         }
         else
         {
-                <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-                    <table class="table table-bordered">
-                        <thead class="table-info sticky-header">
-                            <tr>
-                                <th>Alias</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>C. Price</th>
-                                <th>S. Price</th>
-                                <th>Status</th>
-                                <th>Entry</th>
-                                <th class="d-none d-md-table-cell">Modified</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-bordered">
+                    <thead class="table-info sticky-header">
+                        <tr>
+                            <th>Alias</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>C. Price</th>
+                            <th>S. Price</th>
+                            <th>Status</th>
+                            <th>Entry</th>
+                            <th class="d-none d-md-table-cell">Modified</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         @foreach (var item in FilteredProducts)
                         {
-                                    <tr>
-                                        <td>@item.ProductsAlias</td>
-                                        <td>@item.ProductsName</td>
-                                        <td>
-                                            <span class="truncate-text" title="@item.ProductsDescription">
+                            <tr>
+                                <td>@item.ProductsAlias</td>
+                                <td>@item.ProductsName</td>
+                                <td>
+                                    <span class="truncate-text" title="@item.ProductsDescription">
                                         @item.ProductsDescription
-                                            </span>
-                                        </td>
-                                        <td>@item.ProductsCostingPrice.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
-                                        <td>@item.ProductsSellingPrice.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
-                                        <td>
-                                            <button class="btn btn-sm @(item.ProductsStatus ? "btn-success" : "btn-danger")"
-                                                    @onclick="() => ToggleProductStatus(item, !item.ProductsStatus)">
+                                    </span>
+                                </td>
+                                <td>@item.ProductsCostingPrice.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
+                                <td>@item.ProductsSellingPrice.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
+                                <td>
+                                    <button class="btn btn-sm @(item.ProductsStatus ? "btn-success" : "btn-danger")"
+                                    @onclick="() => ToggleProductStatus(item, !item.ProductsStatus)">
                                         @(item.ProductsStatus ? "Active" : "Inactive")
-                                            </button>
-                                        </td>
-                                        <td>@item.ProductsEntryDate?.ToString("yyyy-MM-dd")</td>
-                                        <td class="d-none d-md-table-cell">@item.ProductsModificationDate?.ToString("yyyy-MM-dd")</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary" @onclick="() => EditProduct(item)">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    </button>
+                                </td>
+                                <td>@item.ProductsEntryDate?.ToString("yyyy-MM-dd")</td>
+                                <td class="d-none d-md-table-cell">@item.ProductsModificationDate?.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @onclick="() => EditProduct(item)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
                         }
-                        </tbody>
-                    </table>
-                </div>
+                    </tbody>
+                </table>
+            </div>
 
         }
     </div>
 </div>
 @if (showServiceModal)
 {
-        <div class="activity-dialog-backdrop fade show"></div>
-        <div class="modal fade show d-block activity-dialog-modal" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
+    <div class="activity-dialog-backdrop fade show"></div>
+    <div class="modal fade show d-block activity-dialog-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
                 <DialogUserActivityMaster OnSelectedMaster="HandleSelectedMaster"
-                                               CallerSelectedData="@data"
-                                                   showModalChanged="@((value) => showServiceModal = value)"
-                                                   showModal="@showServiceModal" />
-                </div>
+                CallerSelectedData="@data"
+                showModalChanged="@((value) => showServiceModal = value)"
+                showModal="@showServiceModal" />
             </div>
         </div>
+    </div>
 }
 <style>
     .sticky-header th {
-        position: sticky;
-        top: 0;
-        background-color: #e9f4ff; /* or your header background */
-        z-index: 10;
+    position: sticky;
+    top: 0;
+    background-color: #e9f4ff; /* or your header background */
+    z-index: 10;
     }
 
     .truncate-text {
-        display: inline-block;
-        max-width: 200px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     }
 </style>
 
 <style>
     /* Main modal styling */
     .modal {
-        z-index: 1050;
+    z-index: 1050;
     }
 
     /* Activity dialog should appear above main form */
     .activity-dialog-modal {
-        z-index: 1060 !important;
+    z-index: 1060 !important;
     }
 
     /* Backdrop for activity dialog */
     .activity-dialog-backdrop {
-        z-index: 1055 !important;
-        background-color: rgba(0,0,0,0.5);
+    z-index: 1055 !important;
+    background-color: rgba(0,0,0,0.5);
     }
 
     body.modal-open {
-        overflow: hidden;
+    overflow: hidden;
     }
 
     .sticky-header th {
-        position: sticky;
-        top: 0;
-        background-color: #e9f4ff;
-        z-index: 10;
+    position: sticky;
+    top: 0;
+    background-color: #e9f4ff;
+    z-index: 10;
     }
 
     .truncate-text {
-        display: inline-block;
-        max-width: 200px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     }
 </style>
 
 @if (!string.IsNullOrEmpty(errorMessage))
 {
-        <div class="alert alert-danger">@errorMessage</div>
+    <div class="alert alert-danger">@errorMessage</div>
 }
 
 @code {
@@ -307,6 +317,8 @@
     private string selectedFilter = "all";
     private bool showForm = false;
     private string errorMessage = string.Empty;
+
+    public List<string> validationErrors = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -357,56 +369,127 @@
         );
 
 
+
     private async Task HandleValidSubmit()
     {
+        validationErrors.Clear(); // Clear previous errors
+        editContext?.MarkAsUnmodified();
+
         try
         {
-            // Log the result
-            string json = JsonSerializer.Serialize(product, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
-            Console.WriteLine($"HandleValidSubmit: {json}");
-            await DeleteActivityAsync();
-            var response = await ApiService.AddOrUpdateProductAsync(product);
-
-            if (response.IsSuccessStatusCode)
+            // Custom validation
+            if (product.UserWorkingActivity == null || !product.UserWorkingActivity.Any())
             {
-                await LoadProducts();
-                ResetForm();
-                showForm = false;
-                errorMessage = string.Empty; // Clear error on success
+                validationErrors.Add("At least one working activity must be assigned");
+                editContext.NotifyValidationStateChanged();
+                StateHasChanged();
             }
-            else
+
+            if (editContext?.Validate() == true && product.UserWorkingActivity != null && product.UserWorkingActivity.Any())
             {
-                var errorContent = await response.Content.ReadAsStringAsync();
+                await DeleteActivityAsync();
+                var response = await ApiService.AddOrUpdateProductAsync(product);
 
-                try
+                if (response.IsSuccessStatusCode)
                 {
-                    // Deserialize the response error (assuming backend returns { message: "..." })
-                    var error = JsonSerializer.Deserialize<Dictionary<string, string>>(errorContent);
-                    if (error != null && error.TryGetValue("message", out var msg))
-                    {
-                        errorMessage = msg;
-                    }
-                    else
-                    {
-                        errorMessage = "An unknown error occurred.";
-                    }
-                }
-                catch
-                {
-                    errorMessage = "An unexpected error occurred.";
-                }
+                    await LoadProducts();
+                    errorMessage = "Product added successfully!";
+                    ResetForm();
+                    showForm = false;
 
-                Console.WriteLine($"Error adding product: {errorMessage}");
+                    StateHasChanged(); // Show the message
+
+                    // Wait 5 seconds, then clear the message
+                    await Task.Delay(5000);
+                    errorMessage = string.Empty;
+                    StateHasChanged();
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    errorMessage = $"Error adding product: {errorContent}";
+
+                    StateHasChanged(); // Show error
+                    await Task.Delay(5000);
+                    errorMessage = string.Empty;
+                    StateHasChanged();
+                }
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Exception: {ex.Message}";
+            Console.WriteLine($"Exception when adding product: {ex.Message}");
         }
     }
+
+
+    // private async Task HandleValidSubmit()
+    // {
+    //     validationErrors.Clear(); Clear previous errors
+    //     editContext?.MarkAsUnmodified();
+
+    //     Log the result
+    //     string json = JsonSerializer.Serialize(product, new JsonSerializerOptions
+    //         {
+    //             WriteIndented = true
+    //         });
+    //     Console.WriteLine($"HandleValidSubmit: {json}");
+
+    //     if (product.UserWorkingActivity == null || !product.UserWorkingActivity.Any())
+    //     {
+    //         validationErrors.Add("At least one working activity must be assigned");
+    //         editContext.NotifyValidationStateChanged();
+    //         StateHasChanged();
+    //     }
+
+    //     if (editContext?.Validate() == true && product.UserWorkingActivity != null || product.UserWorkingActivity.Any())
+    //     {
+
+
+    //         try
+    //         {
+    //             await DeleteActivityAsync();
+    //             var response = await ApiService.AddOrUpdateProductAsync(product);
+
+    //             if (response.IsSuccessStatusCode)
+    //             {
+    //                 await LoadProducts();
+    //                 ResetForm();
+    //                 showForm = false;
+    //                 errorMessage = string.Empty; Clear error on success
+    //             }
+    //             else
+    //             {
+    //                 var errorContent = await response.Content.ReadAsStringAsync();
+
+    //                 try
+    //                 {
+    //                     Deserialize the response error (assuming backend returns { message: "..." })
+    //                     var error = JsonSerializer.Deserialize<Dictionary<string, string>>(errorContent);
+    //                     if (error != null && error.TryGetValue("message", out var msg))
+    //                     {
+    //                         errorMessage = msg;
+    //                     }
+    //                     else
+    //                     {
+    //                         errorMessage = "An unknown error occurred.";
+    //                     }
+    //                 }
+    //                 catch
+    //                 {
+    //                     errorMessage = "An unexpected error occurred.";
+    //                 }
+
+    //                 Console.WriteLine($"Error adding product: {errorMessage}");
+    //             }
+    //         }
+
+    //         catch (Exception ex)
+    //         {
+    //             errorMessage = $"Exception: {ex.Message}";
+    //         }
+    //     }
+    // }
 
     private void EditProduct(ProductsDTO productToEdit)
     {
