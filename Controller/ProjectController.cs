@@ -29,6 +29,8 @@ namespace OfficeProject.Controllers
             return Ok(project);
         }
 
+
+
         [HttpGet("user")]
         //[Authorize]
         public async Task<ActionResult<List<ProjectsDTO>>> GetProjectPerUser()
@@ -36,6 +38,25 @@ namespace OfficeProject.Controllers
             try
             {
                 var project = await _projectsService.GetProjectPerUserAsync();
+                return Ok(project);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving clients", error = ex.Message });
+            }
+        }
+
+        [HttpGet("user/work")]
+        //[Authorize]
+        public async Task<ActionResult<List<ProjectsDTO>>> GetWorkingRecordPerUserAsync()
+        {
+            try
+            {
+                var project = await _projectsService.GetWorkingRecordPerUserAsync();
                 return Ok(project);
             }
             catch (UnauthorizedAccessException ex)
@@ -92,6 +113,8 @@ namespace OfficeProject.Controllers
             }
         }
 
+
+
         [HttpPost("add")]
         [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> AddProjectAsync([FromBody] ProjectsDTO projectDto)
@@ -120,6 +143,8 @@ namespace OfficeProject.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
 
         [HttpPost("save-or-update")]
         [Authorize(Policy = "AdminOrManager")]

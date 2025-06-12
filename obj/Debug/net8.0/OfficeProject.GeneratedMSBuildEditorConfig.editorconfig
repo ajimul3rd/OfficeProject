@@ -132,10 +132,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFJlZGlyZWN0VG9Mb2dpbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/.Net Project/OfficeProject/Web/Pages/TappanDialog/TappanSeoOthServicess.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRhcHBhbkRpYWxvZ1xUYXBwYW5TZW9PdGhTZXJ2aWNlc3MucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
 [E:/.Net Project/OfficeProject/Web/Pages/TappanDialog/TappanWorkingActivity.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRhcHBhbkRpYWxvZ1xUYXBwYW5Xb3JraW5nQWN0aXZpdHkucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -152,24 +148,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eU1hc3Rlckxpc3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/.Net Project/OfficeProject/Web/Pages/UserActivity/AddWorkingActivity.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxBZGRXb3JraW5nQWN0aXZpdHkucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/UserActivity/OthersServicesListModel.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxPdGhlcnNTZXJ2aWNlc0xpc3RNb2RlbC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/UserActivity/SeoDetailListModel.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxTZW9EZXRhaWxMaXN0TW9kZWwucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
 [E:/.Net Project/OfficeProject/Web/Pages/UserActivity/ServiceListModel.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxTZXJ2aWNlTGlzdE1vZGVsLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/.Net Project/OfficeProject/Web/Pages/UserActivity/UserActivity.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxVc2VyQWN0aXZpdHkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/UserActivity/UserWorkRecord.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJBY3Rpdml0eVxVc2VyV29ya1JlY29yZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/.Net Project/OfficeProject/Web/Pages/UserList.razor]

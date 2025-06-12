@@ -1,5 +1,7 @@
 ﻿@using OfficeProject.Models.DTO
+@using OfficeProject.Web.Pages.DialogModel
 @using OfficeProject.Web.Pages.TappanDialog
+@using System.ComponentModel.DataAnnotations
 
 <h4 class="mt-3">Services Overview</h4>
 
@@ -31,7 +33,7 @@
                         <td>@service.DeadLine.ToString("d")</td>
                         <td>
                             <button class="btn btn-sm btn-primary"
-                            @onclick="() => AddWorkRecord()">
+                                    @onclick="() => AddWorkRecord(service)">
                                 <i class="fas fa-plus"></i> Add Work
                             </button>
                         </td>
@@ -46,12 +48,27 @@ else
     <p>No services found.</p>
 }
 
-<TappanSeoOthServicess IsVisible="@ShowActivityDialog" IsVisibleChanged="@((bool val) => ShowActivityDialog = val)" />
+<DialogAddWorkingRecord 
+    IsVisible="@IsVisible"
+    WorkRecord="@CurrentWorkRecord"
+    OnSubmitSignal="@HandleChildSubmit"
+    OnCancel="@OnDialogCancel" />
+
+
 
 @code {
+
+    private bool IsVisible { get; set; } = false;
+    private WorkingRecordsDto CurrentWorkRecord { get; set; } = new();
     private List<ServicesDTO> Services = new();
     private bool ShowActivityDialog = false;
     private ServicesDTO? SelectedService;
+
+
+    [Parameter]
+    public EventCallback<bool> signal { get; set; }
+
+    public int ServiceId { get; set; }
 
     [Parameter] public ProjectsDTO projects { get; set; }
 
@@ -69,6 +86,11 @@ else
         base.OnParametersSet();
     }
 
+    private async Task HandleChildSubmit(bool isSuccess)
+    {
+        await signal.InvokeAsync(isSuccess);
+    }
+
     private void OpenDialog(ServicesDTO services)
     {
         SelectedService = services;
@@ -81,46 +103,27 @@ else
         SelectedService = null;
     }
 
-    private void AddWorkRecord()
+
+
+    private void AddWorkRecord(ServicesDTO service)
     {
-        if (SelectedService != null)
-        {
-            // Your logic here
-            Console.WriteLine($"Adding work record for: {SelectedService.ServiceName}");
-        }
+        CurrentWorkRecord = new WorkingRecordsDto
+            {
+                ServiceId = service?.ServiceId ?? 0,
+                ServiceName = service.ServiceName
+            };
+        IsVisible = true;
     }
+
+    private void OnDialogSubmit(WorkingRecordsDto record)
+    {
+        // save or process record
+        IsVisible = false;
+    }
+
+    private void OnDialogCancel()
+    {
+        IsVisible = false;
+    }
+
 }
-
-@* @code { *@
-@*     private List<ServicesDTO> Services = new(); *@
-@*     private bool ShowActivityDialog = false; *@
-
-@*     [Parameter] public ProjectsDTO projects { get; set; } *@
-
-
-@*     protected override void OnInitialized() *@
-@*     { *@
-@*         Services ??= new List<ServicesDTO>(); *@
-        
-
-
-@*     } *@
-@*     protected override void OnParametersSet() *@
-@*     { *@
-@*         if (projects.Services != null) *@
-@*         { *@
-@*             Services = projects.Services; *@
-@*         } *@
-@*         base.OnParametersSet(); *@
-@*     } *@
-@*     private void OpenDialog(ServicesDTO services) *@
-@*     { *@
-@*         ShowActivityDialog = true; *@
-@*     } *@
-@*     private void AddWorkRecord() *@
-@*     { *@
-      
-
-@*     } *@
-
-@* } *@

@@ -5,20 +5,20 @@ using OfficeProject.Models.Entities;
 
 namespace OfficeProject.Models.DTO
 {
-    public class WorkRecordsSeoDetailsDTO
+    public class SeoTaskDetailsDto
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int WorkRecordsSeoId { get; set; }
+        public int? SeoTaskId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Record Id Not Found")]
         public int WorkRecordId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "KeyWord Not Found")]
         public string KeyWord { get; set; }
 
-        [Required]
-        public int Rank { get; set; }
+        [Required(ErrorMessage = "Current Rank is Requird")]
+        public int CurrentRank { get; set; }
 
         public string? Note { get; set; }
 

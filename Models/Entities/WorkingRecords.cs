@@ -18,8 +18,6 @@ namespace OfficeProject.Models.Entities
         [DataType(DataType.Date)]
         public DateTime WorkDate { get; set; }
 
-        public string ProjectName {  get; set; }
-
         public string ServiceName { get; set; }
 
         public int SharedPost { get; set; }

@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using OfficeProject.Models.Entities;
+using System.Text.Json.Serialization;
 
 namespace OfficeProject.Models.DTO
 {
-    public class WorkingRecordsDTO
+    public class WorkingRecordsDto
     {
         public int? WorkRecordId { get; set; }
 
@@ -13,11 +15,15 @@ namespace OfficeProject.Models.DTO
         [DataType(DataType.Date)]
         public DateTime WorkDate { get; set; }
 
-        public int Post { get; set; }
+        public string ServiceName { get; set; }
 
-        public int Reels { get; set; }
+        public int SharedPost { get; set; }
 
-        public int Ads { get; set; }
+        public int CreatedReels { get; set; }
+
+        public int UsedAdsBudget { get; set; }
+
+        public string Task { get; set; }
 
         [MaxLength(50)]
         public string Status { get; set; }
@@ -48,7 +54,11 @@ namespace OfficeProject.Models.DTO
 
         // Optionally include child DTOs if needed
 
+        [JsonIgnore]
+        public Services Services { get; set; } = null!;
+
         [ValidateComplexType]
-        public List<WorkRecordsSeoDetailsDTO>? WorkRecordsSeoDetails { get; set; }
+        public List<SeoTaskDetailsDto>? SeoTaskDetailsDto { get; set; }
+
     }
 }

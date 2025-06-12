@@ -68,7 +68,7 @@ else
 IsVisible="@ShowDialog" 
 projects="@data"
 IsVisibleChanged="@((bool val) => ShowDialog = val)"
-></TappanWorkingActivity>
+/>
 
 
 
@@ -81,10 +81,7 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)"
 @code {
     // dialog code
     private bool ShowDialog = false;
-    private async Task HandleWorkRecordSubmit(DialogAddWorkingRecord.WorkRecordModel model)
-    {
-        Console.WriteLine($"Submitted record: ServiceId={model.ServiceId}, SEO Count={model.WorkRecordsSeoDetails?.Count}");
-    }
+
     private Task CloseDialog()
     {
         Console.WriteLine("Dialog closed without submit");
@@ -132,17 +129,4 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)"
         }
     }
 
-    // Add this class if not already defined
-    public class WorkRecordModel
-    {
-        public int WorkRecordId { get; set; }
-        public int ServiceId { get; set; }
-        public DateTime WorkDate { get; set; }
-        public int Post { get; set; }
-        public int Reels { get; set; }
-        public int Ads { get; set; }
-        public string Status { get; set; } = "Completed";
-        public string remarks { get; set; }
-        public List<WorkRecordsSeoDetailModel> WorkRecordsSeoDetails { get; set; }
-    }
 }

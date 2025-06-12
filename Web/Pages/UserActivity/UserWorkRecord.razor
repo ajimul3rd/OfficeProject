@@ -1,0 +1,119 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using OfficeProject.Models.DTO
+@inject ApiService api
+@inject NavigationManager Navigation
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Work Record List</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead class="table-info">
+                <tr>
+                    <th>#</th>
+                    <th>SID</th>
+                    <th>Working Date</th>
+                    <th>Shared Post</th>
+                    <th>Created Reels</th>
+                    <th>Used Ads Budget</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (tableData == null || !tableData.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">No data available</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in tableData)
+                    {
+                        <tr>
+                            <td>@item.WorkRecordId</td>
+                            <td>@item.ServiceId</td>
+                            <td>@item.WorkDate.ToString("yyyy-MM-dd")</td>
+                            <td>@item.SharedPost</td>
+                            <td>@item.CreatedReels</td>
+                            <td>@item.UsedAdsBudget</td>
+                            <td>@item.Status</td>
+                            <td>@item.Remarks</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private bool showForm = false;
+    private WorkingRecordsDto WorkRecord { get; set; } = new();
+    private List<WorkingRecordsDto> tableData { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<bool> Signal { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDummyData();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+            await LoadDummyData();
+        
+    }
+
+    private async Task LoadDummyData()
+    {
+        try
+        {
+            var projects = await api.GetWorkingRecordPerUserAsync();
+
+            tableData = projects?
+                .Where(p => p?.Services != null)
+                .SelectMany(p => p!.Services!)
+                .Where(s => s.WorkRecords != null && s.WorkRecords.Any())
+                .SelectMany(s => s.WorkRecords!)
+                .ToList() ?? new List<WorkingRecordsDto>();
+
+            Console.WriteLine($"tableData count: {tableData.Count}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error loading work records: " + ex.Message);
+            tableData = new();
+        }
+    }
+
+    private void ToggleForm() => showForm = !showForm;
+
+    private void CancelForm()
+    {
+        showForm = false;
+        ResetForm();
+    }
+
+    private void ResetForm()
+    {
+        WorkRecord = new WorkingRecordsDto();
+    }
+
+    private void AddSeoDetail()
+    {
+        WorkRecord.SeoTaskDetailsDto.Add(new SeoTaskDetailsDto());
+    }
+
+    private void RemoveSeoDetail(int index)
+    {
+        if (index >= 0 && index < WorkRecord.SeoTaskDetailsDto.Count)
+        {
+            WorkRecord.SeoTaskDetailsDto.RemoveAt(index);
+        }
+    }
+}

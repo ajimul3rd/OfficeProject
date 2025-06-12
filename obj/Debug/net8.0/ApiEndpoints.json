@@ -322,6 +322,26 @@
     ]
   },
   {
+    "ContainingType": "OfficeProject.Controllers.ProjectsController",
+    "Method": "GetWorkingRecordPerUserAsync",
+    "RelativePath": "api/Projects/user/work",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[OfficeProject.Models.DTO.ProjectsDTO, OfficeProject, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "OfficeProject.Controllers.UserController",
     "Method": "GetAllUsersDTO",
     "RelativePath": "api/User",

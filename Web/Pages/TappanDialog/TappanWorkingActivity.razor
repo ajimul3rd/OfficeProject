@@ -29,10 +29,12 @@
 
                     <div class="tab-content mt-3">
                         <div class="@GetTabPaneClass("servicelist")">
-                            <ServiceListModel projects="@projects" />
+                            <ServiceListModel 
+                                projects="@projects" 
+                                signal="@Signal" />
                         </div>
                         <div class="@GetTabPaneClass("workrecord")">
-                            <AddWorkingActivity />
+                            <UserWorkRecord Signal="@HandleChildSubmit" />
                         </div>
                     </div>
                 </div>
@@ -48,6 +50,8 @@
 @code {
 
     [Parameter] public bool IsVisible { get; set; }
+
+    public EventCallback<bool> Signal { get; set; }
 
     [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
 
@@ -72,4 +76,8 @@
         base.OnParametersSet();
     }
 
+    private async Task HandleChildSubmit(bool isSuccess)
+    {
+        await Signal.InvokeAsync(isSuccess);
+    }
 }

@@ -32,10 +32,10 @@ public class MapingProfile:Profile
 
         CreateMap<ServicesDTO, Services>().ReverseMap();
         CreateMap<ProductsDTO, Products>().ReverseMap();
-        CreateMap<WorkingRecordsDTO, WorkingRecords>().ReverseMap();
+        CreateMap<WorkingRecordsDto, WorkingRecords>().ReverseMap();
         CreateMap<OthersServiceDTO, OthersService>().ReverseMap();
         CreateMap<SeoServiceDetailsDTO, SeoServiceDetails>().ReverseMap();
-        CreateMap<WorkRecordsSeoDetailsDTO, SeoTaskDetails>().ReverseMap();
+        CreateMap<SeoTaskDetailsDto, SeoTaskDetails>().ReverseMap();
         CreateMap<AssignedUsersDTO, AssignedUsers>()
     .ForMember(dest => dest.Projects, opt => opt.Ignore()) // Ignoring navigation properties
     .ForMember(dest => dest.Users, opt => opt.Ignore())    // Ignoring navigation properties

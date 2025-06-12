@@ -19,7 +19,7 @@ namespace OfficeProject.Data
         public DbSet<SeoServiceDetails> SeoServiceDetails { get; set; }
         public DbSet<Transactions> Transactions { get; set; }
         public DbSet<WorkingRecords> WorkRecords { get; set; }
-        public DbSet<SeoTaskDetails> WorkRecordsSeoDetails { get; set; }
+        public DbSet<SeoTaskDetails> SeoTaskDetails { get; set; }
         public DbSet<Products> Products { get; set; }
         public DbSet<Services> Services { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }

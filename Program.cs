@@ -101,7 +101,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IProjectsService, ProjectsService>();
-//builder.Services.AddScoped<IDesignPhaseServices, DesignPhaseServices>();
+builder.Services.AddScoped<IWorkingRecordsService, WorkingRecordsService>();
 //builder.Services.AddScoped<IDevelopmentPhaseServices, DevelopmentPhaseServices>();
 builder.Services.AddScoped<IUserWorkingActivityServices, UserWorkingActivityServices>();
 builder.Services.AddScoped<IUserDesignationService, UserDesignationService>();
