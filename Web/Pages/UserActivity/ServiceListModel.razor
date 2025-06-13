@@ -2,6 +2,8 @@
 @using OfficeProject.Web.Pages.DialogModel
 @using OfficeProject.Web.Pages.TappanDialog
 @using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+
 
 <h4 class="mt-3">Services Overview</h4>
 
@@ -33,7 +35,7 @@
                         <td>@service.DeadLine.ToString("d")</td>
                         <td>
                             <button class="btn btn-sm btn-primary"
-                                    @onclick="() => AddWorkRecord(service)">
+                            @onclick="() => AddWorkRecord(service)">
                                 <i class="fas fa-plus"></i> Add Work
                             </button>
                         </td>
@@ -49,21 +51,20 @@ else
 }
 
 <DialogAddWorkingRecord 
-    IsVisible="@IsVisible"
-    WorkRecord="@CurrentWorkRecord"
-    OnSubmitSignal="@HandleChildSubmit"
-    OnCancel="@OnDialogCancel" />
+IsVisible="@IsVisible"
+service="@Service"
+OnSubmitSignal="@HandleChildSubmit"
+OnCancel="@OnDialogCancel" />
 
 
 
 @code {
-
     private bool IsVisible { get; set; } = false;
-    private WorkingRecordsDto CurrentWorkRecord { get; set; } = new();
+    private ServicesDTO Service;
     private List<ServicesDTO> Services = new();
     private bool ShowActivityDialog = false;
-    private ServicesDTO? SelectedService;
-
+    @inject IDataSerializer? DataSerializer;
+    // private ServicesDTO? SelectedService;
 
     [Parameter]
     public EventCallback<bool> signal { get; set; }
@@ -93,25 +94,21 @@ else
 
     private void OpenDialog(ServicesDTO services)
     {
-        SelectedService = services;
+        // SelectedService = services;
         ShowActivityDialog = true;
     }
 
     private void CloseDialog()
     {
         ShowActivityDialog = false;
-        SelectedService = null;
+        // SelectedService = null;
     }
-
-
 
     private void AddWorkRecord(ServicesDTO service)
     {
-        CurrentWorkRecord = new WorkingRecordsDto
-            {
-                ServiceId = service?.ServiceId ?? 0,
-                ServiceName = service.ServiceName
-            };
+        // DataSerializer?.Serializer(service, "Add Record On ServiceListModel");
+        Service ??= new ServicesDTO();
+        Service = service;
         IsVisible = true;
     }
 

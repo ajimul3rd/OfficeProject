@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OfficeProject.Models.DTO;
 using OfficeProject.Models.Entities;
 using OfficeProject.Web.Pages;
 namespace OfficeProject.Data
@@ -19,13 +20,15 @@ namespace OfficeProject.Data
         public DbSet<SeoServiceDetails> SeoServiceDetails { get; set; }
         public DbSet<Transactions> Transactions { get; set; }
         public DbSet<WorkingRecords> WorkRecords { get; set; }
-        public DbSet<SeoTaskDetails> SeoTaskDetails { get; set; }
         public DbSet<Products> Products { get; set; }
         public DbSet<Services> Services { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
         public DbSet<ClientSources> clientSources { get; set; }
         public DbSet<UserWorkingActivity> UserWorkingActivity {  get; set; }
         public DbSet<UserActivityMaster> UserWorkingActivityList { get; set; }
+        public DbSet<OthersTaskDetails> OthersTaskDetails { get; set; }
+        public DbSet<SeoTaskDetails> SeoTaskDetails { get; set; }
+        public DbSet<WebDeveTaskDetails> WebDeveTaskDetails { get; set; }     
 
 
 

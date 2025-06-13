@@ -1,22 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using OfficeProject.Models.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using OfficeProject.Models.Entities;
 
 namespace OfficeProject.Models.DTO
 {
-    public class SeoTaskDetailsDto
+    public class OthersTaskDetailsDto
     {
-        public int? SeoTaskId { get; set; }
+
+        public int? OthersTaskId { get; set; }
 
         [Required(ErrorMessage = "Reference Id is required")]
         public int WorkRecordId { get; set; }
 
-        [Required(ErrorMessage = "Reference Key Word is required")]
-        public string KeyWord { get; set; }
+        [Required(ErrorMessage = " Lable name is required")]
+        public string LableName { get; set; }
 
-        [Required(ErrorMessage = "Current Rank value is Requird")]
-        public int CurrentRank { get; set; }
+        [Required(ErrorMessage = "Shared post value is required")]
+        public int SharedPost { get; set; }
 
         public string? Note { get; set; }
 
@@ -29,15 +30,7 @@ namespace OfficeProject.Models.DTO
 
 
 
-
-
-
-
-
- 
-
-
-
+       
 
     }
 }

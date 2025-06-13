@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using OfficeProject.Models.DTO;
 
 namespace OfficeProject.Models.Entities
 {
@@ -18,7 +19,7 @@ namespace OfficeProject.Models.Entities
         [DataType(DataType.Date)]
         public DateTime WorkDate { get; set; }
 
-        public string ServiceName { get; set; }
+        //public string ServiceName { get; set; }
 
         public int SharedPost { get; set; }
 
@@ -60,5 +61,8 @@ namespace OfficeProject.Models.Entities
         public Services Services { get; set; } = null!;
 
         public List<SeoTaskDetails>? SeoTaskDetails { get; set; }
+        public List<OthersTaskDetails>? OthersTaskDetails { get; set; }
+        public List<WebDeveTaskDetails>? WebDeveTaskDetails { get; set; }
+
     }
 }

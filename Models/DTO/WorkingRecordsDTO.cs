@@ -8,24 +8,27 @@ namespace OfficeProject.Models.DTO
     {
         public int? WorkRecordId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Service id is Required")]
         public int ServiceId { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime WorkDate { get; set; }
 
-        public string ServiceName { get; set; }
+        public DateTime WorkDate { get; set; } = DateTime.Today;
 
-        public int SharedPost { get; set; }
+        //public string ServiceName { get; set; }
 
-        public int CreatedReels { get; set; }
+        public int SharedPost { get; set; } = 0;
 
-        public int UsedAdsBudget { get; set; }
+        public int CreatedReels { get; set; } = 0;
 
+        public int UsedAdsBudget { get; set; } = 0;
+
+        [Required(ErrorMessage = "User Task is required")]
         public string Task { get; set; }
 
         [MaxLength(50)]
+        [Required(ErrorMessage = "Working Status is required")]
         public string Status { get; set; }
 
         [MaxLength(500)]

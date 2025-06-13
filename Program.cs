@@ -116,8 +116,9 @@ builder.Services.AddScoped<ISeoServicess, SeoServicess>();
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<IClientSources, ClientSourcesService>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
-    provider.GetRequiredService<CustomAuthStateProvider>()); 
+provider.GetRequiredService<CustomAuthStateProvider>()); 
 builder.Services.AddScoped<ApiService>();
+builder.Services.AddScoped<IDataSerializer, DataSerializer>();
 
 // HttpClient
 builder.Services.AddHttpClient<ApiService>(client =>

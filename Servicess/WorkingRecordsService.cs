@@ -45,7 +45,7 @@ namespace OfficeProject.Servicess
                     {
                         ServiceId = (int)workingRecordsDto.ServiceId,
                         WorkDate = workingRecordsDto.WorkDate,
-                        ServiceName = workingRecordsDto.ServiceName,
+                        //ServiceName = workingRecordsDto.ServiceName,
                         SharedPost = workingRecordsDto.SharedPost,
                         CreatedReels = workingRecordsDto.CreatedReels,
                         UsedAdsBudget = workingRecordsDto.UsedAdsBudget,
@@ -63,7 +63,7 @@ namespace OfficeProject.Servicess
                 {
                     existingRecords.ServiceId = (int)workingRecordsDto.ServiceId;
                     existingRecords.WorkDate = workingRecordsDto.WorkDate;
-                    existingRecords.ServiceName = workingRecordsDto.ServiceName;
+                    //existingRecords.ServiceName = workingRecordsDto.ServiceName;
                     existingRecords.SharedPost = workingRecordsDto.SharedPost;
                     existingRecords.CreatedReels = workingRecordsDto.CreatedReels;
                     existingRecords.UsedAdsBudget = workingRecordsDto.UsedAdsBudget;

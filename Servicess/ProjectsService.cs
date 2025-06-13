@@ -366,7 +366,7 @@ namespace OfficeProject.Servicess
                                     WorkRecordId = record.WorkRecordId,
                                     ServiceId = record.ServiceId,
                                     WorkDate = record.WorkDate,
-                                    ServiceName = record.ServiceName,
+                                    //ServiceName = record.ServiceName,
                                     SharedPost = record.SharedPost,
                                     CreatedReels = record.CreatedReels,
                                     UsedAdsBudget = record.UsedAdsBudget,

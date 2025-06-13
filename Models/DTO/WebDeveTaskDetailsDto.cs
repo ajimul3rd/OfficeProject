@@ -1,43 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using OfficeProject.Models.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using OfficeProject.Models.Entities;
 
 namespace OfficeProject.Models.DTO
 {
-    public class SeoTaskDetailsDto
+    public class WebDeveTaskDetailsDto
     {
-        public int? SeoTaskId { get; set; }
+       
+        public int? webDevTaskId { get; set; }
 
         [Required(ErrorMessage = "Reference Id is required")]
         public int WorkRecordId { get; set; }
 
-        [Required(ErrorMessage = "Reference Key Word is required")]
-        public string KeyWord { get; set; }
-
-        [Required(ErrorMessage = "Current Rank value is Requird")]
-        public int CurrentRank { get; set; }
-
-        public string? Note { get; set; }
+        [Required(ErrorMessage = "User working task is required")]
+        public string Task { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime TaskDate { get; set; } = DateTime.Now;
+        public string? Remarks { get; set; }
+
+        public string? Note { get; set; }
 
         // Navigation property
         [JsonIgnore]
         public WorkingRecords? WorkRecords { get; set; } = null!;
 
-
-
-
-
-
-
-
- 
-
-
-
-
+   
     }
 }

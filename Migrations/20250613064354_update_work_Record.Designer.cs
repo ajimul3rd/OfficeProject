@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OfficeProject.Data;
 
@@ -11,9 +12,11 @@ using OfficeProject.Data;
 namespace OfficeProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250613064354_update_work_Record")]
+    partial class update_work_Record
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,39 +198,6 @@ namespace OfficeProject.Migrations
                     b.HasIndex("ServiceId");
 
                     b.ToTable("OthersService");
-                });
-
-            modelBuilder.Entity("OfficeProject.Models.Entities.OthersTaskDetails", b =>
-                {
-                    b.Property<int>("OthersTaskId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OthersTaskId"));
-
-                    b.Property<string>("LableName")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("SharedPost")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("TaskDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("WorkRecordId")
-                        .HasColumnType("int");
-
-                    b.HasKey("OthersTaskId");
-
-                    b.HasIndex("WorkRecordId");
-
-                    b.ToTable("OthersTaskDetails");
                 });
 
             modelBuilder.Entity("OfficeProject.Models.Entities.PaymentSchedule", b =>
@@ -432,9 +402,6 @@ namespace OfficeProject.Migrations
                     b.Property<string>("Note")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("TaskDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("WorkRecordId")
                         .HasColumnType("int");
@@ -697,37 +664,6 @@ namespace OfficeProject.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WebDeveTaskDetails", b =>
-                {
-                    b.Property<int>("webDevTaskId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("webDevTaskId"));
-
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Task")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("TaskDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("WorkRecordId")
-                        .HasColumnType("int");
-
-                    b.HasKey("webDevTaskId");
-
-                    b.HasIndex("WorkRecordId");
-
-                    b.ToTable("WebDeveTaskDetails");
-                });
-
             modelBuilder.Entity("OfficeProject.Models.Entities.WebDevelopment", b =>
                 {
                     b.Property<int>("WebDevelopmentId")
@@ -920,17 +856,6 @@ namespace OfficeProject.Migrations
                     b.Navigation("Services");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.OthersTaskDetails", b =>
-                {
-                    b.HasOne("OfficeProject.Models.Entities.WorkingRecords", "WorkRecords")
-                        .WithMany("OthersTaskDetails")
-                        .HasForeignKey("WorkRecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("WorkRecords");
-                });
-
             modelBuilder.Entity("OfficeProject.Models.Entities.PaymentSchedule", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Projects", null)
@@ -1065,17 +990,6 @@ namespace OfficeProject.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WebDeveTaskDetails", b =>
-                {
-                    b.HasOne("OfficeProject.Models.Entities.WorkingRecords", "WorkRecords")
-                        .WithMany("WebDeveTaskDetails")
-                        .HasForeignKey("WorkRecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("WorkRecords");
-                });
-
             modelBuilder.Entity("OfficeProject.Models.Entities.WebDevelopment", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Services", "Services")
@@ -1146,11 +1060,7 @@ namespace OfficeProject.Migrations
 
             modelBuilder.Entity("OfficeProject.Models.Entities.WorkingRecords", b =>
                 {
-                    b.Navigation("OthersTaskDetails");
-
                     b.Navigation("SeoTaskDetails");
-
-                    b.Navigation("WebDeveTaskDetails");
                 });
 #pragma warning restore 612, 618
         }

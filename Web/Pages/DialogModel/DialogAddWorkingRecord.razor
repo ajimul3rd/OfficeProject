@@ -1,5 +1,6 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using OfficeProject.Models.DTO
+@using System.Text.Json
 @inject IWorkingRecordsService workingRecordsService
 
 @if (IsVisible)
@@ -20,19 +21,23 @@
                                 <div class="form-group">
                                     <label>Service ID:</label>
                                     <InputNumber @bind-Value="WorkRecord.ServiceId" class="form-control" readonly />
+                                    <ValidationMessage For="@(() =>WorkRecord.ServiceId)" />
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Service Name:</label>
-                                    <InputText @bind-Value="WorkRecord.ServiceName" class="form-control" readonly />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
 
+                            @* <div class="col-md-6"> *@
+                            @*     <div class="form-group"> *@
+                            @*         <label>Service Name:</label> *@
+                            @*         <InputText @bind-Value="WorkRecord.ServiceName" class="form-control" readonly /> *@
+                            @*         <ValidationMessage For="@(() =>WorkRecord.ServiceName)" /> *@
+                            @*     </div> *@
+                            @* </div> *@
+
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Work Date:</label>
-                                    <InputDate @bind-Value="WorkRecord.WorkDate" class="form-control" />
+                                    <InputDate @bind-Value="WorkRecord.WorkDate" class="form-control" readonly />
+                                    <ValidationMessage For="@(() =>WorkRecord.WorkDate)" />
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -40,6 +45,7 @@
                                 <div class="form-group">
                                     <label>Shared Post:</label>
                                     <InputNumber @bind-Value="WorkRecord.SharedPost" class="form-control" />
+                                    <ValidationMessage For="@(() =>WorkRecord.SharedPost)" />
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -47,6 +53,7 @@
                                 <div class="form-group">
                                     <label>Created Reels:</label>
                                     <InputNumber @bind-Value="WorkRecord.CreatedReels" class="form-control" />
+                                    <ValidationMessage For="@(() =>WorkRecord.CreatedReels)" />
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -54,6 +61,7 @@
                                 <div class="form-group">
                                     <label>Used Ads Budget:</label>
                                     <InputNumber @bind-Value="WorkRecord.UsedAdsBudget" class="form-control" />
+                                    <ValidationMessage For="@(() =>WorkRecord.UsedAdsBudget)" />
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -61,6 +69,7 @@
                                 <div class="form-group">
                                     <label>User Task:</label>
                                     <InputText @bind-Value="WorkRecord.Task" class="form-control" />
+                                    <ValidationMessage For="@(() =>WorkRecord.Task)" />
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -74,6 +83,7 @@
                                         <option>In Progress</option>
                                         <option>Pending</option>
                                     </InputSelect>
+                                    <ValidationMessage For="@(() =>WorkRecord.Status)" />
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -95,63 +105,68 @@
                         @*     <label class="form-check-label">Include SEO Details</label> *@
                         @* </div> *@
 
-                        @* @if (IncludeSeoDetails) *@
-                        @* { *@
-                        @*     <div class="card mb-3"> *@
-                        @*         <div class="card-header">SEO Details</div> *@
-                        @*         <div class="card-body"> *@
-                        @*             <div class="table-responsive"> *@
-                        @*                 <table class="table table-bordered table-sm"> *@
-                        @*                     <thead class="table-info sticky-header"> *@
-                        @*                         <tr> *@
-                        @*                             <th>#</th> *@
-                        @*                             <th>Keyword</th> *@
-                        @*                             <th>Rank</th> *@
-                        @*                             <th>Note</th> *@
-                        @*                             <th>Action</th> *@
-                        @*                         </tr> *@
-                        @*                     </thead> *@
-                        @*                     <tbody> *@
-                        @*                         @for (int i = 0; i < WorkRecord.SeoTaskDetailsDto.Count; i++) *@
-                        @*                         { *@
-                        @*                             <tr> *@
-                        @*                                 <td>@(i + 1)</td> *@
-                        @*                                 <td> *@
-                        @*                                     <InputText @bind-Value="WorkRecord.SeoTaskDetailsDto[i].KeyWord" class="form-control" /> *@
-                        @*                                 </td> *@
-                        @*                                 <td> *@
-                        @*                                     <InputNumber @bind-Value="WorkRecord.SeoTaskDetailsDto[i].CurrentRank" class="form-control" /> *@
-                        @*                                 </td> *@
-                        @*                                 <td> *@
-                        @*                                     <InputTextArea @bind-Value="WorkRecord.SeoTaskDetailsDto[i].Note" class="form-control" /> *@
-                        @*                                 </td> *@
-                        @*                                 <td> *@
-                        @*                                     <button type="button" class="btn btn-danger btn-sm" @onclick="() => RemoveSeoDetail(i)">Remove</button> *@
-                        @*                                 </td> *@
-                        @*                             </tr> *@
-                        @*                         } *@
+                        @if (IncludeSeoDetails)
+                        {
+                             <div class="form-check mb-3"> 
+                                 <InputCheckbox @bind-Value="IncludeSeoDetails" class="form-check-input" /> 
+                                 <label class="form-check-label">Include SEO Details</label> 
+                             </div> 
 
-                        @*                         <tr> *@
-                        @*                             <td>New</td> *@
-                        @*                             <td> *@
-                        @*                                 <InputText @bind-Value="SeoTaskDetail.KeyWord" class="form-control" /> *@
-                        @*                             </td> *@
-                        @*                             <td> *@
-                        @*                                 <InputNumber @bind-Value="SeoTaskDetail.CurrentRank" class="form-control" /> *@
-                        @*                             </td> *@
-                        @*                             <td> *@
-                        @*                                 <InputTextArea @bind-Value="SeoTaskDetail.Note" class="form-control" /> *@
-                        @*                             </td> *@
-                        @*                             <td> *@
-                        @*                                 <button type="button" class="btn btn-success btn-sm" @onclick="AddSeoDetail">Add</button> *@
-                        @*                             </td> *@
-                        @*                         </tr> *@
-                        @*                     </tbody> *@
-                        @*                 </table> *@
-                        @*             </div> *@
-                        @*         </div> *@
-                        @*     </div> *@
-                        @* } *@
+                            @* <div class="card mb-3"> *@
+                            @*     <div class="card-header">SEO Details</div> *@
+                            @*     <div class="card-body"> *@
+                            @*         <div class="table-responsive"> *@
+                            @*             <table class="table table-bordered table-sm"> *@
+                            @*                 <thead class="table-info sticky-header"> *@
+                            @*                     <tr> *@
+                            @*                         <th>#</th> *@
+                            @*                         <th>Keyword</th> *@
+                            @*                         <th>Rank</th> *@
+                            @*                         <th>Note</th> *@
+                            @*                         <th>Action</th> *@
+                            @*                     </tr> *@
+                            @*                 </thead> *@
+                            @*                 <tbody> *@
+                            @*                     @for (int i = 0; i < WorkRecord.SeoTaskDetailsDto.Count; i++) *@
+                            @*                     { *@
+                            @*                         <tr> *@
+                            @*                             <td>@(i + 1)</td> *@
+                            @*                             <td> *@
+                            @*                                 <InputText @bind-Value="WorkRecord.SeoTaskDetailsDto[i].KeyWord" class="form-control" /> *@
+                            @*                             </td> *@
+                            @*                             <td> *@
+                            @*                                 <InputNumber @bind-Value="WorkRecord.SeoTaskDetailsDto[i].CurrentRank" class="form-control" /> *@
+                            @*                             </td> *@
+                            @*                             <td> *@
+                            @*                                 <InputTextArea @bind-Value="WorkRecord.SeoTaskDetailsDto[i].Note" class="form-control" /> *@
+                            @*                             </td> *@
+                            @*                             <td> *@
+                            @*                                 <button type="button" class="btn btn-danger btn-sm" @onclick="() => RemoveSeoDetail(i)">Remove</button> *@
+                            @*                             </td> *@
+                            @*                         </tr> *@
+                            @*                     } *@
+
+                            @*                     <tr> *@
+                            @*                         <td>New</td> *@
+                            @*                         <td> *@
+                            @*                             <InputText @bind-Value="SeoTaskDetail.KeyWord" class="form-control" /> *@
+                            @*                         </td> *@
+                            @*                         <td> *@
+                            @*                             <InputNumber @bind-Value="SeoTaskDetail.CurrentRank" class="form-control" /> *@
+                            @*                         </td> *@
+                            @*                         <td> *@
+                            @*                             <InputTextArea @bind-Value="SeoTaskDetail.Note" class="form-control" /> *@
+                            @*                         </td> *@
+                            @*                         <td> *@
+                            @*                             <button type="button" class="btn btn-success btn-sm" @onclick="AddSeoDetail">Add</button> *@
+                            @*                         </td> *@
+                            @*                     </tr> *@
+                            @*                 </tbody> *@
+                            @*             </table> *@
+                            @*         </div> *@
+                            @*     </div> *@
+                            @* </div> *@
+                        }
 
                         <div class="form-group mt-3">
                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -164,15 +179,23 @@
         </div>
     </div>
 }
+
+
 @code {
     [Parameter]
     public bool IsVisible { get; set; } = false;
 
     private bool IncludeSeoDetails { get; set; } = false;
 
+    private bool OthersServices { get; set; } = false;
+
+    private bool WebDevelopmentServices { get; set; } = false;
+
     private SeoTaskDetailsDto SeoTaskDetail { get; set; } = new();
 
     [Parameter]
+    public ServicesDTO service { get; set; }
+
     public WorkingRecordsDto WorkRecord { get; set; } = new();
 
     [Parameter]
@@ -181,9 +204,36 @@
     [Parameter]
     public EventCallback OnCancel { get; set; }
 
-      protected override void OnParametersSet()
-    {
-        WorkRecord ??= new WorkingRecordsDto();        
+    @inject IDataSerializer? DataSerializer;
+
+    protected override void OnParametersSet()
+    {   
+        // DataSerializer?.Serializer(service, "DialogAddWorkingRecord OnParametersSet ");
+        WebDevelopmentServices = false;
+        OthersServices = false;
+        IncludeSeoDetails = false;
+        WorkRecord ??= new WorkingRecordsDto();
+        if (service != null)
+        {           
+            WorkRecord.ServiceId = (int)service.ServiceId!;
+            if (service.SeoServiceDetails != null)
+            {
+                IncludeSeoDetails = true;
+
+            }
+            if (service.OthersServices != null)
+            {
+                OthersServices = true;
+
+            }
+
+            if (service.WebDevelopment != null)
+            {
+                WebDevelopmentServices = true;
+
+            }
+
+        }       
     }
 
 

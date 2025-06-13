@@ -4,25 +4,23 @@ using System.Text.Json.Serialization;
 
 namespace OfficeProject.Models.Entities
 {
-    public class SeoTaskDetails
+    public class WebDeveTaskDetails
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int SeoTaskId { get; set; }
+        public int webDevTaskId { get; set; }
 
+        [Required]
         [ForeignKey(nameof(WorkRecords))]
         public int WorkRecordId { get; set; }
 
-        [MaxLength(150)]
-        public string KeyWord { get; set; }   
-        
-        public int CurrentRank { get; set; }
-
-        [MaxLength(500)]
-        public string? Note { get; set; }
+        public string Task { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime TaskDate { get; set; } = DateTime.Now;
+        public string? Remarks { get; set; }
+
+        public string? Note { get; set; }
 
         // Navigation property
         [JsonIgnore]
