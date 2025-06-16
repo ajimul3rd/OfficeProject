@@ -63,5 +63,11 @@ namespace OfficeProject.Models.DTO
         [ValidateComplexType]
         public List<SeoTaskDetailsDto>? SeoTaskDetailsDto { get; set; }
 
+        [ValidateComplexType]
+        public List<OthersTaskDetailsDto>? OthersTaskDetailsDto { get; set; }
+
+        [ValidateComplexType]
+        public List<WebDeveTaskDetailsDto>? WebDeveTaskDetailsDto { get; set; }
+
     }
 }

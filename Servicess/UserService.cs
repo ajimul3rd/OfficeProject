@@ -78,7 +78,6 @@ namespace OfficeProject.Servicess
             }
         }
 
-
         public async Task<List<Users>> GetAllUsersAsync()
         {
             using (var context = dbContextFactory.CreateDbContext())
@@ -366,7 +365,6 @@ namespace OfficeProject.Servicess
                     UserContact = userWithClientsDto.UserContact,
                     CompanyName = userWithClientsDto.CompanyName,
                     Address = userWithClientsDto.Address,
-                    //Designation = userWithClientsDto.Designation,
                     UserDesignation= Designation,
                     JoiningDate = userWithClientsDto.JoiningDate,
                     Role = userWithClientsDto.Role,

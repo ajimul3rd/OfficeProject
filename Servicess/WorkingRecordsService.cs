@@ -76,7 +76,7 @@ namespace OfficeProject.Servicess
                     workRecordId = existingRecords.WorkRecordId;
                 }
 
-                // ✅ AssignedUsers Upsert
+                
                 foreach (var seoTaskDto in workingRecordsDto.SeoTaskDetailsDto ?? [])
                 {
                     try
@@ -91,6 +91,7 @@ namespace OfficeProject.Servicess
                                 WorkRecordId = workRecordId,
                                 KeyWord = seoTaskDto.KeyWord,
                                 CurrentRank = seoTaskDto.CurrentRank,
+                                Note = seoTaskDto.Note,
 
                             });
                         }
@@ -99,6 +100,7 @@ namespace OfficeProject.Servicess
                             existingSeoTask.WorkRecordId = workRecordId;
                             existingSeoTask.KeyWord = seoTaskDto.KeyWord;
                             existingSeoTask.CurrentRank = seoTaskDto.CurrentRank;
+                            existingSeoTask.Note = existingSeoTask.Note;
 
                             context.SeoTaskDetails.Update(existingSeoTask);
                         }
@@ -110,8 +112,77 @@ namespace OfficeProject.Servicess
                         Console.WriteLine($"Error saving SeoTaskDetails: {ex.Message}");
                     }
                 }
+                foreach (var othersTaskDto in workingRecordsDto.OthersTaskDetailsDto ?? [])
+                {
+                    try
+                    {
+                        var existingOthersTask = await context.OthersTaskDetails
+                            .FirstOrDefaultAsync(x => x.OthersTaskId == othersTaskDto.OthersTaskId);
 
-               
+                        if (existingOthersTask == null)
+                        {
+                            context.OthersTaskDetails.Add(new OthersTaskDetails
+                            {
+                                WorkRecordId = workRecordId,
+                                LableName = othersTaskDto.LableName,
+                                SharedPost = othersTaskDto.SharedPost,
+                                Note = othersTaskDto.Note
+
+                            });
+                        }
+                        else
+                        {
+                            existingOthersTask.WorkRecordId = workRecordId;
+                            existingOthersTask.LableName = othersTaskDto.LableName;
+                            existingOthersTask.SharedPost = othersTaskDto.SharedPost;
+                            existingOthersTask.Note = existingOthersTask.Note;
+                            context.OthersTaskDetails.Update(existingOthersTask);
+                        }
+
+                        await context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error saving SeoTaskDetails: {ex.Message}");
+                    }
+                }
+
+                foreach (var webTaskDto in workingRecordsDto.WebDeveTaskDetailsDto ?? [])
+                {
+                    try
+                    {
+                        var existingWebTask = await context.WebDeveTaskDetails
+                            .FirstOrDefaultAsync(x => x.webDevTaskId == webTaskDto.webDevTaskId);
+
+                        if (existingWebTask == null)
+                        {
+                            context.WebDeveTaskDetails.Add(new WebDeveTaskDetails
+                            {
+                                WorkRecordId = workRecordId,
+                               Task= webTaskDto.Task,
+                               Remarks= webTaskDto.Remarks,
+                               Note= webTaskDto.Note
+
+
+                            });
+                        }
+                        else
+                        {
+                            existingWebTask.WorkRecordId = workRecordId;
+                            existingWebTask.Task = webTaskDto.Task;
+                            existingWebTask.Remarks = webTaskDto.Remarks;
+                            existingWebTask.Note = webTaskDto.Note;
+                            context.WebDeveTaskDetails.Update(existingWebTask);
+                        }
+
+                        await context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error saving SeoTaskDetails: {ex.Message}");
+                    }
+                }
+
             }
             catch (Exception ex)
             {
