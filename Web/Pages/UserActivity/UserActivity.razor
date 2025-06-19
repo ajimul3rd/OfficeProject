@@ -2,7 +2,6 @@
 @using OfficeProject.Web.Pages.DialogModel
 @using OfficeProject.Web.Pages.DialogModelComponents
 @using OfficeProject.Web.Pages.TappanDialog
-@using static OfficeProject.Web.Pages.DialogModel.DialogAddWorkingRecord
 @page "/userproject"
 @inject ApiService api
 
@@ -34,6 +33,7 @@ else
         <table class="table table-bordered">
             <thead class="table-info">
                 <tr>
+                    <th>PID</th>
                     <th>Project Name</th>
                     <th>Client</th>
                     <th>Start Date</th>
@@ -48,6 +48,7 @@ else
                 @foreach (var project in projects)
                 {
                     <tr @onclick="() => OpenDialog(project)" style="cursor: pointer;" class="hover-row">
+                        <td>@project.ProjectId</td>
                         <td>@project.ProjectName</td>
                         <td>@(project.Client?.ClientName ?? "N/A")</td>
                         <td>@project.ProjectStartDate.ToString("d")</td>
@@ -64,13 +65,10 @@ else
     </div>
 }
 
-<TappanWorkingActivity 
-IsVisible="@ShowDialog" 
+<TappanWorkTask IsVisible="@ShowDialog" 
 projects="@data"
 IsVisibleChanged="@((bool val) => ShowDialog = val)"
 />
-
-
 
 <style>
     .hover-row:hover {

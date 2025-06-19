@@ -13,6 +13,7 @@
         <table class="table table-bordered table-hover">
             <thead class="table-primary">
                 <tr>
+                    <th>SID</th>
                     <th>Service Name</th>
                     <th>Total Post</th>
                     <th>Total Reels</th>
@@ -27,12 +28,14 @@
                 {
 
                     <tr @onclick="() => OpenDialog(service)" style="cursor: pointer;" class="hover-row">
+                        <td>@service.ServiceId</td>
                         <td>@service.ServiceName</td>
                         <td>@service.TotalPost</td>
                         <td>@service.TotalReels</td>
                         <td>@service.BillingType</td>
-                        <td>@service.AdsBudget.ToString("C")</td>
-                        <td>@service.DeadLine.ToString("d")</td>
+                        <td>@service.AdsBudget.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
+                        <td>@service.DeadLine.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
+
                         <td>
                             <button class="btn btn-sm btn-primary"
                             @onclick="() => AddWorkRecord(service)">
@@ -50,8 +53,7 @@ else
     <p>No services found.</p>
 }
 
-<DialogAddWorkingRecord 
-IsVisible="@IsVisible"
+<DialogAddWorkTask IsVisible="@IsVisible"
 service="@Service"
 OnSubmitSignal="@HandleChildSubmit"
 OnCancel="@OnDialogCancel" />
@@ -112,7 +114,7 @@ OnCancel="@OnDialogCancel" />
         IsVisible = true;
     }
 
-    private void OnDialogSubmit(WorkingRecordsDto record)
+    private void OnDialogSubmit(WorkTaskDetailsDto record)
     {
         // save or process record
         IsVisible = false;

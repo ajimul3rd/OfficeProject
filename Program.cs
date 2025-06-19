@@ -101,7 +101,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IProjectsService, ProjectsService>();
-builder.Services.AddScoped<IWorkingRecordsService, WorkingRecordsService>();
+builder.Services.AddScoped<IWorkTaskDetailsService, WorkTaskDetailsService>();
 //builder.Services.AddScoped<IDevelopmentPhaseServices, DevelopmentPhaseServices>();
 builder.Services.AddScoped<IUserWorkingActivityServices, UserWorkingActivityServices>();
 builder.Services.AddScoped<IUserDesignationService, UserDesignationService>();
@@ -113,6 +113,9 @@ builder.Services.AddScoped<IProductVsServices, ProductVsServices>();
 builder.Services.AddScoped<IOthersServices, OthersServices>();
 builder.Services.AddScoped<IWebDevelopmentService, WebDevelopmentService>();
 builder.Services.AddScoped<ISeoServicess, SeoServicess>();
+builder.Services.AddScoped<IOthersTaskservices, OthersTaskservices>();
+builder.Services.AddScoped<IWebDeveTaskService, WebDeveTaskService>();
+builder.Services.AddScoped<ISeoTaskServicess, SeoTaskServicess>();
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<IClientSources, ClientSourcesService>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
@@ -131,6 +134,7 @@ builder.Services.AddHttpClient<ApiService>(client =>
 builder.Services.AddAuthorizationBuilder()
 .AddPolicy("AdminOnly", policy => policy.RequireRole("ADMIN"))
 .AddPolicy("AdminOrManager", policy => policy.RequireRole("ADMIN", "MANAGER"))
+.AddPolicy("AdminOrManagerOrUser", policy =>policy.RequireRole("ADMIN", "MANAGER", "USER"))
 .AddPolicy("User", policy => policy.RequireRole("USER"));
 
 // Controllers

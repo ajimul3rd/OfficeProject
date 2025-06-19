@@ -348,6 +348,7 @@ namespace OfficeProject.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("ProjectCost")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("ProjectCreatedAt")
@@ -531,6 +532,7 @@ namespace OfficeProject.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("AmountPaid")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("PaymentDate")
@@ -797,7 +799,7 @@ namespace OfficeProject.Migrations
                     b.ToTable("WebDevelopment");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkingRecords", b =>
+            modelBuilder.Entity("OfficeProject.Models.Entities.WorkTaskDetails", b =>
                 {
                     b.Property<int>("WorkRecordId")
                         .ValueGeneratedOnAdd()
@@ -861,9 +863,14 @@ namespace OfficeProject.Migrations
                     b.Property<DateTime>("WorkDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Work_UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("WorkRecordId");
 
                     b.HasIndex("ServiceId");
+
+                    b.HasIndex("Work_UserId");
 
                     b.ToTable("WorkRecords");
                 });
@@ -922,7 +929,7 @@ namespace OfficeProject.Migrations
 
             modelBuilder.Entity("OfficeProject.Models.Entities.OthersTaskDetails", b =>
                 {
-                    b.HasOne("OfficeProject.Models.Entities.WorkingRecords", "WorkRecords")
+                    b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
                         .WithMany("OthersTaskDetails")
                         .HasForeignKey("WorkRecordId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -989,7 +996,7 @@ namespace OfficeProject.Migrations
 
             modelBuilder.Entity("OfficeProject.Models.Entities.SeoTaskDetails", b =>
                 {
-                    b.HasOne("OfficeProject.Models.Entities.WorkingRecords", "WorkRecords")
+                    b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
                         .WithMany("SeoTaskDetails")
                         .HasForeignKey("WorkRecordId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1067,7 +1074,7 @@ namespace OfficeProject.Migrations
 
             modelBuilder.Entity("OfficeProject.Models.Entities.WebDeveTaskDetails", b =>
                 {
-                    b.HasOne("OfficeProject.Models.Entities.WorkingRecords", "WorkRecords")
+                    b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
                         .WithMany("WebDeveTaskDetails")
                         .HasForeignKey("WorkRecordId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1087,15 +1094,23 @@ namespace OfficeProject.Migrations
                     b.Navigation("Services");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkingRecords", b =>
+            modelBuilder.Entity("OfficeProject.Models.Entities.WorkTaskDetails", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Services", "Services")
-                        .WithMany("WorkRecords")
+                        .WithMany("WorkTaskDetails")
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("OfficeProject.Models.Entities.Users", "Users")
+                        .WithMany()
+                        .HasForeignKey("Work_UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Services");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("OfficeProject.Models.Entities.Accounts", b =>
@@ -1132,7 +1147,7 @@ namespace OfficeProject.Migrations
 
                     b.Navigation("WebDevelopment");
 
-                    b.Navigation("WorkRecords");
+                    b.Navigation("WorkTaskDetails");
                 });
 
             modelBuilder.Entity("OfficeProject.Models.Entities.Users", b =>
@@ -1144,7 +1159,7 @@ namespace OfficeProject.Migrations
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkingRecords", b =>
+            modelBuilder.Entity("OfficeProject.Models.Entities.WorkTaskDetails", b =>
                 {
                     b.Navigation("OthersTaskDetails");
 

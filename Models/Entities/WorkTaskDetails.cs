@@ -5,7 +5,7 @@ using OfficeProject.Models.DTO;
 
 namespace OfficeProject.Models.Entities
 {
-    public class WorkingRecords
+    public class WorkTaskDetails
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -14,6 +14,10 @@ namespace OfficeProject.Models.Entities
         [Required]
         [ForeignKey(nameof(Services))]
         public int ServiceId { get; set; }
+
+        [Required]
+        [ForeignKey(nameof(Users))]
+        public int Work_UserId { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -59,6 +63,9 @@ namespace OfficeProject.Models.Entities
         // Navigation properties
         [JsonIgnore]
         public Services Services { get; set; } = null!;
+
+        [JsonIgnore]
+        public Users Users { get; set; } = null!;
 
         public List<SeoTaskDetails>? SeoTaskDetails { get; set; }
         public List<OthersTaskDetails>? OthersTaskDetails { get; set; }

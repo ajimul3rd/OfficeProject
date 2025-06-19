@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace OfficeProject.Models.Entities
 {
@@ -17,7 +18,7 @@ namespace OfficeProject.Models.Entities
         [ForeignKey(nameof(PaymentSchedule))]
         public int? ScheduleId { get; set; }
 
-        [Required]
+        [Precision(18, 2)]
         public decimal AmountPaid { get; set; }
 
         [DataType(DataType.Date)]

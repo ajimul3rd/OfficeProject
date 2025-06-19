@@ -12,23 +12,23 @@ namespace OfficeProject.Data
         public DbSet<UserDesignation> UserDesignation { get; set; }
         public DbSet<Clients> Client { get; set; }
         public DbSet<Projects> Projects { get; set; }
-        public DbSet<WebDevelopment> WebDevelopment { get; set; } 
+        public DbSet<WebDevelopment> WebDevelopment { get; set; }
         public DbSet<Accounts> Accounts { get; set; }
         public DbSet<AssignedUsers> AssignedUsers { get; set; }
         public DbSet<OthersService> OthersService { get; set; }
         public DbSet<PaymentSchedule> PaymentSchedule { get; set; }
         public DbSet<SeoServiceDetails> SeoServiceDetails { get; set; }
         public DbSet<Transactions> Transactions { get; set; }
-        public DbSet<WorkingRecords> WorkRecords { get; set; }
+        public DbSet<WorkTaskDetails> WorkRecords { get; set; }
         public DbSet<Products> Products { get; set; }
         public DbSet<Services> Services { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
         public DbSet<ClientSources> clientSources { get; set; }
-        public DbSet<UserWorkingActivity> UserWorkingActivity {  get; set; }
+        public DbSet<UserWorkingActivity> UserWorkingActivity { get; set; }
         public DbSet<UserActivityMaster> UserWorkingActivityList { get; set; }
         public DbSet<OthersTaskDetails> OthersTaskDetails { get; set; }
         public DbSet<SeoTaskDetails> SeoTaskDetails { get; set; }
-        public DbSet<WebDeveTaskDetails> WebDeveTaskDetails { get; set; }     
+        public DbSet<WebDeveTaskDetails> WebDeveTaskDetails { get; set; }
 
 
 
@@ -37,7 +37,7 @@ namespace OfficeProject.Data
             base.OnModelCreating(modelBuilder);
 
 
-          
+
 
             modelBuilder.Entity<AssignedUsers>()
             .HasOne(a => a.Users)

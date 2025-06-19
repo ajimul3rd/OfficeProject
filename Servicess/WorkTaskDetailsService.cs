@@ -1,19 +1,19 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using OfficeProject.Data;
 using OfficeProject.Models.DTO;
 using OfficeProject.Models.Entities;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace OfficeProject.Servicess
 {
-    public class WorkingRecordsService : IWorkingRecordsService
+    public class WorkTaskDetailsService : IWorkTaskDetailsService
     {
         private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMapper Mapper;
-        public WorkingRecordsService(
+        public WorkTaskDetailsService(
             IDbContextFactory<ApplicationDbContext> dbContextFactory,
             IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
@@ -25,27 +25,39 @@ namespace OfficeProject.Servicess
 
         //(WorkingRecordsDto workingRecordsDto)
 
-        public async Task AddOrUpdateUserWorkingRecordAsync(WorkingRecordsDto workingRecordsDto)
+        public async Task AddOrUpdateUserWorkingRecordAsync(WorkTaskDetailsDto workingRecordsDto)
         {
             try
             {
+                var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+                {
+                    throw new UnauthorizedAccessException("User is not authenticated.");
+                }
+
+
                 using var context = dbContextFactory.CreateDbContext();
 
-                WorkingRecords? existingRecords = null;
+                WorkTaskDetails? existingRecords = null;
                 int workRecordId;
 
                 if (workingRecordsDto.WorkRecordId > 0)
                 {
-                    existingRecords = await context.WorkRecords.FirstOrDefaultAsync(p => p.WorkRecordId == workingRecordsDto.WorkRecordId);
+                    existingRecords = await context.WorkRecords
+                        .FirstOrDefaultAsync(p => 
+                        p.WorkRecordId == workingRecordsDto.WorkRecordId &&
+                        p.Work_UserId == currentUserId);
                 }
 
                 if (existingRecords == null)
                 {
-                    var newRecords = new WorkingRecords
+                    var newRecords = new WorkTaskDetails
                     {
                         ServiceId = (int)workingRecordsDto.ServiceId,
                         WorkDate = workingRecordsDto.WorkDate,
                         //ServiceName = workingRecordsDto.ServiceName,
+                        Work_UserId = currentUserId,
                         SharedPost = workingRecordsDto.SharedPost,
                         CreatedReels = workingRecordsDto.CreatedReels,
                         UsedAdsBudget = workingRecordsDto.UsedAdsBudget,
@@ -76,7 +88,7 @@ namespace OfficeProject.Servicess
                     workRecordId = existingRecords.WorkRecordId;
                 }
 
-                
+
                 foreach (var seoTaskDto in workingRecordsDto.SeoTaskDetailsDto ?? [])
                 {
                     try
@@ -159,9 +171,9 @@ namespace OfficeProject.Servicess
                             context.WebDeveTaskDetails.Add(new WebDeveTaskDetails
                             {
                                 WorkRecordId = workRecordId,
-                               Task= webTaskDto.Task,
-                               Remarks= webTaskDto.Remarks,
-                               Note= webTaskDto.Note
+                                Task = webTaskDto.Task,
+                                Remarks = webTaskDto.Remarks,
+                                Note = webTaskDto.Note
 
 
                             });
@@ -190,6 +202,147 @@ namespace OfficeProject.Servicess
                 throw;
             }
         }
-    }
 
+        //public Task<List<WorkTaskDetailsDto?>> GetWorkingRecordPerUserAsync()
+        //{
+        //    throw new NotImplementedException();
+        //}
+        public async Task<List<WorkTaskDetailsDto?>> GetWorkingRecordPerUserAsync()
+        {
+            try
+            {
+                var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+                {
+                    throw new UnauthorizedAccessException("User is not authenticated.");
+                }
+
+                using var context = dbContextFactory.CreateDbContext();
+
+                var workTaskDtos = await context.WorkRecords
+                    .Where(w => w.Work_UserId == currentUserId)
+                    .Select(w => new WorkTaskDetailsDto
+                    {
+                        WorkRecordId = w.WorkRecordId,
+                        ServiceId = w.ServiceId,
+                        ServiceName = w.Services != null ? w.Services.ServiceName : null, // requires navigation property
+                        WorkDate = w.WorkDate,
+                        SharedPost = w.SharedPost,
+                        CreatedReels = w.CreatedReels,
+                        UsedAdsBudget = w.UsedAdsBudget,
+                        Task = w.Task,
+                        Status = w.Status,
+                        Remarks = w.Remarks,
+
+                        SeoTaskDetailsDto = w.SeoTaskDetails.Select(s => new SeoTaskDetailsDto
+                        {
+                            SeoTaskId = s.SeoTaskId,
+                            KeyWord = s.KeyWord,
+                            CurrentRank = s.CurrentRank,
+                            Note = s.Note
+                        }).ToList(),
+
+                        OthersTaskDetailsDto = w.OthersTaskDetails.Select(o => new OthersTaskDetailsDto
+                        {
+                            OthersTaskId = o.OthersTaskId,
+                            LableName = o.LableName,
+                            SharedPost = o.SharedPost,
+                            Note = o.Note
+                        }).ToList(),
+
+                        WebDeveTaskDetailsDto = w.WebDeveTaskDetails.Select(wd => new WebDeveTaskDetailsDto
+                        {
+                            webDevTaskId = wd.webDevTaskId,
+                            Task = wd.Task,
+                            Remarks = wd.Remarks,
+                            Note = wd.Note
+                        }).ToList()
+                    }).ToListAsync();
+
+                return workTaskDtos;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetWorkingRecordPerUserAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+
+
+        public async Task<WorkTaskDetailsDto> GetWorkTaskDetailsById(int workTaskId)
+        {
+            try
+            {
+                var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+                {
+                    throw new UnauthorizedAccessException("User is not authenticated.");
+                }
+
+
+                using var context = dbContextFactory.CreateDbContext();
+
+                // Get the main work task record
+                var workTask = await context.WorkRecords
+                    .FirstOrDefaultAsync(w => w.WorkRecordId == workTaskId &&
+                    w.Work_UserId == currentUserId);
+
+                if (workTask == null)
+                {
+                    return null;
+                }
+
+                // Map to DTO
+                var workTaskDto = Mapper.Map<WorkTaskDetailsDto>(workTask);
+
+                // Get related SEO tasks
+                workTaskDto.SeoTaskDetailsDto = await context.SeoTaskDetails
+                    .Where(s => s.WorkRecordId == workTaskId)
+                    .Select(s => new SeoTaskDetailsDto
+                    {
+                        SeoTaskId = s.SeoTaskId,
+                        KeyWord = s.KeyWord,
+                        CurrentRank = s.CurrentRank,
+                        Note = s.Note
+                    })
+                    .ToListAsync();
+
+                // Get related Others tasks
+                workTaskDto.OthersTaskDetailsDto = await context.OthersTaskDetails
+                    .Where(o => o.WorkRecordId == workTaskId)
+                    .Select(o => new OthersTaskDetailsDto
+                    {
+                        OthersTaskId = o.OthersTaskId,
+                        LableName = o.LableName,
+                        SharedPost = o.SharedPost,
+                        Note = o.Note
+                    })
+                    .ToListAsync();
+
+                // Get related Web Development tasks
+                workTaskDto.WebDeveTaskDetailsDto = await context.WebDeveTaskDetails
+                    .Where(w => w.WorkRecordId == workTaskId)
+                    .Select(w => new WebDeveTaskDetailsDto
+                    {
+                        webDevTaskId = w.webDevTaskId,
+                        Task = w.Task,
+                        Remarks = w.Remarks,
+                        Note = w.Note
+                    })
+                    .ToListAsync();
+
+                return workTaskDto;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetWorkTaskDetailsById: {ex.Message}");
+                throw;
+            }
+        }
+
+       
+    }
 }

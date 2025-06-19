@@ -12,8 +12,8 @@ using OfficeProject.Data;
 namespace OfficeProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250612113527_update_userworking_record_and_there_child")]
-    partial class update_userworking_record_and_there_child
+    [Migration("20250618142932_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -200,6 +200,39 @@ namespace OfficeProject.Migrations
                     b.ToTable("OthersService");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.OthersTaskDetails", b =>
+                {
+                    b.Property<int>("OthersTaskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OthersTaskId"));
+
+                    b.Property<string>("LableName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("SharedPost")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TaskDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WorkRecordId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OthersTaskId");
+
+                    b.HasIndex("WorkRecordId");
+
+                    b.ToTable("OthersTaskDetails");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.PaymentSchedule", b =>
                 {
                     b.Property<int>("ScheduleId")
@@ -318,6 +351,7 @@ namespace OfficeProject.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("ProjectCost")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("ProjectCreatedAt")
@@ -402,6 +436,9 @@ namespace OfficeProject.Migrations
                     b.Property<string>("Note")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("TaskDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("WorkRecordId")
                         .HasColumnType("int");
@@ -498,6 +535,7 @@ namespace OfficeProject.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("AmountPaid")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("PaymentDate")
@@ -664,6 +702,37 @@ namespace OfficeProject.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.WebDeveTaskDetails", b =>
+                {
+                    b.Property<int>("webDevTaskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("webDevTaskId"));
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Task")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TaskDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WorkRecordId")
+                        .HasColumnType("int");
+
+                    b.HasKey("webDevTaskId");
+
+                    b.HasIndex("WorkRecordId");
+
+                    b.ToTable("WebDeveTaskDetails");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.WebDevelopment", b =>
                 {
                     b.Property<int>("WebDevelopmentId")
@@ -733,7 +802,7 @@ namespace OfficeProject.Migrations
                     b.ToTable("WebDevelopment");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkingRecords", b =>
+            modelBuilder.Entity("OfficeProject.Models.Entities.WorkTaskDetails", b =>
                 {
                     b.Property<int>("WorkRecordId")
                         .ValueGeneratedOnAdd()
@@ -772,20 +841,12 @@ namespace OfficeProject.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<string>("ProjectName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Remarks")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
-
-                    b.Property<string>("ServiceName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SharedPost")
                         .HasColumnType("int");
@@ -805,9 +866,14 @@ namespace OfficeProject.Migrations
                     b.Property<DateTime>("WorkDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Work_UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("WorkRecordId");
 
                     b.HasIndex("ServiceId");
+
+                    b.HasIndex("Work_UserId");
 
                     b.ToTable("WorkRecords");
                 });
@@ -862,6 +928,17 @@ namespace OfficeProject.Migrations
                         .IsRequired();
 
                     b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("OfficeProject.Models.Entities.OthersTaskDetails", b =>
+                {
+                    b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
+                        .WithMany("OthersTaskDetails")
+                        .HasForeignKey("WorkRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkRecords");
                 });
 
             modelBuilder.Entity("OfficeProject.Models.Entities.PaymentSchedule", b =>
@@ -922,7 +999,7 @@ namespace OfficeProject.Migrations
 
             modelBuilder.Entity("OfficeProject.Models.Entities.SeoTaskDetails", b =>
                 {
-                    b.HasOne("OfficeProject.Models.Entities.WorkingRecords", "WorkRecords")
+                    b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
                         .WithMany("SeoTaskDetails")
                         .HasForeignKey("WorkRecordId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -998,6 +1075,17 @@ namespace OfficeProject.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.WebDeveTaskDetails", b =>
+                {
+                    b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
+                        .WithMany("WebDeveTaskDetails")
+                        .HasForeignKey("WorkRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkRecords");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.WebDevelopment", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Services", "Services")
@@ -1009,15 +1097,23 @@ namespace OfficeProject.Migrations
                     b.Navigation("Services");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkingRecords", b =>
+            modelBuilder.Entity("OfficeProject.Models.Entities.WorkTaskDetails", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Services", "Services")
-                        .WithMany("WorkRecords")
+                        .WithMany("WorkTaskDetails")
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("OfficeProject.Models.Entities.Users", "Users")
+                        .WithMany()
+                        .HasForeignKey("Work_UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Services");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("OfficeProject.Models.Entities.Accounts", b =>
@@ -1054,7 +1150,7 @@ namespace OfficeProject.Migrations
 
                     b.Navigation("WebDevelopment");
 
-                    b.Navigation("WorkRecords");
+                    b.Navigation("WorkTaskDetails");
                 });
 
             modelBuilder.Entity("OfficeProject.Models.Entities.Users", b =>
@@ -1066,9 +1162,13 @@ namespace OfficeProject.Migrations
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.WorkingRecords", b =>
+            modelBuilder.Entity("OfficeProject.Models.Entities.WorkTaskDetails", b =>
                 {
+                    b.Navigation("OthersTaskDetails");
+
                     b.Navigation("SeoTaskDetails");
+
+                    b.Navigation("WebDeveTaskDetails");
                 });
 #pragma warning restore 612, 618
         }

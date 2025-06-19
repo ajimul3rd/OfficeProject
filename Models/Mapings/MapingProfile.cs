@@ -32,7 +32,7 @@ public class MapingProfile:Profile
 
         CreateMap<ServicesDTO, Services>().ReverseMap();
         CreateMap<ProductsDTO, Products>().ReverseMap();
-        CreateMap<WorkingRecordsDto, WorkingRecords>().ReverseMap();
+        CreateMap<WorkTaskDetailsDto, WorkTaskDetails>().ReverseMap();
         CreateMap<OthersServiceDTO, OthersService>().ReverseMap();
         CreateMap<SeoServiceDetailsDTO, SeoServiceDetails>().ReverseMap();
         CreateMap<SeoTaskDetailsDto, SeoTaskDetails>().ReverseMap();

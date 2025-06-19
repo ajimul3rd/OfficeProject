@@ -1,5 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using OfficeProject.Models.DTO
+@using OfficeProject.Web.Pages.DialogModel
+@using OfficeProject.Web.Pages.TappanDialog
 @inject ApiService api
 @inject NavigationManager Navigation
 
@@ -12,6 +14,7 @@
             <thead class="table-info sticky-header">
                 <tr>
                     <th>SID</th>
+                    <th>S Name</th>
                     <th>Date</th>
                     <th>Task</th>
                     <th>Shared Post</th>
@@ -19,21 +22,23 @@
                     <th>Used Ads Budget</th>
                     <th>Status</th>
                     <th>Remarks</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @if (tableData == null || !tableData.Any())
                 {
                     <tr>
-                        <td colspan="8" class="text-center text-muted">No data available</td>
+                        <td colspan="10" class="text-center text-muted">No data available</td>
                     </tr>
                 }
                 else
                 {
                     @foreach (var item in tableData)
                     {
-                        <tr>
+                        <tr @onclick="() => OnRowClick(item)" style="cursor: pointer;">
                             <td>@item.ServiceId</td>
+                            <td style="width:15%;">@item.ServiceName</td> <!-- New Column -->
                             <td>@item.WorkDate.ToString("yyyy-MM-dd")</td>
                             <td style="width:25%;">@item.Task</td>
                             <td>@item.SharedPost</td>
@@ -41,46 +46,112 @@
                             <td>@item.UsedAdsBudget</td>
                             <td>@item.Status</td>
                             <td>@item.Remarks</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" @onclick:stopPropagation="true" @onclick="() => EditWorkTask(item)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
                         </tr>
                     }
                 }
             </tbody>
+            @* <tbody> *@
+            @*     @if (tableData == null || !tableData.Any()) *@
+            @*     { *@
+            @*         <tr> *@
+            @*             <td colspan="8" class="text-center text-muted">No data available</td> *@
+            @*         </tr> *@
+            @*     } *@
+            @*     else *@
+            @*     { *@
+            @*         @foreach (var item in tableData) *@
+            @*         { *@
+            @*             <tr @onclick="() => OnRowClick(item)" style="cursor: pointer;"> *@
+            @*                 <td>@item.ServiceId</td> *@
+            @*                 <td>@item.WorkDate.ToString("yyyy-MM-dd")</td> *@
+            @*                 <td style="width:25%;">@item.Task</td> *@
+            @*                 <td>@item.SharedPost</td> *@
+            @*                 <td>@item.CreatedReels</td> *@
+            @*                 <td>@item.UsedAdsBudget</td> *@
+            @*                 <td>@item.Status</td> *@
+            @*                 <td>@item.Remarks</td> *@
+
+            @*                 <td> *@
+            @*                     <button class="btn btn-sm btn-warning" @onclick:stopPropagation="true" @onclick="() => EditWorkTask(item)"> *@
+            @*                         <i class="fas fa-edit"></i> *@
+            @*                     </button> *@
+            @*                 </td> *@
+            @*             </tr> *@
+            @*         } *@
+            @*     } *@
+            @* </tbody> *@
         </table>
     </div>
 </div>
+<DialogUpdateWorkTask 
+IsVisible="@IsVisible" 
+isSubmit="@ReloadWorkTask" 
+Data="@WorkRecord" />
+
+<TappanSeoTaskOthersTask  
+IsVisible="@ShowDialog" 
+workTaskId="@workTaskId" 
+IsVisibleChanged="@((bool val) => ShowDialog = val)" /> 
 
 @code {
-    private bool showForm = false;
-    private WorkingRecordsDto WorkRecord { get; set; } = new();
-    private List<WorkingRecordsDto> tableData { get; set; } = new();
+    private bool IsVisible = false;
+    private bool ShowDialog = false;
+    private int workTaskId { get; set; }
+    private WorkTaskDetailsDto WorkRecord { get; set; } = new();
+    private List<WorkTaskDetailsDto> tableData { get; set; } = new();
+    // private List<ServicesDTO> servicesList = new(); Store all services
+
 
     [Parameter]
-    public EventCallback<bool> Signal { get; set; }
+    public EventCallback<bool> isFormSubmit { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadDummyData();
+        await LoadWorkList();
     }
 
     protected override async Task OnParametersSetAsync()
     {
 
-            await LoadDummyData();
-        
+        await LoadWorkList();
+
     }
 
-    private async Task LoadDummyData()
+    // private async Task LoadWorkList()
+    // {
+    //     try
+    //     {
+    //         var projects = await api.GetWorkingRecordPerUserAsync();
+    //         DataSerializer?.Serializer(projects, "LoadWorkList");
+    //         tableData = projects?
+    //             .Where(p => p?.Services != null)
+    //             .SelectMany(p => p!.Services!)
+    //             .Where(s => s.WorkTaskDetails != null && s.WorkTaskDetails.Any())
+    //             .SelectMany(s => s.WorkTaskDetails!)
+    //             .ToList() ?? new List<WorkTaskDetailsDto>();
+
+    //         Console.WriteLine($"tableData count: {tableData.Count}");
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Console.WriteLine("Error loading work records: " + ex.Message);
+    //         tableData = new();
+    //     }
+    // }
+
+    private async Task LoadWorkList()
     {
         try
         {
-            var projects = await api.GetWorkingRecordPerUserAsync();
+            var workTasks = await api.GetWorkingRecordPerUserAsync();
 
-            tableData = projects?
-                .Where(p => p?.Services != null)
-                .SelectMany(p => p!.Services!)
-                .Where(s => s.WorkRecords != null && s.WorkRecords.Any())
-                .SelectMany(s => s.WorkRecords!)
-                .ToList() ?? new List<WorkingRecordsDto>();
+            tableData = workTasks;
 
             Console.WriteLine($"tableData count: {tableData.Count}");
         }
@@ -88,32 +159,41 @@
         {
             Console.WriteLine("Error loading work records: " + ex.Message);
             tableData = new();
+           
         }
     }
 
-    private void ToggleForm() => showForm = !showForm;
-
-    private void CancelForm()
+    private void EditWorkTask(WorkTaskDetailsDto work)
     {
-        showForm = false;
-        ResetForm();
+        IsVisible = true;
+        ShowDialog = false;
+        WorkRecord ??=new WorkTaskDetailsDto();
+        WorkRecord = work;
+
     }
 
-    private void ResetForm()
-    {
-        WorkRecord = new WorkingRecordsDto();
-    }
 
-    private void AddSeoDetail()
-    {
-        WorkRecord.SeoTaskDetailsDto.Add(new SeoTaskDetailsDto());
-    }
 
-    private void RemoveSeoDetail(int index)
+    private async Task ReloadWorkTask(bool isSuccess)
     {
-        if (index >= 0 && index < WorkRecord.SeoTaskDetailsDto.Count)
+        Console.WriteLine(isSuccess);
+        if (isSuccess)
         {
-            WorkRecord.SeoTaskDetailsDto.RemoveAt(index);
+            await LoadWorkList(); 
+            StateHasChanged(); 
         }
+        else
+        {
+            IsVisible = false;
+        }
+    }
+
+
+    @inject IDataSerializer? DataSerializer;
+    private void OnRowClick(WorkTaskDetailsDto item)
+    {
+        ShowDialog = true;
+        workTaskId = (int)item.WorkRecordId!;
+        // DataSerializer?.Serializer(item, "Submission Error");
     }
 }

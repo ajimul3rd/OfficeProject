@@ -3,6 +3,7 @@ using OfficeProject.Models.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace OfficeProject.Models.DTO
 {
@@ -29,6 +30,7 @@ namespace OfficeProject.Models.DTO
         public DateTime ProjectStartDate { get; set; } = DateTime.UtcNow;
 
         [Required(ErrorMessage = "Project cost is required")]
+        [Precision(18, 2)]
         public decimal ProjectCost { get; set; }
 
         [JsonIgnore]

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using OfficeProject.Models.Enums;
 
 namespace OfficeProject.Models.Entities
@@ -38,8 +39,9 @@ namespace OfficeProject.Models.Entities
 
         [Column(TypeName = "nvarchar(50)")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public BillingType? BillingType { get; set; }        
+        public BillingType? BillingType { get; set; }
 
+        [Precision(18, 2)]
         public decimal ProjectCost { get; set; } = 0;
 
         [DataType(DataType.DateTime)]

@@ -287,43 +287,7 @@ public class ApiService
     }
 
 
-    public async Task<List<ProjectsDTO>> GetWorkingRecordPerUserAsync()
-    {
-        try
-        {
-            await AddAuthHeaderAsync();
-
-            // Make sure this matches your actual API endpoint
-            var response = await http.GetAsync("api/projects/user/work");
-
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                Converters = { new JsonStringEnumConverter() }
-            };
-
-            return JsonSerializer.Deserialize<List<ProjectsDTO>>(content, options) ?? new List<ProjectsDTO>();
-        }
-        catch (HttpRequestException ex)
-        {
-            Console.WriteLine($"HTTP Error: {ex.Message}");
-            throw;
-        }
-        catch (JsonException ex)
-        {
-            Console.WriteLine($"JSON Error: {ex.Message}");
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"General Error: {ex.Message}");
-            throw;
-        }
-    }
-
+   
 
 
     // ✅ Get Project By Id
@@ -343,9 +307,9 @@ public class ApiService
             throw new Exception($"Error {response.StatusCode}: {error}");
         }
     }
-  
 
-   
+
+
 
 
     ////############################################### MarketingPhase Services ##################################################
@@ -368,6 +332,60 @@ public class ApiService
 
 
     //}
+
+    //############################################### Work Task  Services ##################################################
+
+    public async Task<HttpResponseMessage> AddOrUpdateUserWorkingRecordAsync(WorkTaskDetailsDto dto)
+    {
+        await AddAuthHeaderAsync();
+        return await http.PostAsJsonAsync("api/WorkTask/save-or-update", dto);
+    }
+
+    public async Task<WorkTaskDetailsDto> GetWorkTaskDetailsById(int workTaskId)
+    {
+        await AddAuthHeaderAsync();
+        var response = await http.GetAsync($"api/WorkTask/{workTaskId}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<WorkTaskDetailsDto>();
+    }
+
+    public async Task<List<WorkTaskDetailsDto>> GetWorkingRecordPerUserAsync()
+    {
+        try
+        {
+            await AddAuthHeaderAsync();
+
+            // Make sure this matches your actual API endpoint
+            var response = await http.GetAsync("api/WorkTask");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
+
+            return JsonSerializer.Deserialize<List<WorkTaskDetailsDto>>(content, options) ?? new List<WorkTaskDetailsDto>();
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"HTTP Error: {ex.Message}");
+            throw;
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"JSON Error: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"General Error: {ex.Message}");
+            throw;
+        }
+    }
+
 
     //############################################### Products Services ##################################################
     // ✅ ADD PRODUCTS 

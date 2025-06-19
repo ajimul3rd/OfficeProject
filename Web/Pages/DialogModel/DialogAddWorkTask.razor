@@ -1,7 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using OfficeProject.Models.DTO
 @using System.Text.Json
-@inject IWorkingRecordsService workingRecordsService
+@inject ApiService api
 
 @if (IsVisible)
 {
@@ -354,7 +354,7 @@
 
     private bool webFlag { get; set; } = false;
 
-    public WorkingRecordsDto WorkRecord { get; set; }
+    public WorkTaskDetailsDto WorkRecord { get; set; }
 
     @inject IDataSerializer? DataSerializer;
 
@@ -376,7 +376,7 @@
         seoFlag = false;
         othersFlag = false;
         webFlag = false;
-        WorkRecord = new WorkingRecordsDto();
+        WorkRecord = new WorkTaskDetailsDto();
         if (service != null)
         {
             WorkRecord.ServiceId = (int)service.ServiceId!;
@@ -424,7 +424,7 @@
         }
         if (WorkRecord == null)
         {
-            WorkRecord = new WorkingRecordsDto();
+            WorkRecord = new WorkTaskDetailsDto();
         }
         if (editContext == null)
         {
@@ -539,11 +539,7 @@
     {
         IsVisible = false;
     }
-
-
-    private bool isSubmitting = false;
-
-
+    
     private async Task HandleValidSubmit()
     {
        
@@ -561,7 +557,7 @@
             WorkRecord.OthersTaskDetailsDto = new List<OthersTaskDetailsDto>();
         }
 
-        DataSerializer?.Serializer(WorkRecord, "Before Submission Validation");
+        @* DataSerializer?.Serializer(WorkRecord, "Before Submission Validation"); *@
 
         var isValid = editContext.Validate();
         // Notify validation state change to update UI
@@ -574,10 +570,11 @@
             return;
         }
 
-        isSubmitting = true;
+       
         try
         {
-           await workingRecordsService.AddOrUpdateUserWorkingRecordAsync(WorkRecord); 
+            await api.AddOrUpdateUserWorkingRecordAsync(WorkRecord);
+            DataSerializer?.Serializer(WorkRecord, "Form Submit");
             await OnSubmitSignal.InvokeAsync(true);
 
             // Reset form state
@@ -591,15 +588,12 @@
             // Handle API errors
             DataSerializer?.Serializer(ex, "Submission Error");
         }
-        finally
-        {
-            isSubmitting = false;
-        }
+       
     }
 
         private void ResetForm()
         {
-            WorkRecord = new WorkingRecordsDto
+            WorkRecord = new WorkTaskDetailsDto
             {
                 // Maintain ServiceId and WorkDate if needed
                 ServiceId = WorkRecord.ServiceId,

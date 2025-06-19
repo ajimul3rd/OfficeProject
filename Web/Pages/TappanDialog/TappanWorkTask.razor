@@ -29,12 +29,11 @@
 
                     <div class="tab-content mt-3">
                         <div class="@GetTabPaneClass("servicelist")">
-                            <ServiceListModel 
-                                projects="@projects" 
-                                signal="@Signal" />
+                            <ServiceListModel projects="@projects"
+                                              signal="@Signal" />
                         </div>
                         <div class="@GetTabPaneClass("workrecord")">
-                            <UserWorkRecord Signal="@HandleChildSubmit" />
+                            <UserWorkRecord isFormSubmit="@HandleChildSubmit" />
                         </div>
                     </div>
                 </div>

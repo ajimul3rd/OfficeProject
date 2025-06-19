@@ -4,12 +4,14 @@ using System.Text.Json.Serialization;
 
 namespace OfficeProject.Models.DTO
 {
-    public class WorkingRecordsDto
+    public class WorkTaskDetailsDto
     {
         public int? WorkRecordId { get; set; }
 
         [Required(ErrorMessage ="Service id is Required")]
         public int ServiceId { get; set; }
+        public string? ServiceName { get; set; }
+        public int Work_UserId { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -58,7 +60,10 @@ namespace OfficeProject.Models.DTO
         // Optionally include child DTOs if needed
 
         [JsonIgnore]
-        public Services Services { get; set; } = null!;
+        public Services? Services { get; set; } = null!;
+
+        [JsonIgnore]
+        public Users? Users { get; set; } = null!;
 
         [ValidateComplexType]
         public List<SeoTaskDetailsDto>? SeoTaskDetailsDto { get; set; }

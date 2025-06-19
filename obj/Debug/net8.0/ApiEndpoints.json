@@ -322,26 +322,6 @@
     ]
   },
   {
-    "ContainingType": "OfficeProject.Controllers.ProjectsController",
-    "Method": "GetWorkingRecordPerUserAsync",
-    "RelativePath": "api/Projects/user/work",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.List\u00601[[OfficeProject.Models.DTO.ProjectsDTO, OfficeProject, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
     "ContainingType": "OfficeProject.Controllers.UserController",
     "Method": "GetAllUsersDTO",
     "RelativePath": "api/User",
@@ -508,6 +488,58 @@
       {
         "Name": "refreshToken",
         "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "OfficeProject.Controller.WorkTaskController",
+    "Method": "GetWorkingRecords",
+    "RelativePath": "api/WorkTask",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[OfficeProject.Models.DTO.WorkTaskDetailsDto, OfficeProject, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "OfficeProject.Controller.WorkTaskController",
+    "Method": "GetWorkTaskDetailsById",
+    "RelativePath": "api/WorkTask/{workTaskId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "workTaskId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "OfficeProject.Controller.WorkTaskController",
+    "Method": "AddOrUpdateUserWorkingRecordAsync",
+    "RelativePath": "api/WorkTask/save-or-update",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "workTaskDetailsDto",
+        "Type": "OfficeProject.Models.DTO.WorkTaskDetailsDto",
         "IsRequired": true
       }
     ],
