@@ -89,17 +89,14 @@
                                                 </InputSelect>
                                                 <ValidationMessage For="@(() => projectDTO.BillingType)" class="small text-danger" />
                                             </div>
-
                                             <div class="mb-2">
-                                                <label class="form-label small">Project Type</label>
-                                                <InputSelect class="form-select form-select-sm"
-                                                @bind-Value="projectDTO.ProjectType"
-                                                @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectType)))">
-                                                    <option value="">Select Type</option>
-                                                    <option value="@ProjectType.WEB_DEVELOPMENT">Web Development</option>
-                                                    <option value="@ProjectType.DIGITAL_MARKETING">Digital Marketing</option>
-                                                </InputSelect>
+                                                <label class="form-label small">Project Cost</label>
+                                                <InputNumber @bind-Value="@projectDTO.ProjectCost"
+                                                             @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectCost)))"
+                                                             class="form-control form-control-sm" readonly />
                                             </div>
+
+                                           
                                         </div>
 
                                         <!-- Column 3 -->
@@ -112,12 +109,7 @@
                                                 <ValidationMessage For="@(() => projectDTO.ProjectStartDate)" class="text-danger small" />
                                             </div>
 
-                                            <div class="mb-2">
-                                                <label class="form-label small">Project Cost</label>
-                                                <InputNumber @bind-Value="@projectDTO.ProjectCost"
-                                                @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectCost)))"
-                                                class="form-control form-control-sm" readonly />
-                                            </div>
+                                            
                                         </div>
                                     </div>
                                 </div>

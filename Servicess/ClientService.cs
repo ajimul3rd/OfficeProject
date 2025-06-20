@@ -180,7 +180,7 @@ namespace OfficeProject.Servicess
                             {
                                 ProjectName = projectDto.ProjectName,
                                 ProjectStartDate = projectDto.ProjectStartDate,
-                                ProjectType = projectDto.ProjectType,
+                                //ProjectType = projectDto.ProjectType,
                                 ProjectCost = projectDto.ProjectCost,
                                 ProjectCreatedAt = projectDto.ProjectCreatedAt,
                             };
@@ -248,7 +248,7 @@ namespace OfficeProject.Servicess
                             ProjectName = p.ProjectName,
                             ProjectStartDate = p.ProjectStartDate,
                             ProjectCost = p.ProjectCost,
-                            ProjectType = p.ProjectType,
+                            //ProjectType = p.ProjectType,
                             ProjectCreatedAt = p.ProjectCreatedAt
                         }).ToList()
                     }).ToList();

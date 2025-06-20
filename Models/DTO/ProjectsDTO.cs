@@ -58,29 +58,29 @@ namespace OfficeProject.Models.DTO
 
         }
 
-        [JsonIgnore]
-        // Add a property to hold the callback
-        public Action<ProjectsDTO, ProjectType?>? OnProjectTypeChanged { get; set; }
+        //[JsonIgnore]
+        //// Add a property to hold the callback
+        //public Action<ProjectsDTO, ProjectType?>? OnProjectTypeChanged { get; set; }
 
-        [JsonIgnore]
-        // Backing field for the ProjectType
-        private ProjectType? _projectType;
+        //[JsonIgnore]
+        //// Backing field for the ProjectType
+        //private ProjectType? _projectType;
         
-        [Required(ErrorMessage = "Project type is required")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ProjectType? ProjectType
-        {
-            get => _projectType!;
-            set
-            {
-                if (_projectType != value)// Only trigger if value actually changed
-                {
-                    _projectType = value;// Update the stored value
+        //[Required(ErrorMessage = "Project type is required")]
+        //[JsonConverter(typeof(JsonStringEnumConverter))]
+        //public ProjectType? ProjectType
+        //{
+        //    get => _projectType!;
+        //    set
+        //    {
+        //        if (_projectType != value)// Only trigger if value actually changed
+        //        {
+        //            _projectType = value;// Update the stored value
 
-                    OnProjectTypeChanged?.Invoke(this, value);// Notify subscribers
-                }
-            }
-        }
+        //            OnProjectTypeChanged?.Invoke(this, value);// Notify subscribers
+        //        }
+        //    }
+        //}
 
         [Required(ErrorMessage = "Project creation date is required")]
         public DateTime ProjectCreatedAt { get; set; } = DateTime.UtcNow;       

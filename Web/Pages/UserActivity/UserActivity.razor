@@ -6,6 +6,13 @@
 @inject ApiService api
 
 <h3>My Projects</h3>
+<div class="mb-3">
+    <input class="form-control"
+           type="text"
+           @bind="searchText"
+           @bind:event="oninput"
+           placeholder="Search by PID, Project Name or Client Name...." />
+</div>
 
 @if (isLoading)
 {
@@ -37,7 +44,7 @@ else
                     <th>Project Name</th>
                     <th>Client</th>
                     <th>Start Date</th>
-                    <th>Type</th>                   
+                    @* <th>Type</th>                    *@
                     <th>GMB</th>
                     <th>Fb</th>
                     <th>Ig</th>
@@ -45,21 +52,21 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var project in projects)
+                @foreach (var project in filteredProjects)
                 {
                     <tr @onclick="() => OpenDialog(project)" style="cursor: pointer;" class="hover-row">
                         <td>@project.ProjectId</td>
                         <td>@project.ProjectName</td>
                         <td>@(project.Client?.ClientName ?? "N/A")</td>
                         <td>@project.ProjectStartDate.ToString("d")</td>
-                        <td>@project.ProjectType</td>
+                        @* <td>@project.ProjectType</td> *@
                         <td>@project.GmbRakning</td>
                         <td>@project.FbFollowers</td>
                         <td>@project.IgFollowers</td>
-
                         <td>In-Complete</td>
                     </tr>
                 }
+
             </tbody>
         </table>
     </div>
@@ -126,5 +133,14 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)"
             await InvokeAsync(StateHasChanged);
         }
     }
+
+    private string searchText = "";
+    private IEnumerable<ProjectsDTO> filteredProjects => string.IsNullOrWhiteSpace(searchText)
+        ? projects
+        : projects.Where(p =>
+            (p.ProjectId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(p.ProjectName) && p.ProjectName.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(p.Client?.ClientName) && p.Client.ClientName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+        );
 
 }

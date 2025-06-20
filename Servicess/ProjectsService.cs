@@ -101,7 +101,7 @@ namespace OfficeProject.Servicess
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
                         ProjectStartDate = project.ProjectStartDate,
-                        ProjectType = project.ProjectType,
+                        //ProjectType = project.ProjectType,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
                         InternalRemark = project.InternalRemark,
@@ -422,7 +422,7 @@ namespace OfficeProject.Servicess
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
                         ProjectStartDate = project.ProjectStartDate,
-                        ProjectType = project.ProjectType,
+                        //ProjectType = project.ProjectType,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
                         InternalRemark = project.InternalRemark,
@@ -554,7 +554,7 @@ namespace OfficeProject.Servicess
                     existingProject.ProjectStartDate = project.ProjectStartDate;
                     existingProject.ProjectCost = project.ProjectCost;
                     existingProject.BillingType = project.BillingType;
-                    existingProject.ProjectType = project.ProjectType;
+                    //existingProject.ProjectType = project.ProjectType;
                     existingProject.ProjectCreatedAt = project.ProjectCreatedAt;
 
                     // Optional: Update child collections only if needed (custom logic may apply)
@@ -593,7 +593,7 @@ namespace OfficeProject.Servicess
                         ProjectName = projectDto.ProjectName,
                         BillingType = projectDto.BillingType,
                         ProjectStartDate = projectDto.ProjectStartDate,
-                        ProjectType = projectDto.ProjectType,
+                        //ProjectType = projectDto.ProjectType,
                         ProjectCost = projectDto.ProjectCost,
                         CurrentIssue = projectDto.CurrentIssue,
                         InternalRemark = projectDto.InternalRemark,
@@ -615,7 +615,7 @@ namespace OfficeProject.Servicess
                     existingProject.ProjectName = projectDto.ProjectName;
                     existingProject.BillingType = projectDto.BillingType;
                     existingProject.ProjectStartDate = projectDto.ProjectStartDate;
-                    existingProject.ProjectType = projectDto.ProjectType;
+                    //existingProject.ProjectType = projectDto.ProjectType;
                     existingProject.ProjectCost = projectDto.ProjectCost;
                     existingProject.CurrentIssue = projectDto.CurrentIssue;
                     existingProject.InternalRemark = projectDto.InternalRemark;

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OfficeProject")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2569cf172d40d79a65ff58f439086cd44675d505")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1e3aee0544e382c80e6fcf5279bd325837234fe8")]
 [assembly: System.Reflection.AssemblyProductAttribute("OfficeProject")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OfficeProject")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

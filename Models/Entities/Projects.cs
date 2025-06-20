@@ -26,16 +26,14 @@ namespace OfficeProject.Models.Entities
         public string? CustomerNote { get; set; }
         public string? FbFollowers { get; set; }
         public string? IgFollowers { get; set; }
-
-        public string? GmbRakning { get; set; }
-        
+        public string? GmbRakning { get; set; }        
 
         [DataType(DataType.DateTime)]
         public DateTime ProjectStartDate { get; set; } = DateTime.UtcNow;
 
-        [Column(TypeName = "nvarchar(50)")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ProjectType? ProjectType { get; set; }
+        //[Column(TypeName = "nvarchar(50)")]
+        //[JsonConverter(typeof(JsonStringEnumConverter))]
+        //public ProjectType? ProjectType { get; set; }
 
         [Column(TypeName = "nvarchar(50)")]
         [JsonConverter(typeof(JsonStringEnumConverter))]

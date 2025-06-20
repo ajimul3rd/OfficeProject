@@ -6,6 +6,13 @@
 
 
 <h4 class="mt-3">Services Overview</h4>
+<div class="mb-3">
+    <input class="form-control"
+           type="text"
+           @bind="searchText"
+           @bind:event="oninput"
+           placeholder="Search by SID or Service Name..." />
+</div>
 
 @if (Services != null && Services.Any())
 {
@@ -24,9 +31,8 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var service in Services)
+                @foreach (var service in FilteredServices)
                 {
-
                     <tr @onclick="() => OpenDialog(service)" style="cursor: pointer;" class="hover-row">
                         <td>@service.ServiceId</td>
                         <td>@service.ServiceName</td>
@@ -35,15 +41,15 @@
                         <td>@service.BillingType</td>
                         <td>@service.AdsBudget.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
                         <td>@service.DeadLine.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
-
                         <td>
                             <button class="btn btn-sm btn-primary"
-                            @onclick="() => AddWorkRecord(service)">
+                                    @onclick="() => AddWorkRecord(service)">
                                 <i class="fas fa-plus"></i> Add Work
                             </button>
                         </td>
                     </tr>
                 }
+
             </tbody>
         </table>
     </div>
@@ -79,6 +85,14 @@ OnCancel="@OnDialogCancel" />
     {
         Services ??= new List<ServicesDTO>();
     }
+    private string searchText = "";
+
+    private IEnumerable<ServicesDTO> FilteredServices => string.IsNullOrWhiteSpace(searchText)
+        ? Services
+        : Services.Where(s =>
+            s.ServiceId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            (!string.IsNullOrEmpty(s.ServiceName) && s.ServiceName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+        );
 
     protected override void OnParametersSet()
     {
