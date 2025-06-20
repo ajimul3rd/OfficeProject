@@ -1089,9 +1089,10 @@ showModal="@showServiceModal" />
                 }
                 else
                 {
-                    foreach (var service in projectDTO.Services)
+                    foreach (var service in projectDTO.Services!)
                     {
-                        if (service.ProjectId == null || service.ProjectId != 0)
+                        // if (service.ProjectId == null || service.ProjectId != 0)
+                        if ( service.ProjectId != 0)
                         {
                             service.ProjectId = (int)projectDTO.ProjectId!;
                         }

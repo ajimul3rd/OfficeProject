@@ -5,7 +5,7 @@
 namespace OfficeProject.Migrations
 {
     /// <inheritdoc />
-    public partial class removed_project_type : Migration
+    public partial class RemovedProjectType : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

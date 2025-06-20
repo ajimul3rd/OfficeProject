@@ -181,7 +181,7 @@
     private List<ClientSources> clientSources;
     private bool isAddingNew = false;
     private string newClientSourceName;
-    private int? selectedClientSourceId;
+    // private int? selectedClientSourceId;
     private string errorMessage;
     private string successMessage;
     private ClientSources? sourceToEdit;
@@ -198,7 +198,7 @@
             clientSources = await ClientSourcesService.GetAll();
             isAddingNew = false;
             newClientSourceName = null;
-            selectedClientSourceId = null;
+            // selectedClientSourceId = null;
             errorMessage = null;
             successMessage = null;
             sourceToEdit = null;

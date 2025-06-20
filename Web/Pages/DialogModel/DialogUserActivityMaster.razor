@@ -141,12 +141,12 @@
     private List<UserActivityMasterDto> _tableData = new();
     private UserActivityMasterDto _activity = new();
     private string _searchText = "";
-    private string _selectedFilter = "active";
+    // private string _selectedFilter = "active";
     private string _errorMessage = string.Empty;
-    private bool _isActive = true;
+    // private bool _isActive = true;
     private bool _showAddForm = false;
     private EditContext _editContext;
-    private bool _isSubmitting = false;
+    // private bool _isSubmitting = false;
     private string _statusMessage = string.Empty;
     private bool _isError = false;
     private List<UserActivityMasterDto> _selectedMaster = new();
@@ -170,6 +170,8 @@
     [Inject]
     public IUserActivityMasterService UserActivityMasterService { get; set; }
 
+    @inject IDataSerializer? DataSerializer;
+
     protected override async Task OnInitializedAsync()
     {
         _activity = new UserActivityMasterDto { MasterId = 0 };
@@ -185,7 +187,7 @@
         }
     }
 
-    private async Task ToggleActivitySelection(UserActivityMasterDto activity, bool? isChecked)
+    private void ToggleActivitySelection(UserActivityMasterDto activity, bool? isChecked)
     {
         if (isChecked == true)
         {
@@ -279,17 +281,7 @@
         ResetForm();
     }
 
-    // private async Task HandleValidSubmit()
-    // {
-    //     try
-    //     {
-    //         await UserActivityMasterService.AddOrUpdateGetUserActivityList(_activity);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Console.WriteLine($"Exception when adding activity: {ex.Message}");
-    //     }
-    // }
+
 
     private void ResetForm()
     {
@@ -311,11 +303,10 @@
         {
             await OnSelectedMaster.InvokeAsync(_selectedMaster);
         }
-            //         string json = JsonSerializer.Serialize(_selectedMaster, new JsonSerializerOptions
-            //     {
-            //         WriteIndented = true
-            //     });
-            // Console.WriteLine($"CloseModal: {json}");
+
+
+   
+        DataSerializer?.Serializer(_selectedMaster, "CloseModal:");
         StateHasChanged();
         ResetSelectedActivities();
 

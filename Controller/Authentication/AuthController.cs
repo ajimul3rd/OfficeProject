@@ -186,7 +186,7 @@ namespace OfficeProject.Controller.Authentication
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = "An error occurred during token refresh" });
+                return StatusCode(500, new { Message = "An error occurred during token refresh", Details = ex.Message });
             }
         }
 

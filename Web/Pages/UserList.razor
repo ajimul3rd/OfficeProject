@@ -280,7 +280,7 @@ else
 
     private bool isLoading = true;
 
-    private bool isUpdate = false;
+    // private bool isUpdate = false;
 
     private bool showAddForm = false;
 
@@ -324,7 +324,7 @@ else
                 UserDesignation = new List<UserDesignation>() // Initialize here
             };
         showAddForm = true;
-        isUpdate = false;
+        // isUpdate = false;
         registerModel = new RegisterModel();
         editContext = new EditContext(registerModel!);
         StateHasChanged();
@@ -335,7 +335,7 @@ else
     {
         try
         {
-            isUpdate = true;
+            // isUpdate = true;
             var user = await userService.GetUserDTOById((int)userId!);
             if (user != null)
             {	
@@ -381,7 +381,7 @@ else
             if (registerModel.UserDesignation == null || !registerModel.UserDesignation.Any())
             {
                 validationErrors.Add("Assigned User Designations");
-                editContext.NotifyValidationStateChanged();
+                editContext!.NotifyValidationStateChanged();
                 StateHasChanged();
             }
 
@@ -543,7 +543,9 @@ else
 
     private async Task RemoveActivity(UserDesignation service)
     {
-        if (registerModel!.UserDesignation == null&&service.DesignationId!=0||service.DesignationId==null ) return;
+        // if (registerModel!.UserDesignation == null && service.DesignationId!=0||service.DesignationId==null ) return;
+        if (registerModel?.UserDesignation == null || service.DesignationId == 0)
+            return;
         if (!activityDeleteList.Contains(service.DesignationId))
         {
             activityDeleteList.Add(service.DesignationId);
@@ -556,7 +558,7 @@ else
     {
         try
         {
-            if (activityDeleteList?.Count > 0 && registerModel.UserDesignation != null)
+            if (activityDeleteList?.Count > 0 && registerModel!.UserDesignation != null)
             {
                 foreach (var Id in activityDeleteList)
                 {

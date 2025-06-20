@@ -27,11 +27,13 @@
         await ((CustomAuthStateProvider)AuthenticationStateProvider).StateChangedAsync();
     }
 
-    private async Task OnNavigateAsync(NavigationContext context)
+   private Task OnNavigateAsync(NavigationContext context)
     {
         // Skip auth check for login page and static assets
         if (context.Path == "/login" || context.Path.StartsWith("/_content/"))
-            return;
+            return Task.CompletedTask;
+
+        return Task.CompletedTask;
     }
 
     private class RedirectToLogin : ComponentBase

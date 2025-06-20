@@ -287,7 +287,7 @@ else
     private ClientsDTO? Model { get; set; }
     private bool showAddForm = false;
     private bool isSubmitting = false;
-    private bool isError = false;
+    // private bool isError = false;
     private List<ClientsDTO> tableData = new();
     private string searchText = "";
     private string selectedFilter = "all";
@@ -378,20 +378,20 @@ else
 
                 if (response.IsSuccessStatusCode)
                 {   await LoadProjects();
-                    isError = false;
+                    // isError = false;
                 }
                 else
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
                     statusMessage = $"Error adding client: {errorContent}";
-                    isError = true;
+                    // isError = true;
                 }
             }
         }
         catch (Exception ex)
         {
             statusMessage = $"Exception when adding client: {ex.Message}";
-            isError = true;
+            // isError = true;
         }
         finally
         {
@@ -426,21 +426,21 @@ else
                     statusMessage = "Client added successfully!";
                     showAddForm = !showAddForm;
                     await LoadProjects();
-                    isError = false;
+                    // isError = false;
                     CloseFormDialog();
                 }
                 else
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
                     statusMessage = $"Error adding client: {errorContent}";
-                    isError = true;
+                                        // isError = true;
                 }
             }
         }
         catch (Exception ex)
         {
             statusMessage = $"Exception when adding client: {ex.Message}";
-            isError = true;
+            // isError = true;
         }
         finally
         {

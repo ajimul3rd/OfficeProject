@@ -12,8 +12,8 @@ using OfficeProject.Data;
 namespace OfficeProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250620083802_removed_project_type")]
-    partial class removed_project_type
+    [Migration("20250618142932_init")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -363,6 +363,9 @@ namespace OfficeProject.Migrations
 
                     b.Property<DateTime>("ProjectStartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ProjectType")
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");

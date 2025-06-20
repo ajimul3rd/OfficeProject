@@ -272,7 +272,6 @@
                                 <th>Email</th>
                                 <th>Status</th>
                                 <th>User Roles</th>
-                                <th>User Designation </th>
                                 <th>Select</th>
                             </tr>
                         </thead>
@@ -284,7 +283,7 @@
                                     <td>@user.UserContact</td>
                                     <td>@user.UserEmail</td>
                                     <td>@user.IsActive</td>
-                                    @* <td>@user.UserDesignation.ToArray</td> *@
+                                     @* <td>@user.UserDesignation.ToArray</td>  *@
                                     <td>
                                         <button class="btn btn-sm @(user.IsActive ? "btn-success" : "btn-danger")">
                                             @(user.IsActive ? "Active" : "Inactive")
@@ -378,6 +377,8 @@
 
     private bool isError = false;
 
+    @inject IDataSerializer? DataSerializer;
+
     protected override async Task OnInitializedAsync()
     {
         Model ??= new RegisterModel { IsActive = true };
@@ -407,7 +408,7 @@
 
 
 
-    private async Task ToggleOnUserSelection(UserDTO user, bool? isChecked)
+    private void ToggleOnUserSelection(UserDTO user, bool? isChecked)
     {
         if (IsUserAssigned(user)) return; // Prevent editing assigned users
 
@@ -453,9 +454,9 @@
 
     private string selectedFilter = "all";
 
-    private bool showCardView = true;
+    // private bool showCardView = true;
 
-    private bool isTableView = true;  
+    // private bool isTableView = true;  
 
 
 
@@ -526,16 +527,12 @@
         try
         {
 
-            // string json = JsonSerializer.Serialize(Model, new JsonSerializerOptions
-            //     {
-            //         WriteIndented = true
-            //     });
-            // Console.WriteLine(json);
+            // DataSerializer?.Serializer(Model, "DialogUserList Submit:");
             errorMessage = string.Empty;
             if (Model.UserDesignation == null || !Model.UserDesignation.Any())
             {
                 validationErrors.Add("Assigned User Designations");
-                editContext.NotifyValidationStateChanged();
+                editContext!.NotifyValidationStateChanged();
                 StateHasChanged();
             }
 
@@ -607,6 +604,7 @@
         showServiceModal = true;
     }
 
+  
     private void HandleSelectedMaster(List<UserActivityMasterDto> model)
     {
         try
@@ -638,12 +636,7 @@
                 }
             }
 
-            // Log for debugging
-            // string json = JsonSerializer.Serialize(product.UserWorkingActivity, new JsonSerializerOptions
-            //     {
-            //         WriteIndented = true
-            //     });
-            // Console.WriteLine($"HandleSelectedMaster: {json}");
+   
             validationErrors.Clear();
             statusMessage = "";
 
@@ -659,12 +652,12 @@
 
     private async Task RemoveActivity(UserDesignation service)
     {
-        if (Model!.UserDesignation == null && service.DesignationId != 0 || service.DesignationId == null) return;
+        if (Model!.UserDesignation == null && service.DesignationId != 0) return;
         if (!activityDeleteList.Contains(service.DesignationId))
         {
             activityDeleteList.Add(service.DesignationId);
         }
-        Model.UserDesignation.Remove(service);
+        Model.UserDesignation!.Remove(service);
         await InvokeAsync(StateHasChanged);
     }
 

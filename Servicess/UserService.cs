@@ -25,25 +25,6 @@ namespace OfficeProject.Servicess
 
         }
 
-        // ✅ Get All Users and UsersDTO
-
-        //public async Task<List<UserDTO>> GetAllUsersDTOAsync()
-        //{
-        //    using (var context = dbContextFactory.CreateDbContext())
-        //    {
-        //        return Mapper.Map<List<UserDTO>>(await context.Users.ToListAsync());
-        //    }
-        //}
-
-        //public async Task<List<UserDTO>> GetAllUsersDTOAsync()
-        //{
-        //    using (var context = dbContextFactory.CreateDbContext())
-        //    {
-        //        return Mapper.Map<List<UserDTO>>(await context.Users
-        //            .Include(u => u.UserDesignation) // Include UserDesignation
-        //            .ToListAsync());
-        //    }
-        //}
 
         public async Task<List<UserDTO>> GetAllUsersDTOAsync()
         {
@@ -86,15 +67,7 @@ namespace OfficeProject.Servicess
             }
         }
 
-        // ✅ Get UserDTO By Id 
-        //public async Task<UserDTO?> GetUserDTOById(int id)
-        //{
-        //    using (var context = dbContextFactory.CreateDbContext())
-        //    {
-        //        var user = await context.Users.FindAsync(id); // Pass the 'id' parameter
-        //        return user == null ? null : Mapper.Map<UserDTO>(user);
-        //    }
-        //}
+
         public async Task<UserDTO?> GetUserDTOById(int id)
         {
             using (var context = dbContextFactory.CreateDbContext())
@@ -179,73 +152,7 @@ namespace OfficeProject.Servicess
             }
         }
 
-        // ✅ Update User
 
-
-        //public async Task UpdateUserAsync(UserDTO user)
-        //{
-
-
-
-        //    using (var context = dbContextFactory.CreateDbContext())
-        //    {
-
-        //        var existingUser = await context.Users.FindAsync(user.UserId);
-        //        if (existingUser != null)
-        //        {
-        //            Console.WriteLine("activity:");
-        //            // Update all non-sensitive fields
-        //            existingUser.UserName = user.UserName;
-        //            existingUser.UserEmail = user.UserEmail;
-        //            existingUser.UserContact = user.UserContact;
-        //            existingUser.Role = user.Role;
-        //            existingUser.IsActive = user.IsActive;
-        //            existingUser.CompanyName = user.CompanyName;
-        //            existingUser.Address = user.Address;
-        //            existingUser.JoiningDate = user.JoiningDate;
-        //            await context.SaveChangesAsync();
-
-        //            string json = JsonSerializer.Serialize(user, new JsonSerializerOptions
-        //            {
-        //                WriteIndented = true
-        //            });
-        //            Console.WriteLine($"existingUser.UserDesignation: {json}");
-
-        //            foreach (var activity in user.UserDesignation ?? [])
-        //            {
-
-        //                try
-        //                {
-        //                    var existingActivity = await context.UserDesignation
-        //                        .FirstOrDefaultAsync(x => x.DesignationId == activity.DesignationId);
-
-        //                    if (existingActivity == null)
-        //                    {
-
-        //                        var newActivity = new UserDesignation
-        //                        {
-        //                            DesignationId = existingUser.UserId, // Now we have a valid ProductId
-        //                            Designation = activity.Designation
-        //                        };
-        //                        context.UserDesignation.Add(newActivity);
-        //                    }
-        //                    else
-        //                    {
-        //                        existingActivity.Designation = activity.Designation;
-        //                        context.UserDesignation.Update(existingActivity);
-        //                    }
-
-        //                    await context.SaveChangesAsync();
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    Console.WriteLine($"Error saving UserDesignation: {ex.Message}");
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-        // ✅ UpdateRefreshToken
         public async Task UpdateUserAsync(UserDTO user)
         {
             using (var context = dbContextFactory.CreateDbContext())
@@ -280,7 +187,8 @@ namespace OfficeProject.Servicess
                         try
                         {
                             // If DesignationId is 0 or null → INSERT new record
-                            if (activity.DesignationId == 0 || activity.DesignationId == null)
+                            //if (activity.DesignationId == 0 || activity.DesignationId == null)
+                            if (activity.DesignationId == 0)
                             {
                                 var newDesignation = new UserDesignation
                                 {
@@ -347,7 +255,7 @@ namespace OfficeProject.Servicess
             {
                 var Designation = new List<UserDesignation>();
 
-                foreach (var data in userWithClientsDto.UserDesignationDto)
+                foreach (var data in userWithClientsDto.UserDesignationDto!)
                 {
                     Designation.Add(new UserDesignation
                     {
@@ -414,7 +322,7 @@ namespace OfficeProject.Servicess
                         IsActive = c.IsActive,
                         IssueDate = c.IssueDate,
                         IssuedBy = c.IssuedBy,
-                        ClientCreatedAt = (DateTime)c.ClientCreatedAt
+                        ClientCreatedAt = (DateTime)c.ClientCreatedAt!
                     }).ToList()
                 };
 
