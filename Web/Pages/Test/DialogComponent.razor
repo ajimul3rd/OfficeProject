@@ -1,0 +1,59 @@
+<div class="dialog-overlay">
+    <div class="dialog-box">
+        <h4>Dialog Component</h4>
+        <p>Do you want to complete the task?</p>
+
+        <button @onclick="HandleComplete">Complete Task</button>
+        <button @onclick="HandleCancel">Cancel</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskResult> OnTaskCompleted { get; set; }
+
+    private async Task HandleComplete()
+    {
+        var result = new TaskResult { Success = true, Data = "Task Data" };
+        await OnTaskCompleted.InvokeAsync(result);
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task HandleCancel()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+    public class TaskResult
+    {
+        public bool Success { get; set; }
+        public string Data { get; set; }
+    }
+}
+<style>
+    .dialog-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .dialog-box {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        text-align: center;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+</style>

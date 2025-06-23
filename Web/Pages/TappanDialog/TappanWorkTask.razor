@@ -1,6 +1,6 @@
 ﻿@using OfficeProject.Web.Pages.UserActivity
 @using OfficeProject.Models.DTO
-
+@inject IDataSerializer? DataSerializer
 @if (IsVisible)
 {
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
@@ -8,20 +8,20 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Works Activity Panel</h5>
-                    <button type="button" class="btn-close btn-danger "  @onclick="CloseDialog"></button>
+                    <button class="btn btn-sm btn-danger" @onclick="CloseDialog">X</button>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body" style="height: 75vh;">
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <button class="nav-link @(activeTab == "servicelist" ? "active" : "")"
-                                    @onclick="@(() => SwitchTab("servicelist"))">
+                            @onclick="@(() => SwitchTab("servicelist"))">
                                 Services
                             </button>
                         </li>
                         <li class="nav-item">
                             <button class="nav-link @(activeTab == "workrecord" ? "active" : "")"
-                                    @onclick="@(() => SwitchTab("workrecord"))">
+                            @onclick="@(() => SwitchTab("workrecord"))">
                                 Works
                             </button>
                         </li>
@@ -30,17 +30,14 @@
                     <div class="tab-content mt-3">
                         <div class="@GetTabPaneClass("servicelist")">
                             <ServiceListModel projects="@projects"
-                                              signal="@Signal" />
+                            isAddWorkFormSubmit="@HandleWorkFormSubmit" />
                         </div>
                         <div class="@GetTabPaneClass("workrecord")">
-                            <UserWorkRecord isFormSubmit="@HandleChildSubmit" />
+                            <UserWorkRecord isFormSubmit="@HandleWorkFormSubmit" />
                         </div>
                     </div>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger " @onclick="CloseDialog">Close</button>
-                </div>
             </div>
         </div>
     </div>
@@ -50,7 +47,8 @@
 
     [Parameter] public bool IsVisible { get; set; }
 
-    public EventCallback<bool> Signal { get; set; }
+    [Parameter]
+    public EventCallback<bool> isAddWorkFormSubmit { get; set; }
 
     [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
 
@@ -67,16 +65,16 @@
     {
         IsVisible = false;
         await IsVisibleChanged.InvokeAsync(false);
+        // await Signal.InvokeAsync(isSuccess);
     }
-    
+
     protected override void OnParametersSet()
     {
-
         base.OnParametersSet();
     }
 
-    private async Task HandleChildSubmit(bool isSuccess)
+    private async Task HandleWorkFormSubmit(bool isSuccess)
     {
-        await Signal.InvokeAsync(isSuccess);
+        await isAddWorkFormSubmit.InvokeAsync(isSuccess);
     }
 }

@@ -2,14 +2,15 @@
 @using OfficeProject.Web.Pages.UserActivity
 @using OfficeProject.Models.DTO
 @inject ApiService api
+@inject IDataSerializer? DataSerializer
 @if (IsVisible)
 {
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content" style="height: 85vh;">
                 <div class="modal-header">
                     <h5 class="modal-title">Sub-Works Activity Panel</h5>
-                    <button type="button" class="btn-close btn-danger" @onclick="CloseDialog"></button>
+                    <button class="btn btn-sm btn-danger" @onclick="CloseDialog">X</button>
                 </div>
 
                 <div class="modal-body">
@@ -80,10 +81,7 @@
                         }
                     </div>
                 </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger"  @onclick="CloseDialog">Close</button>
-                </div>
+              
             </div>
         </div>
     </div>

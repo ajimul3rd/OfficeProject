@@ -1,13 +1,15 @@
 ﻿@using OfficeProject.Models.DTO
 @inject ApiService api
+@inject IDataSerializer? DataSerializer
 @if (IsVisible)
 {
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" @onclick="CloseDialog">
-        <div class="modal-dialog modal-lg" role="document" @onclick:stopPropagation>
-            <div class="modal-content">
+
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
+            <div class="modal-content" style="height: 85vh;">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Work Record</h5>
-                    <button type="button" class="btn-close" aria-label="Close" @onclick="CloseDialog"></button>
+                    <h5 class="modal-title">Update Work Task</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="CloseDialog">X</button>
                 </div>
 
                 <div class="modal-body">
@@ -78,7 +80,7 @@
                         </div>
 
                         <div class="form-group mt-3">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
                             <button type="button" class="btn btn-secondary ms-2" @onclick="CloseDialog">Cancel</button>
                         </div>
                     </EditForm>

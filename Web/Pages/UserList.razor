@@ -9,6 +9,7 @@
 @using OfficeProject.Models.Enums;
 @using System.Text.Json
 @using OfficeProject.Web.Pages.DialogModel
+@inject IDataSerializer? DataSerializer
 
 
 <h3>User Management</h3>
@@ -20,178 +21,7 @@
 }
 else
 {
-    <button class="btn btn-primary mb-3" @onclick="ShowAddForm">Add New User</button>
-
-    @if (showAddForm)
-    {
-        <div class="card mb-3">
-            <div class="card-header">
-                <h4>@(registerModel.UserId == 0 ? "Add New User" : "Edit User")</h4>
-            </div>
-            <div class="card-body">
-                <EditForm EditContext="@editContext" OnValidSubmit="@SaveUser" Context="formContext">
-                    <DataAnnotationsValidator />
-
-                    <!-- Existing fields... -->
-                    <div class="form-group mb-3">
-                        <label>Name:</label>
-                        <InputText class="form-control" @bind-Value="@registerModel.UserName" />
-                        <ValidationMessage For="@(() => registerModel.UserName)" />
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label>Email:</label>
-                        <InputText class="form-control" @bind-Value="@registerModel.UserEmail" />
-                        <ValidationMessage For="@(() => registerModel.UserEmail)" />
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label>Contact:</label>
-                        <InputText class="form-control" @bind-Value="@registerModel.UserContact" />
-                        <ValidationMessage For="@(() => registerModel.UserContact)" />
-                    </div>
-                    @if (registerModel.UserId == 0)
-                    {
-                        <div class="form-group mb-3">
-                            <label>Password:</label>
-                            <InputText type="password" class="form-control" @bind-Value="@registerModel.UserPassword"  />
-                            <ValidationMessage For="@(() => registerModel.UserPassword)" />
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="form-group mb-3">
-                            <label>Password:</label>
-                            <InputText type="password" class="form-control" @bind-Value="@registerModel.UserPassword" readonly />
-                            <ValidationMessage For="@(() => registerModel.UserPassword)" />
-                        </div>
-                    }
-
-
-                    <div class="form-group mb-3">
-                        <label>Role:</label>
-                        <InputSelect class="form-control" @bind-Value="registerModel.Role">
-                            <option value="">Select Role</option> 
-                            <option value="@UserRole.USER">USER</option>
-                            <option value="@UserRole.ADMIN">ADMIN</option>
-                            <option value="@UserRole.MANAGER">MANAGER</option>
-                        </InputSelect>
-                        <ValidationMessage For="@(() => registerModel.Role)" />
-                    </div>
-
-                    <!-- New fields -->
-                    <div class="form-group mb-3">
-                        <label>Company Name:</label>
-                        <InputText class="form-control" @bind-Value="@registerModel.CompanyName" />
-                        <ValidationMessage For="@(() => registerModel.CompanyName)" />
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label>Address:</label>
-                        <InputTextArea class="form-control" @bind-Value="@registerModel.Address" />
-                        <ValidationMessage For="@(() => registerModel.Address)" />
-                    </div>
-
-                    <div class="col-12">
-                        <div class="card mb-4 border-0 shadow-sm">
-                            <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0"><i class="fas fa-cogs me-2"></i>Select User Working Activity</h6>
-                                <span class="badge bg-primary">
-                                    @(registerModel.UserDesignation?.Count ?? 0) @(registerModel.UserDesignation?.Count == 1 ? "activity" : "activitices")
-                                </span>
-                            </div>
-                            @if (validationErrors.Any())
-                            {
-                                <div class="alert alert-danger">
-                                    <ul class="mb-0">
-                                        @foreach (var error in validationErrors)
-                                        {
-                                            <li>@error</li>
-                                        }
-                                    </ul>
-                                </div>
-                            }
-                            <ValidationMessage For="@(() => registerModel.UserDesignation)" />
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold d-block mb-2">
-                                    <i class="fas fa-box-open me-2"></i>Select Activities
-                                </label>
-
-                                <div class="input-group">
-                                    <div class="form-control p-2 @(registerModel.UserDesignation == null || !registerModel.UserDesignation.Any() ? "border-danger" : "border-primary")"
-                                         style="min-height: 42px; cursor: pointer;"
-                                         @onclick="getUserWorkingActivity">
-
-                                        @if (registerModel.UserDesignation == null || !registerModel.UserDesignation.Any())
-                                        {
-                                            <div class="text-muted d-flex align-items-center h-100">
-                                                <i class="fas fa-search me-2"></i>
-                                                <span>Click to browse user working activity</span>
-                                            </div>
-
-                                        }
-                                        else
-                                        {
-                                            <div class="d-flex flex-wrap gap-2 align-items-center">
-                                                @if (registerModel.UserDesignation?.Any() == true)
-                                                {
-                                                    @foreach (var a in registerModel.UserDesignation)
-                                                    {
-                                                        @if (!string.IsNullOrEmpty(a.Designation))
-                                                        {
-                                                            <span class="badge bg-primary rounded-pill d-flex align-items-center py-2 px-3">
-                                                                @a.Designation
-                                                                <button class="btn-close btn-close-white btn-sm ms-2 p-0"
-                                                                        @onclick="@(async (e) => await RemoveActivity(a))"
-                                                                @onclick:stopPropagation
-                                                                @onclick:preventDefault
-                                                                        aria-label="Remove"
-                                                                        style="font-size: 0.6rem; opacity: 0.8;">
-                                                                </button>
-                                                            </span>
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    <div class="text-muted d-flex align-items-center h-100">
-                                                        <i class="fas fa-search me-2"></i>
-                                                        <span>Click to browse user working activity</span>
-                                                    </div>
-                                                }
-                                            </div>
-                                        }
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label>Joining Date:</label>
-                        <InputDate class="form-control" @bind-Value="@registerModel.JoiningDate" />
-                        <ValidationMessage For="@(() => registerModel.JoiningDate)" />
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label>Active:</label>
-                        <InputCheckbox class="form-check-input" @bind-Value="@registerModel.IsActive" />
-                        <ValidationMessage For="@(() => registerModel.IsActive)" />
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <button type="button" class="btn btn-secondary ms-2" @onclick="CancelEdit">Cancel</button>
-                    </div>
-                </EditForm>
-
-            </div>
-        </div>
-
-        <p>@message</p>
-    }
+    <button class="btn btn-primary mb-3" @onclick="OpenAddUserDialog">Add New User</button>
 
     <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
         <table class="table table-bordered table-sm custom-tight-table mb-0">
@@ -229,6 +59,7 @@ else
     </div>
 
 }
+<DialogAddUser registerModel="@registerModel" showForm="@showForm" isFormSubmit="@HandleLoadUsersAsync" />
 @if (showServiceModal)
 {
     <div class="activity-dialog-backdrop fade show"></div>
@@ -243,6 +74,7 @@ else
         </div>
     </div>
 }
+
 
 <style>
     .table-responsive {
@@ -259,14 +91,10 @@ else
     }
 </style>
 
-
 @if (!string.IsNullOrEmpty(errorMessage))
 {
     <div class="alert alert-danger">@errorMessage</div>
 }
-
-
-
 <p>@message</p>
 
 @code {
@@ -282,7 +110,7 @@ else
 
     // private bool isUpdate = false;
 
-    private bool showAddForm = false;
+    private bool showForm = false;
 
     private string errorMessage = string.Empty;
 
@@ -294,16 +122,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadUsers();
+
+    }
+
+    private async Task LoadUsers()
+    {
         try
         {
             users = await apiService.GetAllUsersDTOAsync();
-
-            // Log for debugging
-            // string json = JsonSerializer.Serialize(users, new JsonSerializerOptions
-            //     {
-            //         WriteIndented = true
-            //     });
-            // Console.WriteLine($"GetAllUsersDTOAsync: {json}");
         }
         catch (Exception ex)
         {
@@ -313,22 +140,25 @@ else
         {
             isLoading = false;
         }
-        
+    }
+    private async Task HandleLoadUsersAsync(bool isFormSubmit)
+    {
+        if (isFormSubmit) ;
+        Console.WriteLine("isFormSubmit:" + isFormSubmit);
+        users.Clear();
+        await LoadUsers();
+        CancelEdit();
+        StateHasChanged();
+
     }
 
-
-    private void ShowAddForm()
+    private void OpenAddUserDialog()
     {
         registerModel ??= new RegisterModel
             {
                 UserDesignation = new List<UserDesignation>() // Initialize here
             };
-        showAddForm = true;
-        // isUpdate = false;
-        registerModel = new RegisterModel();
-        editContext = new EditContext(registerModel!);
-        StateHasChanged();
-
+        showForm = true;
     }
 
     private async Task EditUser(int? userId)
@@ -352,12 +182,7 @@ else
                 registerModel.UserDesignation = user.UserDesignation ?? new List<UserDesignation>();
                 registerModel.JoiningDate = user.JoiningDate;
                 registerModel.UserId = user.UserId;
-
-
-                // message = JsonSerializer.Serialize(registerModel, new JsonSerializerOptions { WriteIndented = true });
-                showAddForm = true;
-                editContext = new EditContext(registerModel!);
-                StateHasChanged();
+                showForm = true;
             }
         }
         catch (Exception ex)
@@ -365,85 +190,11 @@ else
             errorMessage = $"Error loading user: {ex.Message}";
         }
     }
-    private async Task SaveUser()
-    {
-        validationErrors.Clear(); // Clear previous errors
-        editContext?.MarkAsUnmodified();
-        try
-        {
-            if (registerModel == null) // Add this check
-            {
-                errorMessage = "User data is missing";
-                return;
-            }
-
-            errorMessage = string.Empty;
-            if (registerModel.UserDesignation == null || !registerModel.UserDesignation.Any())
-            {
-                validationErrors.Add("Assigned User Designations");
-                editContext!.NotifyValidationStateChanged();
-                StateHasChanged();
-            }
-
-            if (editContext?.Validate() == true && registerModel.UserDesignation != null && registerModel.UserDesignation.Any())
-            {
-                if (registerModel.UserId == 0)
-                {
-
-                    await DeleteActivityAsync();
-                    var response = await apiService.RegisterUserAsync(registerModel);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-                        users = await apiService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
-                        showAddForm = false;
-                    }
-                    else
-                    {
-                        errorMessage = await response.Content.ReadAsStringAsync();
-                    }
-                }
-                else
-                {
-
-                    var userDto = new UserDTO
-                        {
-                            UserId = registerModel.UserId, // or handle null as needed
-                            UserName = registerModel.UserName,
-                            UserEmail = registerModel.UserEmail,
-                            UserContact = registerModel.UserContact,
-                            Role = registerModel.Role,
-                            IsActive = registerModel.IsActive,
-                            CompanyName = registerModel.CompanyName,
-                            Address = registerModel.Address,
-                            UserDesignation = registerModel.UserDesignation,
-                            JoiningDate = registerModel.JoiningDate
-                        };
-                    await DeleteActivityAsync();
-                    await apiService.UpdateUserDTOAsync(userDto, (int)userDto.UserId!);
-                    users = await apiService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
-                    showAddForm = false;
-
-                }
-
-                
-            }
-
-           
-            registerModel = new RegisterModel();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Error saving user: {ex.Message}";
-            Console.WriteLine(ex.ToString()); // Better logging
-        }
-    }
-
+  
 
     private void CancelEdit()
     {
-        showAddForm = false;
+        showForm = false;
         errorMessage = string.Empty;
         registerModel = new RegisterModel();
     }
@@ -522,12 +273,6 @@ else
                 }
             }
 
-            // Log for debugging
-            // string json = JsonSerializer.Serialize(product.UserWorkingActivity, new JsonSerializerOptions
-            //     {
-            //         WriteIndented = true
-            //     });
-            // Console.WriteLine($"HandleSelectedMaster: {json}");
             validationErrors.Clear();
             statusMessage = "";
 
@@ -543,8 +288,7 @@ else
 
     private async Task RemoveActivity(UserDesignation service)
     {
-        // if (registerModel!.UserDesignation == null && service.DesignationId!=0||service.DesignationId==null ) return;
-        if (registerModel?.UserDesignation == null || service.DesignationId == 0)
+if (registerModel?.UserDesignation == null || service.DesignationId == 0)
             return;
         if (!activityDeleteList.Contains(service.DesignationId))
         {
@@ -574,24 +318,7 @@ else
             // Consider keeping the items in the list if deletion failed
         }
     }
-    // private async Task RemoveActivity(UserDesignation service)
-    // {
-    //     if (registerModel?.UserDesignation == null) return;
-
-    //     if (service.DesignationId != 0) Only add to delete list if it has an ID
-    //     {
-    //         activityDeleteList.Add(service.DesignationId);
-    //         Log for debugging
-    //         string json = JsonSerializer.Serialize(activityDeleteList, new JsonSerializerOptions
-    //             {
-    //                 WriteIndented = true
-    //             });
-    //         Console.WriteLine($"RemoveActivity: {json}");
-    //     }
-    //     registerModel.UserDesignation.Remove(service);
-    //     await InvokeAsync(StateHasChanged);
-       
-    // }
+    
 
 }
 

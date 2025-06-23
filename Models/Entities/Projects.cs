@@ -31,10 +31,6 @@ namespace OfficeProject.Models.Entities
         [DataType(DataType.DateTime)]
         public DateTime ProjectStartDate { get; set; } = DateTime.UtcNow;
 
-        //[Column(TypeName = "nvarchar(50)")]
-        //[JsonConverter(typeof(JsonStringEnumConverter))]
-        //public ProjectType? ProjectType { get; set; }
-
         [Column(TypeName = "nvarchar(50)")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public BillingType? BillingType { get; set; }

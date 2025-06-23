@@ -6,7 +6,7 @@
 @inject NavigationManager Navigation
 @inject IDataSerializer? DataSerializer
 
-<h5 class="mb-3">Work Record List</h5>
+<h5 class="mb-3">Work Task List</h5>
 
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white ">
@@ -98,7 +98,7 @@
     private List<WorkTaskDetailsDto> tableData { get; set; } = new();
 
     private string searchText = "";
-    // private string searchDateString = "";
+
     private DateTime? searchDate;
 
     [Parameter]
@@ -136,6 +136,7 @@
         try
         {
             var workTasks = await api.GetWorkingRecordPerUserAsync();
+            // DataSerializer?.Serializer(workTasks, "UserWorkRecord:LoadWorkList");
             tableData = workTasks ?? new();
         }
         catch (Exception ex)

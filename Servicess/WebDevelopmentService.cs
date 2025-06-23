@@ -8,13 +8,15 @@ namespace OfficeProject.Servicess
        
 
     private readonly ApplicationDbContext _context;
+        private readonly IDataSerializer? DataSerializer;
 
-    public WebDevelopmentService(ApplicationDbContext context)
-    {
-        _context = context;
-    }
+        public WebDevelopmentService(ApplicationDbContext context, IDataSerializer? dataSerializer)
+        {
+            _context = context;
+            DataSerializer = dataSerializer;
+        }
 
-    public async Task<bool> DeleteWebServiceAsync(int webId)
+        public async Task<bool> DeleteWebServiceAsync(int webId)
     {
         var webService = await _context.WebDevelopment.FindAsync(webId);
         if (webService == null)

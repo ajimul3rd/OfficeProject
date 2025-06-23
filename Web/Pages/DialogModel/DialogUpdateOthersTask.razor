@@ -1,6 +1,7 @@
 ﻿@using OfficeProject.Models.DTO
 @inject ApiService api
 @inject IOthersTaskservices othersTaskservices
+@inject IDataSerializer? DataSerializer
 
 <div class="modal-body">
     @if (isLoading)

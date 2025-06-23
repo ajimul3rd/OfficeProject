@@ -16,11 +16,11 @@ namespace OfficeProject.Models.DTO
         public string? DomainName { get; set; }
 
         [Required(ErrorMessage = "Hosting date is required")]
-        public DateTime? HostingDate { get; set; }
+        public DateTime? HostingDate { get; set; } = DateTime.Today;
 
         [Required(ErrorMessage = "Renewal date is required")]
         [DataType(DataType.Date)]
-        public DateTime? HostingRenewalDate { get; set; }
+        public DateTime? HostingRenewalDate { get; set; } = DateTime.Today;
 
         [Required(ErrorMessage = "Hosting Limitation is required")]
         public string? HostingLimit { get; set; } = "1 Year";
@@ -33,7 +33,7 @@ namespace OfficeProject.Models.DTO
         [Required(ErrorMessage = "Server IP is required")]
         [RegularExpression(@"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",
                     ErrorMessage = "Invalid IP address format")]
-        public string ServerIp { get; set; } = string.Empty;
+        public string ServerIp { get; set; } = "192.168.1.1";
 
         public string? ServerUserId { get; set; }
 
@@ -51,7 +51,7 @@ namespace OfficeProject.Models.DTO
         public DateTime StartDate { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "Dead line is required")]
-        public DateTime? Deadline { get; set; }
+        public DateTime? Deadline { get; set; } = DateTime.Now.AddMonths(1);
 
         public string? Remarks { get; set; }
 

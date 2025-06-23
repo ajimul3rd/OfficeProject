@@ -93,51 +93,6 @@ namespace OfficeProject.Servicess
             }
         }
 
-        //public async Task AddClienttAsync(ClientsDTO clientDto)
-        //{
-        //    try
-        //    {
-        //        // Get current user ID from claims
-        //        var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
-
-        //        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-        //        {
-        //            throw new UnauthorizedAccessException("User not authenticated or invalid user ID");
-        //        }
-
-        //        using (var context = dbContextFactory.CreateDbContext())
-        //        {
-        //            var client = new Clients
-        //            {
-        //                UserId = userId,
-        //                ClientName = clientDto.ClientName,
-        //                CompanyName = clientDto.CompanyName,
-        //                ClientContact1 = clientDto.ClientContact1,
-        //                ClientContact2 = clientDto.ClientContact2,
-        //                ClientEmail1 = clientDto.ClientEmail1,
-        //                ClientEmail2 = clientDto.ClientEmail2,
-        //                ClientAddress = clientDto.ClientAddress,
-        //                ClientCity = clientDto.ClientCity,
-        //                ClientSource = clientDto.ClientSource,
-        //                IssueDate = clientDto.IssueDate,
-        //                IssuedBy = clientDto.IssuedBy,
-        //                IsActive = clientDto.IsActive,
-        //                ClientCreatedAt = clientDto.ClientCreatedAt
-        //            };
-
-
-        //            context.Client.Add(client);
-        //            await context.SaveChangesAsync();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error adding client: {ex.Message}");
-        //        throw;
-        //    }
-        //}
-
-
         public async Task AddClienttWithProjectAsync(ClientsDTO clientDto)
         {
             try
@@ -184,12 +139,6 @@ namespace OfficeProject.Servicess
                                 ProjectCost = projectDto.ProjectCost,
                                 ProjectCreatedAt = projectDto.ProjectCreatedAt,
                             };
-
-                            // Optionally add WebDevelopment (if provided)
-                           
-
-                            // Optionally add MarketingPhases (if provided)
-
 
                             client.Projects.Add(project);
                         }

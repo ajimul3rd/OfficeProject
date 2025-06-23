@@ -5,10 +5,11 @@ namespace OfficeProject.Servicess
     public class SeoServicess: ISeoServicess
     {
         private readonly ApplicationDbContext _context;
-
-        public SeoServicess(ApplicationDbContext context)
+        private readonly IDataSerializer? DataSerializer;
+        public SeoServicess(ApplicationDbContext context, IDataSerializer? dataSerializer)
         {
             _context = context;
+            DataSerializer = dataSerializer;
         }
 
         public async Task<bool> DeleteSeoDetailsAsync(int seoId)

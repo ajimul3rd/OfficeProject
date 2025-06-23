@@ -32,44 +32,28 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = V2ViXEFwcC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/.Net Project/OfficeProject/Web/Pages/AddClient.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXEFkZENsaWVudC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [E:/.Net Project/OfficeProject/Web/Pages/AddProduct/AddProducts.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXEFkZFByb2R1Y3RcQWRkUHJvZHVjdHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/ClientList.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXENsaWVudExpc3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/.Net Project/OfficeProject/Web/Pages/ClientSourceList.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXENsaWVudFNvdXJjZUxpc3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/DesignTaskModel.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xEZXNpZ25UYXNrTW9kZWwucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/DevelopmentPhaseModel.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xEZXZlbG9wbWVudFBoYXNlTW9kZWwucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/DigitalMarketingProjectInfo.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xEaWdpdGFsTWFya2V0aW5nUHJvamVjdEluZm8ucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/MaintananceTaskModel.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xNYWludGFuYW5jZVRhc2tNb2RlbC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/MarketingPhaseModel.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xNYXJrZXRpbmdQaGFzZU1vZGVsLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModelComponents/WebDevelopmentProjectInfoModel.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsQ29tcG9uZW50c1xXZWJEZXZlbG9wbWVudFByb2plY3RJbmZvTW9kZWwucmF6b3I=
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogAddClient.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ0FkZENsaWVudC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogAddProject.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ0FkZFByb2plY3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogAddUser.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ0FkZFVzZXIucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/.Net Project/OfficeProject/Web/Pages/DialogModel/DialogAddWorkTask.razor]
@@ -108,22 +92,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXERpYWxvZ1VzZXJMaXN0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/XAddMarketingPhaseDialog.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXFhBZGRNYXJrZXRpbmdQaGFzZURpYWxvZy5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/XAddProjectDialog.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXFhBZGRQcm9qZWN0RGlhbG9nLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/XDigitalMarketingTabPanDialog.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXFhEaWdpdGFsTWFya2V0aW5nVGFiUGFuRGlhbG9nLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/DialogModel/XWebDevelopmentTabPanDialog.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXERpYWxvZ01vZGVsXFhXZWJEZXZlbG9wbWVudFRhYlBhbkRpYWxvZy5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [E:/.Net Project/OfficeProject/Web/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXEVycm9yLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -156,12 +124,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRhcHBhbkRpYWxvZ1xUYXBwYW5Xb3JrVGFzay5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/.Net Project/OfficeProject/Web/Pages/Test/ParentTest.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRlc3RcUGFyZW50VGVzdC5yYXpvcg==
+[E:/.Net Project/OfficeProject/Web/Pages/Test/BillingTest.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRlc3RcQmlsbGluZ1Rlc3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/.Net Project/OfficeProject/Web/Pages/Test/TrackableInputSelect.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRlc3RcVHJhY2thYmxlSW5wdXRTZWxlY3QucmF6b3I=
+[E:/.Net Project/OfficeProject/Web/Pages/Test/DialogComponent.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRlc3RcRGlhbG9nQ29tcG9uZW50LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/.Net Project/OfficeProject/Web/Pages/Test/ParentTest.razor]
+build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFRlc3RcUGFyZW50VGVzdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/.Net Project/OfficeProject/Web/Pages/UserActivityMasterList.razor]
@@ -182,10 +154,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [E:/.Net Project/OfficeProject/Web/Pages/UserList.razor]
 build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFVzZXJMaXN0LnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/.Net Project/OfficeProject/Web/Pages/XClientsList.razor]
-build_metadata.AdditionalFiles.TargetPath = V2ViXFBhZ2VzXFhDbGllbnRzTGlzdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/.Net Project/OfficeProject/Web/Routes.razor]

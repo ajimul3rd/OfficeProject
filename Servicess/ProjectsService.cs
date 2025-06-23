@@ -1,5 +1,7 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using System.Text.Json;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -10,22 +12,25 @@ using OfficeProject.Models.Enums;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
+
 namespace OfficeProject.Servicess
 {
     public class ProjectsService : IProjectsService
     {
-
+        private readonly IDataSerializer? DataSerializer;
         private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMapper Mapper;
+        private readonly IBillingCycleHelper billingCycleHelper;
         public ProjectsService(
             IDbContextFactory<ApplicationDbContext> dbContextFactory,
-            IHttpContextAccessor httpContextAccessor, IMapper mapper)
+            IHttpContextAccessor httpContextAccessor, IMapper mapper, IBillingCycleHelper billingCycleHelper, IDataSerializer? dataSerializer)
         {
             this.dbContextFactory = dbContextFactory;
             this.httpContextAccessor = httpContextAccessor;
             this.Mapper = mapper;
-
+            this.billingCycleHelper = billingCycleHelper;
+            DataSerializer = dataSerializer;
         }
 
         public async Task AddProjectsAsync(ProjectsDTO projectsDto)
@@ -198,13 +203,13 @@ namespace OfficeProject.Servicess
                                 }).ToList()
                             }).ToList()
 
-                    }).Where(p => p.Services != null && p.Services.Any()).ToList(); // Filter out projects with no matching services
-                    //string json = JsonSerializer.Serialize(projectDTOs, new JsonSerializerOptions
-                    //{
-                    //    WriteIndented = true
-                    //});
-                    //Console.WriteLine($"GetProjectPerUserAsync: {json}");
-                    return projectDTOs;
+                    }).Where(p => p.Services != null && p.Services.Any()).ToList();
+
+
+
+
+                    //return projectDTOs;
+                    return await GetWorkServicesByIdAndBetweenDate(projectDTOs);
                 }
             }
             catch (Exception ex)
@@ -214,186 +219,71 @@ namespace OfficeProject.Servicess
             }
         }
 
-        //public async Task<List<ProjectsDTO>> GetWorkingRecordPerUserAsync()
-        //{
-        //    try
-        //    {
-        //        var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        public async Task<List<ProjectsDTO>> GetWorkServicesByIdAndBetweenDate(List<ProjectsDTO> projectDTOs)
+        {
+            foreach (var project in projectDTOs)
+            {
+                foreach (var service in project.Services!)
+                {
+                    if (service.BillingType == null) continue;
 
-        //        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-        //        {
-        //            throw new UnauthorizedAccessException("User is not authenticated.");
-        //        }
+                    // Subtract 1 month from service start date
+                    DateTime adjustedStartDate = service.StartDate;
 
-        //        using (var context = dbContextFactory.CreateDbContext())
-        //        {
-        //            // Get user with designation
-        //            var user = await context.Users
-        //                .Include(u => u.UserDesignation)
-        //                .FirstOrDefaultAsync(u => u.UserId == userId);
+                    // Get billing period
+                    //Console.WriteLine($"Service: {service.ServiceName}, Billing: {service.BillingType}, Start: {adjustedStartDate:yyyy-MM-dd}");
 
-        //            if (user == null)
-        //            {
-        //                throw new UnauthorizedAccessException("User not found.");
-        //            }
+                    var (periodStart, periodEnd) = billingCycleHelper.GetCurrentBillingPeriod(
+                        adjustedStartDate,
+                        (BillingType)service.BillingType,
+                        DateTime.Today
+                    );
 
-        //            var designationNames = user.UserDesignation?.Select(d => d.Designation).ToHashSet() ?? new HashSet<string>();
+                    //Console.WriteLine($"Billing Period: {periodStart:yyyy-MM-dd} to {periodEnd:yyyy-MM-dd}");
 
-        //            var projects = await context.Projects
-        //                .Include(p => p.Client)
-        //                .Include(p => p.AssignedUsers)
-        //                .Include(p => p.Services)
-        //                    .ThenInclude(s => s.Products)
-        //                        .ThenInclude(p => p.UserWorkingActivity)
-        //                .Include(p => p.Services)
-        //                    .ThenInclude(w => w.WorkTaskDetails)
-        //                .Include(p => p.Services)
-        //                    .ThenInclude(s => s.SeoServiceDetails)
-        //                .Include(p => p.Services)
-        //                    .ThenInclude(s => s.OthersServices)
-        //                .Include(p => p.Services)
-        //                    .ThenInclude(s => s.WebDevelopment)
-        //                .Where(p => p.AssignedUsers.Any(u => u.UserId == userId))
-        //                .ToListAsync();
+                    var summary= await GetWorkTaskSummary((int)service.ServiceId!, periodStart, periodEnd);
+                    {
+                        service.CompletePost = summary.TotalSharedPost;
+                        service.CompleteReels = summary.TotalCreatedReels;
+                        service.UsedAdsBudget= summary.TotalUsedAdsBudget;
+                    }
+                }
+            }
 
-        //            var projectDTOs = projects.Select(project => new ProjectsDTO
-        //            {
-        //                ProjectId = project.ProjectId,
-        //                UserId = project.UserId,
-        //                ClientId = project.ClientId,
-        //                ProjectName = project.ProjectName,
-        //                BillingType = project.BillingType,
-        //                ProjectStartDate = project.ProjectStartDate,
-        //                ProjectType = project.ProjectType,
-        //                ProjectCost = project.ProjectCost,
-        //                CurrentIssue = project.CurrentIssue,
-        //                InternalRemark = project.InternalRemark,
-        //                CustomerNote = project.CustomerNote,
-        //                FbFollowers = project.FbFollowers,
-        //                IgFollowers = project.IgFollowers,
-        //                GmbRakning = project.GmbRakning,
-        //                IsActive = project.IsActive,
+            return projectDTOs;
+        }
 
-        //                AssignedUsers = project.AssignedUsers?.Select(user => new AssignedUsersDTO
-        //                {
-        //                    AssignedUsersId = user.AssignedUsersId,
-        //                    ProjectId = user.ProjectId,
-        //                    UserId = user.UserId,
-        //                    UserName = user.UserName,
-        //                    Role = user.Role
-        //                }).ToList(),
+        public async Task<WorkTaskSummaryDto> GetWorkTaskSummary(int serviceId, DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                using var context = dbContextFactory.CreateDbContext();
 
-        //                Client = project.Client != null ? new ClientsDTO
-        //                {
-        //                    ClientId = project.Client.ClientId,
-        //                    ClientName = project.Client.ClientName,
-        //                    ClientEmail1 = project.Client.ClientEmail1,
-        //                    ClientContact1 = project.Client.ClientContact1
-        //                } : null,
+                var filteredRecords = await context.WorkRecords
+                    .Where(w => w.ServiceId == serviceId &&
+                                w.WorkDate >= startDate &&
+                                w.WorkDate <= endDate)
+                    .ToListAsync();
 
-        //                Services = project.Services
-        //                    .Where(service =>
-        //                        (service.Products?.UserWorkingActivity != null &&
-        //                         service.Products.UserWorkingActivity.Any(ua =>
-        //                             designationNames.Contains(ua.WorkingActivityName))) ||
-        //                        (service.WorkTaskDetails != null && service.WorkTaskDetails.Any()))
-        //                    .Select(service => new ServicesDTO
-        //                    {
-        //                        ServiceId = service.ServiceId,
-        //                        ProjectId = service.ProjectId,
-        //                        ProductsId = service.ProductsId,
-        //                        ServiceName = service.ServiceName,
-        //                        BillingType = service.BillingType,
-        //                        Price = service.Price,
-        //                        FinalPrice = service.FinalPrice,
-        //                        StartDate = service.StartDate,
-        //                        EndDate = service.EndDate,
-        //                        TotalPost = service.TotalPost,
-        //                        TotalReels = service.TotalReels,
-        //                        AdsBudget = service.AdsBudget,
-        //                        DeadLine = service.DeadLine,
-        //                        ExtraField1 = service.ExtraField1,
-        //                        ExtraField2 = service.ExtraField2,
-        //                        ExtraField3 = service.ExtraField3,
+               
+                DataSerializer?.Serializer(filteredRecords, "ProjectsService->GetWorkTaskSummary:");
 
-        //                        SeoServiceDetails = service.SeoServiceDetails?.Select(detail => new SeoServiceDetailsDTO
-        //                        {
-        //                            SeoServiceDetailsId = detail.SeoServiceDetailsId,
-        //                            ServiceId = detail.ServiceId,
-        //                            KeyWord = detail.KeyWord,
-        //                            Rank = detail.Rank,
-        //                            Note = detail.Note,
-        //                            ExtraField1 = detail.ExtraField1,
-        //                            ExtraField2 = detail.ExtraField2
-        //                        }).ToList(),
+                var summary = new WorkTaskSummaryDto
+                {
+                    TotalSharedPost = filteredRecords.Sum(w => w.SharedPost),
+                    TotalCreatedReels = filteredRecords.Sum(w => w.CreatedReels),
+                    TotalUsedAdsBudget = filteredRecords.Sum(w => w.UsedAdsBudget)
+                };
 
-        //                        OthersServices = service.OthersServices?.Select(other => new OthersServiceDTO
-        //                        {
-        //                            OthersId = other.OthersId,
-        //                            ServiceId = other.ServiceId,
-        //                            LableName = other.LableName,
-        //                            Post = other.Post,
-        //                            Note = other.Note,
-        //                            ExtraField1 = other.ExtraField1,
-        //                            ExtraField2 = other.ExtraField2
-        //                        }).ToList(),
+                return summary;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetWorkTaskSummary: {ex.Message}");
+                throw;
+            }
+        }
 
-        //                        WebDevelopment = service.WebDevelopment?.Select(web => new WebDevelopmentDTO
-        //                        {
-        //                            WebDevelopmentId = web.WebDevelopmentId,
-        //                            ServiceId = web.ServiceId,
-        //                            DomainName = web.DomainName,
-        //                            HostingDate = web.HostingDate,
-        //                            HostingRenewalDate = web.HostingRenewalDate,
-        //                            HostingLimit = web.HostingLimit,
-        //                            HostingRenewalAmount = web.HostingRenewalAmount,
-        //                            ServerFtpAssign = web.ServerFtpAssign,
-        //                            ServerIp = web.ServerIp,
-        //                            ServerUserId = web.ServerUserId,
-        //                            ServerPassword = web.ServerPassword,
-        //                            DesignTools = web.DesignTools,
-        //                            MackupLink = web.MackupLink,
-        //                            Languages = web.Languages,
-        //                            IsActive = web.IsActive,
-        //                            StartDate = web.StartDate,
-        //                            Deadline = web.Deadline,
-        //                            Remarks = web.Remarks,
-        //                            Note = web.Note
-        //                        }).ToList(),
-
-        //                        WorkTaskDetails = service.WorkTaskDetails?.Select(record => new WorkTaskDetailsDto
-        //                        {
-        //                            WorkRecordId = record.WorkRecordId,
-        //                            ServiceId = record.ServiceId,
-        //                            WorkDate = record.WorkDate,
-        //                            //ServiceName = record.ServiceName,
-        //                            SharedPost = record.SharedPost,
-        //                            CreatedReels = record.CreatedReels,
-        //                            UsedAdsBudget = record.UsedAdsBudget,
-        //                            Task = record.Task,
-        //                            Status = record.Status,
-        //                            Remarks = record.Remarks,
-        //                            ExtraField1 = record.ExtraField1,
-        //                            ExtraField2 = record.ExtraField2,
-        //                            ExtraField3 = record.ExtraField3,
-        //                            ExtraField4 = record.ExtraField4,
-        //                            ExtraField5 = record.ExtraField5,
-        //                            ExtraField6 = record.ExtraField6,
-        //                            ExtraField7 = record.ExtraField7,
-        //                        }).ToList()
-        //                    }).ToList()
-
-        //            }).Where(p => p.Services != null && p.Services.Any()).ToList();
-
-        //            return projectDTOs;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error retrieving projects: {ex.Message}");
-        //        throw;
-        //    }
-        //}
 
         public async Task<List<ProjectsDTO?>> GetAllProjectAsync()
         {

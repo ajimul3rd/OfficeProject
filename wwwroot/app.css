@@ -1,5 +1,6 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size:12px;
 }
 a, .btn-link {
     color: #006bb7;
@@ -47,4 +48,12 @@ h1:focus {
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
+}
+.modal-overlay-foreground {
+    z-index: 1060 !important;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-foreground {
+    z-index: 1070 !important;
 }

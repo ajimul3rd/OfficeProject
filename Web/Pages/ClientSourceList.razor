@@ -1,5 +1,6 @@
 ﻿@page "/client-source"
 @using OfficeProject.Models.Entities
+@inject IDataSerializer? DataSerializer
 
 <div class="container-fluid">
 
@@ -174,16 +175,23 @@
 
 @code {
     [Inject] public IClientSources ClientSourcesService { get; set; }
+
     [Parameter] public string SelectedName { get; set; }
+
     [Parameter] public EventCallback<string> SelectedNameChanged { get; set; }
+
     [Parameter] public bool showHeader { get; set; } = true;
 
     private List<ClientSources> clientSources;
+
     private bool isAddingNew = false;
+
     private string newClientSourceName;
-    // private int? selectedClientSourceId;
+
     private string errorMessage;
+
     private string successMessage;
+
     private ClientSources? sourceToEdit;
 
     protected override async Task OnInitializedAsync()
@@ -198,7 +206,6 @@
             clientSources = await ClientSourcesService.GetAll();
             isAddingNew = false;
             newClientSourceName = null;
-            // selectedClientSourceId = null;
             errorMessage = null;
             successMessage = null;
             sourceToEdit = null;

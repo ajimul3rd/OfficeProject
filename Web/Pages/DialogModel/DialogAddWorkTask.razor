@@ -2,18 +2,20 @@
 @using OfficeProject.Models.DTO
 @using System.Text.Json
 @inject ApiService api
+@inject IDataSerializer? DataSerializer
 
 @if (IsVisible)
 {
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" @onclick="Close">
-        <div class="modal-dialog modal-lg" role="document" @onclick:stopPropagation>
-            <div class="modal-content">
+   
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
+            <div class="modal-content" style="height: 85vh;">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Work Record</h5>
-                    <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+                    <h5 class="modal-title">Add Work Task</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="Close">X</button>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body" style="overflow-y: auto; max-height: calc(85vh - 100px); padding: 1rem;">
                     <EditForm EditContext="editContext" OnSubmit="@HandleValidSubmit">
                         <ObjectGraphDataAnnotationsValidator />
                         <div class="row">
@@ -337,7 +339,7 @@
     public ServicesDTO service { get; set; }
 
     [Parameter]
-    public EventCallback<bool> OnSubmitSignal { get; set; }
+    public EventCallback<bool> isAddWorkFormSubmit { get; set; }
 
     [Parameter]
     public EventCallback OnCancel { get; set; }
@@ -575,7 +577,7 @@
         {
             await api.AddOrUpdateUserWorkingRecordAsync(WorkRecord);
             DataSerializer?.Serializer(WorkRecord, "Form Submit");
-            await OnSubmitSignal.InvokeAsync(true);
+            await isAddWorkFormSubmit.InvokeAsync(true);
 
             // Reset form state
             ResetForm();

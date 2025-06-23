@@ -1,82 +1,87 @@
 ﻿@using OfficeProject.Models.DTO
 @using System.Text.Json
+@inject IDataSerializer? DataSerializer
+
 
 @if (ShowModal)
 {
-        <div class="modal-overlay" @onclick:stopPropagation>
-            <div class="modal-dialog modal-lg modal-content">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="mb-0">User Working Activity</h5>
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
+            <div class="modal-content" style="height: 85vh;">
+                <div class="modal-header">
+                    <h5 class="modal-title">User Working Activity</h5>
                     <button class="btn btn-sm btn-danger" @onclick="CloseModal">X</button>
                 </div>
-                <div class="d-flex justify-content-end mb-2">
-                    <button class="btn btn-sm btn-success" @onclick="() => _showAddForm = true">+ Add User Working Activity</button>
-                </div>
-            @if (_showAddForm)
-            {
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
 
-                                <div class="input-group mb-3 w-100">
-                                    <input type="text" class="form-control"
-                                           placeholder="Enter new User Working Activity Name"
-                                           @bind="newWorkingActivityName" @onkeydown="HandleKeyDown" />
+                <div class="modal-body" style="overflow-y: auto; max-height: calc(85vh - 100px); padding: 1rem;">
+                    <div class="d-flex justify-content-end mb-2">
+                        <button class="btn btn-sm btn-success" @onclick="() => _showAddForm = true">+ Add User Working Activity</button>
+                    </div>
+                    @if (_showAddForm)
+                    {
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
 
-                                    <button class="btn btn-success" type="button"
-                                            @onclick="AddNewUserWorkingActivity"
-                                            disabled="@string.IsNullOrWhiteSpace(newWorkingActivityName)">
-                                        <i class="fas fa-save me-1"></i> Save
-                                    </button>
+                                        <div class="input-group mb-3 w-100">
+                                            <input type="text" class="form-control"
+                                                   placeholder="Enter new User Working Activity Name"
+                                                   @bind="newWorkingActivityName" @onkeydown="HandleKeyDown" />
 
-                                    <button class="btn btn-outline-secondary" type="button"
-                                            @onclick="CancelAdd">
-                                        <i class="fas fa-times me-1"></i> Cancel
-                                    </button>
+                                            <button class="btn btn-success" type="button"
+                                                    @onclick="AddNewUserWorkingActivity"
+                                                    disabled="@string.IsNullOrWhiteSpace(newWorkingActivityName)">
+                                                <i class="fas fa-save me-1"></i> Save
+                                            </button>
+
+                                            <button class="btn btn-outline-secondary" type="button"
+                                                    @onclick="CancelAdd">
+                                                <i class="fas fa-times me-1"></i> Cancel
+                                            </button>
+                                        </div>
+
+
+
+                                        @if (!string.IsNullOrEmpty(successMessage))
+                                        {
+                                            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                                <i class="fas fa-check-circle me-2"></i> @successMessage
+                                                <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
+                                            </div>
+                                        }
+
+                                        @if (!string.IsNullOrEmpty(errorMessage))
+                                        {
+                                            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                                                <i class="fas fa-exclamation-circle me-2"></i> @errorMessage
+                                                <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
-
-                                
-
-                                @if (!string.IsNullOrEmpty(successMessage))
-                                {
-                                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                        <i class="fas fa-check-circle me-2"></i> @successMessage
-                                        <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
-                                    </div>
-                                }
-
-                                @if (!string.IsNullOrEmpty(errorMessage))
-                                {
-                                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                                        <i class="fas fa-exclamation-circle me-2"></i> @errorMessage
-                                        <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
-                                    </div>
-                                }
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                    @if (!string.IsNullOrEmpty(_statusMessage))
-                    {
-                                    <div class="alert @(_isError ? "alert-danger" : "alert-success") mt-4">
-                                        <i class="@(_isError ? "fas fa-exclamation-circle" : "fas fa-check-circle") me-2"></i>
-                            @_statusMessage
-                                    </div>
+                        @if (!string.IsNullOrEmpty(_statusMessage))
+                        {
+                            <div class="alert @(_isError ? "alert-danger" : "alert-success") mt-4">
+                                <i class="@(_isError ? "fas fa-exclamation-circle" : "fas fa-check-circle") me-2"></i>
+                                @_statusMessage
+                            </div>
+                        }
+
                     }
-                       
-            }
-                <!-- Search and Filter Controls -->
-                <div class="mb-3 d-flex justify-content-between">
-                    <input type="text" class="form-control me-2"
-                           placeholder="Search..."
-                           @bind="_searchText" @bind:event="oninput" style="width: 200px;" />
-                </div>
+                    <!-- Search and Filter Controls -->
+                    <div class="mb-3 d-flex justify-content-between">
+                        <input type="text" class="form-control me-2"
+                               placeholder="Search..."
+                               @bind="_searchText" @bind:event="oninput" style="width: 200px;" />
+                    </div>
 
-                <!-- Product Table -->
-            @if (FilteredActivities != null && FilteredActivities.Any())
-            {
+                    <!-- Product Table -->
+                    @if (FilteredActivities != null && FilteredActivities.Any())
+                    {
                         <table class="table table-bordered table-sm table-hover">
                             <thead class="table-info sticky-header">
                                 <tr>
@@ -85,31 +90,34 @@
                                 </tr>
                             </thead>
                             <tbody>
-                        @foreach (var activity in FilteredActivities)
-                        {
-                                        <tr>
-                                <td>@activity.MasterActivityName</td>
-                                            <td>
-                                                <input type="checkbox"
-                                                       @onchange="(e) => ToggleActivitySelection(activity, (bool?)e.Value)"
-                                                       checked="@IsActivitySelectedOrAssigned(activity)"
-                                                       disabled="@IsActivityPreAssigned(activity)" />
-                                            </td>
-                                        </tr>
-                        }
+                                @foreach (var activity in FilteredActivities)
+                                {
+                                    <tr>
+                                        <td>@activity.MasterActivityName</td>
+                                        <td>
+                                            <input type="checkbox"
+                                                   @onchange="(e) => ToggleActivitySelection(activity, (bool?)e.Value)"
+                                                   checked="@IsActivitySelectedOrAssigned(activity)"
+                                                   disabled="@IsActivityPreAssigned(activity)" />
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
-            }
-            else
-            {
+                    }
+                    else
+                    {
                         <div class="alert alert-info">No activities found</div>
-            }
-            @if (!string.IsNullOrEmpty(_errorMessage))
-            {
+                    }
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
                         <div class="alert alert-danger mt-2">@_errorMessage</div>
-            }
+                    }
+                </div>
             </div>
         </div>
+    </div>          
+            
 }
 
 
@@ -139,20 +147,27 @@
 
 @code {
     private List<UserActivityMasterDto> _tableData = new();
+
     private UserActivityMasterDto _activity = new();
+
     private string _searchText = "";
-    // private string _selectedFilter = "active";
+
     private string _errorMessage = string.Empty;
-    // private bool _isActive = true;
+
     private bool _showAddForm = false;
+
     private EditContext _editContext;
-    // private bool _isSubmitting = false;
+
     private string _statusMessage = string.Empty;
+
     private bool _isError = false;
+
     private List<UserActivityMasterDto> _selectedMaster = new();
 
     private string newWorkingActivityName;
+
     private string errorMessage;
+
     private string successMessage;
 
     [Parameter]

@@ -102,7 +102,7 @@ builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IProjectsService, ProjectsService>();
 builder.Services.AddScoped<IWorkTaskDetailsService, WorkTaskDetailsService>();
-//builder.Services.AddScoped<IDevelopmentPhaseServices, DevelopmentPhaseServices>();
+builder.Services.AddScoped<IBillingCycleHelper, BillingCycleHelper>();
 builder.Services.AddScoped<IUserWorkingActivityServices, UserWorkingActivityServices>();
 builder.Services.AddScoped<IUserDesignationService, UserDesignationService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "1c7rvWagHlO30xKjHOCYQyqah+iFcXft+adjoZiRYdY=",
+  "Hash": "g3px8F6avO4ks8qf95I4GEqghngf2ismMypyunmJhp8=",
   "Source": "OfficeProject",
   "BasePath": "_content/OfficeProject",
   "Mode": "Default",
@@ -73,8 +73,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "4vdnpl526e",
-      "Integrity": "8KImD9Zhk80UFs534txcIjxwx/6uCJxaAa97/kbzog4=",
+      "Fingerprint": "bvamya3npx",
+      "Integrity": "eWVcL5B4z7nFxh/33fTLMukiPsZVzmWW+RBRw9Wi4m8=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\app.css"
@@ -94,8 +94,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "wwrxke6brf",
-      "Integrity": "cEjUQs9qZ/T1GPt0cVDwIz7c8IrZ1HznQ38IeGk/nNY=",
+      "Fingerprint": "lkllbadgii",
+      "Integrity": "dYP1gaRVVuB5+ttdnBG0oKite8+lSS996yuD5hBG0xU=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\bootstrap\\bootstrap.min.css"
@@ -145,7 +145,7 @@
   ],
   "Endpoints": [
     {
-      "Route": "app.4vdnpl526e.css",
+      "Route": "app.bvamya3npx.css",
       "AssetFile": "E:\\.Net Project\\OfficeProject\\wwwroot\\app.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -155,7 +155,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2589"
+          "Value": "2773"
         },
         {
           "Name": "Content-Type",
@@ -163,11 +163,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"8KImD9Zhk80UFs534txcIjxwx/6uCJxaAa97/kbzog4=\""
+          "Value": "\"eWVcL5B4z7nFxh/33fTLMukiPsZVzmWW+RBRw9Wi4m8=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 18 Apr 2025 09:10:02 GMT"
+          "Value": "Mon, 23 Jun 2025 11:19:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -177,7 +177,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "4vdnpl526e"
+          "Value": "bvamya3npx"
         },
         {
           "Name": "label",
@@ -185,7 +185,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-8KImD9Zhk80UFs534txcIjxwx/6uCJxaAa97/kbzog4="
+          "Value": "sha256-eWVcL5B4z7nFxh/33fTLMukiPsZVzmWW+RBRw9Wi4m8="
         }
       ]
     },
@@ -200,7 +200,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2589"
+          "Value": "2773"
         },
         {
           "Name": "Content-Type",
@@ -208,11 +208,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"8KImD9Zhk80UFs534txcIjxwx/6uCJxaAa97/kbzog4=\""
+          "Value": "\"eWVcL5B4z7nFxh/33fTLMukiPsZVzmWW+RBRw9Wi4m8=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 18 Apr 2025 09:10:02 GMT"
+          "Value": "Mon, 23 Jun 2025 11:19:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -222,7 +222,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-8KImD9Zhk80UFs534txcIjxwx/6uCJxaAa97/kbzog4="
+          "Value": "sha256-eWVcL5B4z7nFxh/33fTLMukiPsZVzmWW+RBRw9Wi4m8="
         }
       ]
     },
@@ -237,7 +237,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "226890"
+          "Value": "226106"
         },
         {
           "Name": "Content-Type",
@@ -245,11 +245,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"cEjUQs9qZ/T1GPt0cVDwIz7c8IrZ1HznQ38IeGk/nNY=\""
+          "Value": "\"dYP1gaRVVuB5+ttdnBG0oKite8+lSS996yuD5hBG0xU=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 03 May 2025 13:49:34 GMT"
+          "Value": "Sat, 21 Jun 2025 13:56:42 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -259,7 +259,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-cEjUQs9qZ/T1GPt0cVDwIz7c8IrZ1HznQ38IeGk/nNY="
+          "Value": "sha256-dYP1gaRVVuB5+ttdnBG0oKite8+lSS996yuD5hBG0xU="
         }
       ]
     },
@@ -346,7 +346,7 @@
       ]
     },
     {
-      "Route": "bootstrap/bootstrap.min.wwrxke6brf.css",
+      "Route": "bootstrap/bootstrap.min.lkllbadgii.css",
       "AssetFile": "E:\\.Net Project\\OfficeProject\\wwwroot\\bootstrap\\bootstrap.min.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -356,7 +356,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "226890"
+          "Value": "226106"
         },
         {
           "Name": "Content-Type",
@@ -364,11 +364,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"cEjUQs9qZ/T1GPt0cVDwIz7c8IrZ1HznQ38IeGk/nNY=\""
+          "Value": "\"dYP1gaRVVuB5+ttdnBG0oKite8+lSS996yuD5hBG0xU=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 03 May 2025 13:49:34 GMT"
+          "Value": "Sat, 21 Jun 2025 13:56:42 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -378,7 +378,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "wwrxke6brf"
+          "Value": "lkllbadgii"
         },
         {
           "Name": "label",
@@ -386,7 +386,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-cEjUQs9qZ/T1GPt0cVDwIz7c8IrZ1HznQ38IeGk/nNY="
+          "Value": "sha256-dYP1gaRVVuB5+ttdnBG0oKite8+lSS996yuD5hBG0xU="
         }
       ]
     },
@@ -495,7 +495,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 20 Jun 2025 09:43:15 GMT"
+          "Value": "Mon, 23 Jun 2025 11:20:23 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -532,7 +532,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 20 Jun 2025 09:43:15 GMT"
+          "Value": "Mon, 23 Jun 2025 11:20:23 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -577,7 +577,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 20 Jun 2025 09:43:15 GMT"
+          "Value": "Mon, 23 Jun 2025 11:20:23 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -622,7 +622,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 20 Jun 2025 09:43:15 GMT"
+          "Value": "Mon, 23 Jun 2025 11:20:23 GMT"
         },
         {
           "Name": "Cache-Control",

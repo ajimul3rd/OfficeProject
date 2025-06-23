@@ -2,6 +2,7 @@
 @using OfficeProject.Models.DTO
 @using OfficeProject.Models.Entities
 @using OfficeProject.Web.Pages.DialogModel
+@inject IDataSerializer? DataSerializer
 
 <div class="container-fluid">
 
@@ -181,16 +182,23 @@
 
 @code {
     [Inject] public IUserActivityMasterService UserActivityMasterService { get; set; }
+
     [Parameter] public string SelectedActivityName { get; set; }
+
     [Parameter] public EventCallback<string> SelectedActivityNameChanged { get; set; }
+
     [Parameter] public bool showHeader { get; set; } = true;
 
     private List<UserActivityMasterDto> userWorkingActivity;
+
     private bool isAddingNew = false;
+
     private string newWorkingActivityName;
-    // private int? selectedWorkingActivityId;
+
     private string errorMessage;
+
     private string successMessage;
+
     private UserActivityMasterDto? ActivityToEdit;
 
     protected override async Task OnInitializedAsync()
@@ -205,7 +213,6 @@
             userWorkingActivity = await UserActivityMasterService.GetAllUserActivityList();
             isAddingNew = false;
             newWorkingActivityName = null;
-            // selectedWorkingActivityId = null;
             errorMessage = null;
             successMessage = null;
             ActivityToEdit = null;
@@ -305,11 +312,6 @@
             errorMessage = $"Error deleting user working activity: {ex.Message}";
         }
     }
-
-
-
-
-
 
 }
 <style>

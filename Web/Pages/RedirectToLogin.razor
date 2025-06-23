@@ -1,6 +1,7 @@
 ﻿@inject NavigationManager Navigation
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDataSerializer? DataSerializer
 
 <AuthorizeView>
     <Authorized>

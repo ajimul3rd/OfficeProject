@@ -44,10 +44,11 @@ public class ApiService
     }
 
     // UPDATE USER
-    public async Task UpdateUserDTOAsync(UserDTO user,int id)
+    public async Task<HttpResponseMessage> UpdateUserDTOAsync(UserDTO user,int id)
     {
         await AddAuthHeaderAsync();
-        await http.PutAsJsonAsync($"api/user/{id}", user);
+        return   await http.PutAsJsonAsync($"api/user/{id}", user);
+        
     }
 
     // REFRESH TOKEN

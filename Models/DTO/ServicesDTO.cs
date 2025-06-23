@@ -33,12 +33,12 @@ namespace OfficeProject.Models.DTO
 
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
-
         public int TotalPost { get; set; }
-
+        public int? CompletePost { get; set; }
         public int TotalReels { get; set; }
-
+        public int? CompleteReels { get; set; }
         public decimal AdsBudget { get; set; }
+        public decimal? UsedAdsBudget { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime DeadLine { get; set; }

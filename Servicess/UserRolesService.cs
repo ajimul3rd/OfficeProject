@@ -7,11 +7,12 @@ namespace OfficeProject.Servicess
     public class UserRolesService : IUserRolesService
     {
         private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
-
+        private readonly IDataSerializer? DataSerializer;
         public UserRolesService(
-          IDbContextFactory<ApplicationDbContext> dbContextFactory)
+          IDbContextFactory<ApplicationDbContext> dbContextFactory , IDataSerializer? dataSerializer)
         {
-            this.dbContextFactory = dbContextFactory;         
+            this.dbContextFactory = dbContextFactory;  
+             DataSerializer = dataSerializer;
 
         }
         public async  Task<string> AddOrUpdateUserRoleAsync(UserRoles userRoles)

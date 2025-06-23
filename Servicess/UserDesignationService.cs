@@ -7,13 +7,16 @@ namespace OfficeProject.Servicess
     {
         private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IDataSerializer? DataSerializer;
 
         public UserDesignationService(
             IDbContextFactory<ApplicationDbContext> dbContextFactory,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IDataSerializer? dataSerializer)
         {
             this.dbContextFactory = dbContextFactory;
             this.httpContextAccessor = httpContextAccessor;
+            DataSerializer = dataSerializer;
         }
 
 

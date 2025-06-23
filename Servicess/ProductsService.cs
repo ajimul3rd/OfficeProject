@@ -16,13 +16,15 @@ namespace OfficeProject.Servicess
         private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMapper Mapper;
+        private readonly IDataSerializer? DataSerializer;
         public ProductsService(
             IDbContextFactory<ApplicationDbContext> dbContextFactory,
-            IHttpContextAccessor httpContextAccessor, IMapper mapper)
+            IHttpContextAccessor httpContextAccessor, IMapper mapper, IDataSerializer? dataSerializer)
         {
             this.dbContextFactory = dbContextFactory;
             this.httpContextAccessor = httpContextAccessor;
             this.Mapper = mapper;
+            this.DataSerializer = dataSerializer;   
 
         }
 
