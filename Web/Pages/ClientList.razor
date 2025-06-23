@@ -4,10 +4,11 @@
 @using OfficeProject.Models.DTO
 @using OfficeProject.Web.Pages.DialogModel
 @inject IDataSerializer? DataSerializer
+@inject IClientService clientService
 
 <h3 class="mb-4">Client Management</h3>
 
-<DialogAddClient Model="@Model" isFormSubmit="HandleLoadProjectsAsync" showForm="@showDialog" />
+<DialogAddClient Model="@Model" isFormSubmit="HandleGetProjectsAsync" showForm="@showDialog" />
 
 @if (tableData?.Count > 0)
 {
@@ -96,7 +97,7 @@ else
     }
 </style>
 
-<DialogAddClient Model="@Model" isFormSubmit="HandleLoadProjectsAsync" showForm="@showDialog" />
+<DialogAddClient Model="@Model" isFormSubmit="HandleGetProjectsAsync" showForm="@showDialog" />
 
 @code {
 
@@ -119,7 +120,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         Model=  new ClientsDTO(); // Initialize model first
-        await LoadProjects();
+        await GetClientList();
 
     }
 
@@ -128,16 +129,16 @@ else
     {
         if (isSuccess)
         {
-            await LoadProjects();
+            await GetClientList();
 
         }
 
     }
-    private async Task HandleLoadProjectsAsync(bool isFormSubmit)
+    private async Task HandleGetProjectsAsync(bool isFormSubmit)
     {
-        if (isFormSubmit) ;
+        if (isFormSubmit) 
 
-        await LoadProjects();
+            await GetClientList();
         CloseFormDialog();
 
     }
@@ -170,11 +171,11 @@ else
             };
         showDialog = true;
     }
-    private async Task LoadProjects()
+    private async Task GetClientList()
     {
         try
         {
-            tableData = await ApiService.GetClientListAsync() ?? new List<ClientsDTO>();
+            tableData = await clientService.GetClientListAsync() ?? new List<ClientsDTO>();
         }
         catch (Exception ex)
         {
@@ -187,10 +188,11 @@ else
         client.IsActive = newStatus;
         try
         {
-          var response = await ApiService.AddSingleClientAsync(client!);
+          var response = await ApiService.AddClientAsync(client!);
 
                 if (response.IsSuccessStatusCode)
-                {   await LoadProjects();
+            {
+                await GetClientList();
                 }
                 else
                 {

@@ -216,12 +216,12 @@ namespace OfficeProject.Servicess
         {
             try
             {
-                var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
+                //var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
 
-                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-                {
-                    throw new UnauthorizedAccessException("User not authenticated or invalid user ID");
-                }
+                //if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                //{
+                //    throw new UnauthorizedAccessException("User not authenticated or invalid user ID");
+                //}
 
                 using (var context = dbContextFactory.CreateDbContext())
                 {

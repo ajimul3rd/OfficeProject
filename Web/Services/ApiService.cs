@@ -128,7 +128,7 @@ public class ApiService
 
     //############################################### Client Services ##################################################
     // ✅ ADD CLIENT WITH PROJECT
-    public async Task<HttpResponseMessage> AddSingleClientAsync(ClientsDTO clientDto)
+    public async Task<HttpResponseMessage> AddClienttAsync(ClientsDTO clientDto)
     {
         await AddAuthHeaderAsync();
         return await http.PostAsJsonAsync("api/clients/single", clientDto);
@@ -395,8 +395,7 @@ public class ApiService
         await AddAuthHeaderAsync();
         return await http.PostAsJsonAsync("api/Products", productsDTO);
     }
-    public async Task<List<ProductsDTO>?> GetProductListdAsync()
-    {
+    public async Task<List<ProductsDTO>?> GetAlGetAllProductsDTOAsync()   {
         await AddAuthHeaderAsync();
         var response = await http.GetAsync("api/Products");
 

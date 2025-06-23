@@ -12,6 +12,8 @@
 @using OfficeProject.Authentication
 @using System.Text.Json
 @inject IDataSerializer? DataSerializer
+@inject IClientService? clientService
+@inject IUserService? userService
 
 
 
@@ -28,9 +30,14 @@
                 </div>
 
                 <div class="modal-body" style="overflow-y: auto; max-height: calc(85vh - 100px); padding: 1rem;">
+                    <AuthorizeView Roles="ADMIN,MANAGER">
                     <div class="d-flex justify-content-end mb-2">
-                        <button class="btn btn-sm btn-success" @onclick="() => showAddForm = true">+ Add User</button>
+                        @* <button class="btn btn-sm btn-success" @onclick="() => showAddForm = true">+ Add User</button> *@
+                            <button class="btn btn-sm btn-success" @onclick="ToggleAddCancelForm">
+                                @(showAddForm ? "Cancel" : "+ Add User")
+                            </button>
                     </div>
+                    </AuthorizeView>
 
                     @if (showAddForm)
                     {
@@ -248,6 +255,9 @@
                         </div>
                     }
 
+
+                    @if (!showAddForm)
+                    {
                     <div class="client-management-container">
                         <!-- Client List View -->
                         <div class="dashboard-header mb-2">
@@ -268,6 +278,7 @@
                             </div>
                         </div>
 
+                      
                         @if (FilteredClients != null && FilteredClients.Any())
                         {
                             <table class="table table-bordered table-sm table-hover">
@@ -310,8 +321,9 @@
                         else
                         {
                             <div class="alert alert-info small mt-3">Client list is empty.</div>
-                        }
+                        }                        
                     </div>
+                    }
                 </div>
             </div>
         </div>
@@ -393,17 +405,18 @@
     {
         Model ??= new RegisterModel { IsActive = true };
         editContext = new(Model);
-        await LoadProjects();
+        await GetUsers();
     }
 
     protected override async Task OnParametersSetAsync()
     {
+        showAddForm = false;
         assignedUsers ??= new List<AssignedUsersDTO>();
         selectedUsers ??= new List<UserDTO>();
 
         if (showModal)
         {
-            await LoadProjects();
+            await GetUsers();
         }
     }
 
@@ -501,11 +514,11 @@
     private  List<UserDTO> selectedUsers = new(); 
     
    
-    private async Task LoadProjects()
+    private async Task GetUsers()
     {
         try
         {
-            tableData = await ApiService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
+            tableData = await userService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
              
         }
         catch (Exception ex)
@@ -552,7 +565,7 @@
                     ResetForm();
                     statusMessage = "Client added successfully!";
                     showAddForm = !showAddForm;
-                    await LoadProjects();
+                    await GetUsers();
                     isError = false;
                 }
                 else

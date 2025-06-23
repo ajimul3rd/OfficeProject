@@ -345,7 +345,7 @@
     {
         try
         {
-            tableData = await ApiService.GetProductListdAsync() ?? new List<ProductsDTO>();
+            tableData = await ApiService.GetAlGetAllProductsDTOAsync() ?? new List<ProductsDTO>();
             StateHasChanged();
         }
         catch (Exception ex)

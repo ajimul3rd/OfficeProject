@@ -116,7 +116,7 @@ namespace OfficeProject.Controllers
 
 
         [HttpPost("add")]
-        [Authorize(Policy = "AdminOrManager")]
+        //[Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> AddProjectAsync([FromBody] ProjectsDTO projectDto)
         {
             if (projectDto == null)

@@ -15,9 +15,12 @@
 
                 <div class="modal-body" style="overflow-y: auto; max-height: calc(85vh - 100px); padding: 1rem;">
                     <div class="d-flex justify-content-end mb-2">
-                        <button class="btn btn-sm btn-success" @onclick="() => _showAddForm = true">+ Add User Working Activity</button>
+                        @* <button class="btn btn-sm btn-success" @onclick="() => showAddForm = true">+ Add User Working Activity</button> *@
+                        <button class="btn btn-sm btn-success" @onclick="ToggleAddCancelForm">
+                            @(showAddForm ? "Cancel" : "+ Add User Working Activity")
+                        </button>
                     </div>
-                    @if (_showAddForm)
+                    @if (showAddForm)
                     {
                         <div class="card shadow-sm mb-4">
                             <div class="card-body">
@@ -26,17 +29,17 @@
 
                                         <div class="input-group mb-3 w-100">
                                             <input type="text" class="form-control"
-                                                   placeholder="Enter new User Working Activity Name"
-                                                   @bind="newWorkingActivityName" @onkeydown="HandleKeyDown" />
+                                            placeholder="Enter new User Working Activity Name"
+                                            @bind="newWorkingActivityName" @onkeydown="HandleKeyDown" />
 
                                             <button class="btn btn-success" type="button"
-                                                    @onclick="AddNewUserWorkingActivity"
-                                                    disabled="@string.IsNullOrWhiteSpace(newWorkingActivityName)">
+                                            @onclick="AddNewUserWorkingActivity"
+                                            disabled="@string.IsNullOrWhiteSpace(newWorkingActivityName)">
                                                 <i class="fas fa-save me-1"></i> Save
                                             </button>
 
                                             <button class="btn btn-outline-secondary" type="button"
-                                                    @onclick="CancelAdd">
+                                            @onclick="CancelAdd">
                                                 <i class="fas fa-times me-1"></i> Cancel
                                             </button>
                                         </div>
@@ -75,8 +78,8 @@
                     <!-- Search and Filter Controls -->
                     <div class="mb-3 d-flex justify-content-between">
                         <input type="text" class="form-control me-2"
-                               placeholder="Search..."
-                               @bind="_searchText" @bind:event="oninput" style="width: 200px;" />
+                        placeholder="Search..."
+                        @bind="_searchText" @bind:event="oninput" style="width: 200px;" />
                     </div>
 
                     <!-- Product Table -->
@@ -96,9 +99,9 @@
                                         <td>@activity.MasterActivityName</td>
                                         <td>
                                             <input type="checkbox"
-                                                   @onchange="(e) => ToggleActivitySelection(activity, (bool?)e.Value)"
-                                                   checked="@IsActivitySelectedOrAssigned(activity)"
-                                                   disabled="@IsActivityPreAssigned(activity)" />
+                                            @onchange="(e) => ToggleActivitySelection(activity, (bool?)e.Value)"
+                                            checked="@IsActivitySelectedOrAssigned(activity)"
+                                            disabled="@IsActivityPreAssigned(activity)" />
                                         </td>
                                     </tr>
                                 }
@@ -117,31 +120,31 @@
             </div>
         </div>
     </div>          
-            
+
 }
 
 
 <style>
     .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1050;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
     }
 
     .modal-content {
-        background-color: white;
-        border-radius: 8px;
-        max-height: 90vh;
-        overflow-y: auto;
-        padding: 20px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    background-color: white;
+    border-radius: 8px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
 </style>
 
@@ -154,7 +157,7 @@
 
     private string _errorMessage = string.Empty;
 
-    private bool _showAddForm = false;
+    private bool showAddForm = false;
 
     private EditContext _editContext;
 
@@ -196,6 +199,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        showAddForm = false;
         if (ShowModal)
         {
             await LoadUserWorkingActivities();
@@ -243,10 +247,11 @@
 
     private void CancelAdd()
     {
-       
+
         newWorkingActivityName = null;
         errorMessage = null;
         successMessage = null;
+        showAddForm = false;
     }
 
     private async Task AddNewUserWorkingActivity()
@@ -266,6 +271,7 @@
             successMessage = $"User working activity '{newWorkingActivityName}' added successfully!";
             await LoadUserWorkingActivities();
             newWorkingActivityName = null;
+            showAddForm = false;
         }
         catch (Exception ex)
         {
@@ -292,7 +298,7 @@
 
     private void ToggleAddCancelForm()
     {
-        _showAddForm = !_showAddForm;
+        showAddForm = !showAddForm;
         ResetForm();
     }
 

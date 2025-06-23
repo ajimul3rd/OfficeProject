@@ -2,6 +2,7 @@
 @using System.Text.Json
 @inject ApiService ApiService
 @inject IDataSerializer? DataSerializer
+@inject IProductsService? productService
 
 @if (showModal)
 {
@@ -16,7 +17,10 @@
 
                 <div class="modal-body" style="overflow-y: auto; max-height: calc(85vh - 100px); padding: 1rem;">
                     <div class="d-flex justify-content-end mb-2">
-                        <button class="btn btn-sm btn-success" @onclick="() => showAddForm = true">+ Add Product</button>
+                        @* <button class="btn btn-sm btn-success" @onclick="() => showAddForm = true">+ Add Product</button> *@
+                        <button class="btn btn-sm btn-success" @onclick="ToggleAddCancelForm">
+                            @(showAddForm ? "Cancel" : "+ Add Product")
+                        </button>
                     </div>
 
                     @if (showAddForm)
@@ -31,7 +35,7 @@
 
 
                         <div class="card-body">
-                            <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+                            <EditForm EditContext="@editContext" OnValidSubmit="@Submit">
                                 <DataAnnotationsValidator />
 
                                 <div class="row">
@@ -190,6 +194,8 @@
 
                         </div>
                     }
+                    @if (!showAddForm)
+                    {
                     <!-- Search and Filter Controls -->
                     <div class="mb-3 d-flex justify-content-between">
                         <input type="text" class="form-control me-2"
@@ -201,6 +207,7 @@
                             @* <option value="inactive">Inactive</option> *@
                         </select>
                     </div>
+               
 
                     <!-- Product Table -->
                     @if (FilteredProducts != null && FilteredProducts.Any())
@@ -250,6 +257,8 @@
                     else
                     {
                         <div class="alert alert-info">No products found</div>
+                    }
+
                     }
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
@@ -320,7 +329,7 @@
         product = new ProductsDTO();
         product.UserId = 0;
         editContext = new EditContext(product);
-        await LoadProducts();
+        await GetProducts();
 
         selectedProducts.Clear(); //Reset
 
@@ -334,6 +343,7 @@
 
     protected override void OnParametersSet()
     {
+        showAddForm = false;
         if (callerSelectedProducts != null && tableData != null)
         {
             // Reset selectedProducts if callerSelectedProducts is empty
@@ -350,6 +360,7 @@
             selectedProducts.AddRange(newSelections);
             StateHasChanged();
         }
+
     }
 
     private async Task ToggleProductSelection(ProductsDTO product, bool? isChecked)
@@ -390,11 +401,11 @@
         return callerSelectedProducts?.Any(p => p.ProductsId == product.ProductsId) ?? false;
     }
 
-    private async Task LoadProducts()
+    private async Task GetProducts()
     {
         try
         {
-            tableData = await ApiService.GetProductListdAsync() ?? new List<ProductsDTO>();
+            tableData = await productService.GetAllProductsDTOAsync() ?? new List<ProductsDTO>();
         }
         catch (Exception ex)
         {
@@ -418,7 +429,7 @@
         ResetForm();
     }
 
-    private async Task HandleValidSubmit()
+    private async Task Submit()
     {
         validationErrors.Clear(); //Clear previous errors
         editContext?.MarkAsUnmodified();
@@ -441,7 +452,7 @@
 
                 if (response.IsSuccessStatusCode)
                 {
-                    await LoadProducts();
+                    await GetProducts();
                     statusMessage = "Product added successfully!";
                     ResetForm();
                     showAddForm = false;

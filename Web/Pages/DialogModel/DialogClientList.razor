@@ -8,9 +8,11 @@
 @inject IJSRuntime JSRuntime;
 @using OfficeProject.Web.Pages.DialogModel;
 @inject IDataSerializer? DataSerializer
+@inject IClientService? clientService
+@inject IUserService? userService
 @if (showModal)
 {
-    
+
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
             <div class="modal-content" style="height: 85vh;">
@@ -21,7 +23,14 @@
 
                 <div class="modal-body" style="overflow-y: auto; max-height: calc(85vh - 100px); padding: 1rem;">
                     <div class="d-flex justify-content-end mb-2">
-                        <button class="btn btn-sm btn-success" @onclick="() => showAddForm = true">+ Add Client</button>
+
+                        @* <button class="btn btn-sm btn-success" @onclick="() => showAddForm = true"> *@
+                        @*     + Add Client</button> *@
+                        <button class="btn btn-sm btn-success" @onclick="ToggleAddCancelForm">
+                            @(showAddForm ? "Cancel" : "+ Add Client")
+                        </button>
+
+
                     </div>
                     @if (showAddForm)
                     {
@@ -41,15 +50,15 @@
                                                 <div class="mb-3">
                                                     <label class="form-label required">Client Name</label>
                                                     <InputText @bind-Value="@Model.ClientName"
-                                                               @onblur="@(() => MarkAsTouched(Model, nameof(Model.ClientName)))"
-                                                               class="form-control" />
+                                                    @onblur="@(() => MarkAsTouched(Model, nameof(Model.ClientName)))"
+                                                    class="form-control" />
                                                     <ValidationMessage For="@(() => Model.ClientName)" class="text-danger small" />
                                                 </div>
 
                                                 <div class="mb-3">
                                                     <label class="form-label required">Company Name</label>
                                                     <InputText @bind-Value="@Model.CompanyName"
-                                                               @onblur="@(() => MarkAsTouched(Model, nameof(Model.CompanyName)))" class="form-control" />
+                                                    @onblur="@(() => MarkAsTouched(Model, nameof(Model.CompanyName)))" class="form-control" />
                                                     <ValidationMessage For="@(() => Model.CompanyName)" class="text-danger small" />
                                                 </div>
 
@@ -57,8 +66,8 @@
                                                     <div class="col-md-6">
                                                         <label class="form-label required">Primary Contact</label>
                                                         <InputText @bind-Value="@Model.ClientContact1"
-                                                                   @onblur="@(() => MarkAsTouched(Model, nameof(Model.ClientContact1)))"
-                                                                   class="form-control" />
+                                                        @onblur="@(() => MarkAsTouched(Model, nameof(Model.ClientContact1)))"
+                                                        class="form-control" />
                                                         <ValidationMessage For="@(() => Model.ClientContact1)" class="text-danger small" />
                                                     </div>
                                                     <div class="col-md-6">
@@ -86,27 +95,27 @@
                                                 <div class="mb-3">
                                                     <label class="form-label required">Primary Email</label>
                                                     <InputText @bind-Value="@Model.ClientEmail1"
-                                                               @onblur="@(() => MarkAsTouched(Model, nameof(Model.ClientEmail1)))"
-                                                               class="form-control" />
+                                                    @onblur="@(() => MarkAsTouched(Model, nameof(Model.ClientEmail1)))"
+                                                    class="form-control" />
                                                     <ValidationMessage For="@(() => Model.ClientEmail1)" class="text-danger small" />
                                                 </div>
 
                                                 <div class="mb-3">
                                                     <label class="form-label">Secondary Email</label>
                                                     <InputText @bind-Value="@Model.ClientEmail2"
-                                                               class="form-control" />
+                                                    class="form-control" />
                                                 </div>
 
                                                 <div class="row g-3">
                                                     <div class="col-md-8">
                                                         <label class="form-label">Address</label>
                                                         <InputText @bind-Value="@Model.ClientAddress"
-                                                                   class="form-control" />
+                                                        class="form-control" />
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label class="form-label">City</label>
                                                         <InputText @bind-Value="@Model.ClientCity"
-                                                                   class="form-control" />
+                                                        class="form-control" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -132,8 +141,8 @@
                                                     <div class="col-md-3">
                                                         <label class="form-label required">Issued By</label>
                                                         <InputSelect @bind-Value="Model.IssuedBy"
-                                                                     class="form-select"
-                                                                     @onblur="@(() => MarkAsTouched(Model, nameof(Model.IssuedBy)))">
+                                                        class="form-select"
+                                                        @onblur="@(() => MarkAsTouched(Model, nameof(Model.IssuedBy)))">
                                                             <option value="">-- Select User --</option>
                                                             @foreach (var user in users)
                                                             {
@@ -146,8 +155,8 @@
                                                     <div class="col-md-3 d-flex align-items-center">
                                                         <div class="form-check form-switch">
                                                             <InputCheckbox @bind-Value="@Model.IsActive"
-                                                                           class="form-check-input"
-                                                                           id="isActiveToggle" />
+                                                            class="form-check-input"
+                                                            id="isActiveToggle" />
                                                             <label class="form-check-label" for="isActiveToggle">
                                                                 Active Status
                                                             </label>
@@ -162,13 +171,13 @@
                                     <div class="col-12 mt-4">
                                         <div class="d-flex justify-content-end gap-3">
                                             <button type="button"
-                                                    class="btn btn-outline-secondary"
-                                                    @onclick="ToggleAddCancelForm">
+                                            class="btn btn-outline-secondary"
+                                            @onclick="ToggleAddCancelForm">
                                                 <i class="fas fa-times me-2"></i>Cancel
                                             </button>
                                             <button type="submit"
-                                                    class="btn btn-primary"
-                                                    disabled="@isSubmitting">
+                                            class="btn btn-primary"
+                                            disabled="@isSubmitting">
                                                 @if (isSubmitting)
                                                 {
                                                     <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -194,73 +203,77 @@
                             }
                         </div>
                     }
-                    <div class="client-management-container">
-                        <!-- Client List View -->
-                        <div class="dashboard-header mb-2">
-                            <div class="d-flex flex-wrap gap-2">
-                                <input type="text" id="searchInput" class="form-control form-control-sm"
-                                       placeholder="Search clients..."
-                                       @bind-value="searchText"
-                                       @bind-value:event="oninput"
-                                       style="max-width: 200px;" />
+                    @if (!showAddForm)
+                    {
+                        <div class="client-management-container">
+                            <!-- Client List View -->
+                            <div class="dashboard-header mb-2">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <input type="text" id="searchInput" class="form-control form-control-sm"
+                                    placeholder="Search clients..."
+                                    @bind-value="searchText"
+                                    @bind-value:event="oninput"
+                                    style="max-width: 200px;" />
 
-                                <select id="filterSelect" class="form-select form-select-sm"
-                                        @bind="selectedFilter"
-                                        style="max-width: 150px;">
-                                    @* <option value="all">All</option> *@
-                                    <option value="active">Active</option>
-                                    @* <option value="inactive">Inactive</option> *@
-                                </select>
+                                    <select id="filterSelect" class="form-select form-select-sm"
+                                    @bind="selectedFilter"
+                                    style="max-width: 150px;">
+                                        @* <option value="all">All</option> *@
+                                        <option value="active">Active</option>
+                                        @* <option value="inactive">Inactive</option> *@
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        @if (FilteredClients != null && FilteredClients.Any())
-                        {
-                            <table class="table table-bordered table-sm table-hover">
-                                <thead class="table-info sticky-header">
-                                    <tr class="small">
-                                        <th>Client Name</th>
-                                        <th>Company Name</th>
-                                        <th>Contact No.</th>
-                                        <th>Email</th>
-                                        <th>Status</th>
-                                        <th>Select</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var client in FilteredClients)
-                                    {
+
+                            @if (FilteredClients != null && FilteredClients.Any())
+                            {
+                                <table class="table table-bordered table-sm table-hover">
+                                    <thead class="table-info sticky-header">
                                         <tr class="small">
-                                            <td>@client.ClientName</td>
-                                            <td>@client.CompanyName</td>
-                                            <td>@client.ClientContact1</td>
-                                            <td>@client.ClientEmail1</td>
-                                            <td>
-                                                <button class="btn btn-sm @(client.IsActive ? "btn-success" : "btn-danger")">
-                                                    @(client.IsActive ? "Active" : "Inactive")
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <input type="checkbox"
-                                                       @onchange="(e) => SelectClient(client, (bool)e.Value)"
-                                                       checked="@(selectedClientId == client.ClientId)" />
-
-                                            </td>
+                                            <th>Client Name</th>
+                                            <th>Company Name</th>
+                                            <th>Contact No.</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th>Select</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        }
-                        else
-                        {
-                            <div class="alert alert-info small mt-3">Client list is empty.</div>
-                        }
-                    </div>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var client in FilteredClients)
+                                        {
+                                            <tr class="small">
+                                                <td>@client.ClientName</td>
+                                                <td>@client.CompanyName</td>
+                                                <td>@client.ClientContact1</td>
+                                                <td>@client.ClientEmail1</td>
+                                                <td>
+                                                    <button class="btn btn-sm @(client.IsActive ? "btn-success" : "btn-danger")">
+                                                        @(client.IsActive ? "Active" : "Inactive")
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <input type="checkbox"
+                                                    @onchange="(e) => SelectClient(client, (bool)e.Value)"
+                                                    checked="@(selectedClientId == client.ClientId)" />
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info small mt-3">Client list is empty.</div>
+                            }
+
+                        </div>}
                 </div>
             </div>
         </div>
     </div>
-                    
+
 
 }
 
@@ -374,23 +387,27 @@
 
 
         editContext = new(Model);
-        await LoadProjects();
-        await LoadUserList();
+        await GetClients();
+        await GetUsers();
 
 
     }
 
+    protected override void OnParametersSet()
+    {
+        showAddForm = false;
+    }
     private void MarkAsTouched(object model, string fieldName)
     {
         var fieldIdentifier = new FieldIdentifier(model, fieldName);
         editContext?.NotifyFieldChanged(fieldIdentifier);
     }
 
-    private async Task LoadUserList()
+    private async Task GetUsers()
     {
         try
         {
-            users = await ApiService.GetAllUsersDTOAsync();
+            users = await userService.GetAllUsersDTOAsync();
         }
         catch (Exception ex)
         {
@@ -398,11 +415,11 @@
         }
     }
 
-    private async Task LoadProjects()
+    private async Task GetClients()
     {
         try
         {
-            tableData = await ApiService.GetClientListAsync() ?? new List<ClientsDTO>();
+            tableData = await clientService.GetClientListAsync() ?? new List<ClientsDTO>();
         }
         catch (Exception ex)
         {
@@ -425,14 +442,14 @@
         {
             if (editContext!.Validate())
             {
-                var response = await ApiService.AddSingleClientAsync(Model!);
+                var response = await ApiService.AddClienttAsync(Model!);
 
                 if (response.IsSuccessStatusCode)
                 {
                     ResetForm();
                     statusMessage = "Client added successfully!";
                     showAddForm = !showAddForm;
-                    await LoadProjects();
+                    await GetClients();
                     isError = false;
                 }
                 else

@@ -158,24 +158,68 @@ namespace OfficeProject.Servicess
             }
         }
 
+        //public async Task<List<ProductsDTO>> GetAllProductsDTOAsync()
+        //{
+        //    try
+        //    {
+        //        var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
 
+        //        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+        //        {
+        //            throw new UnauthorizedAccessException("User not authenticated or invalid user ID");
+        //        }
+
+        //        using (var context = dbContextFactory.CreateDbContext())
+        //        {
+        //            var products = await context.Products
+        //     .Where(p => p.UserId == userId)
+        //     .Include(p => p.UserWorkingActivity)
+        //     .ToListAsync();
+
+        //            return products.Select(p => new ProductsDTO
+        //            {
+        //                ProductsId = p.ProductsId,
+        //                UserId = p.UserId,
+        //                ProductsAlias = p.ProductsAlias,
+        //                ProductsName = p.ProductsName,
+        //                ProductsDescription = p.ProductsDescription,
+        //                ProductsSellingPrice = p.ProductsSellingPrice,
+        //                ProductsCostingPrice = p.ProductsCostingPrice,
+        //                ProductsStatus = p.ProductsStatus,
+        //                ProductsEntryDate = p.ProductsEntryDate,
+        //                ProductsModificationDate = p.ProductsModificationDate,
+
+        //                UserWorkingActivity = p.UserWorkingActivity?.Select(a => new UserWorkingActivityDto
+        //                {
+        //                    WorkingActivityId = a.workingActivityId,
+        //                    ProductsId = a.ProductsId,
+        //                    WorkingActivityName = a.WorkingActivityName
+        //                }).ToList()
+        //            }).ToList();
+
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error retrieving clients: {ex.Message}");
+        //        throw;
+        //    }
+        //}
         public async Task<List<ProductsDTO>> GetAllProductsDTOAsync()
         {
             try
             {
-                var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
+                //var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
 
-                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-                {
-                    throw new UnauthorizedAccessException("User not authenticated or invalid user ID");
-                }
+                //if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                //{
+                //    throw new UnauthorizedAccessException("User not authenticated or invalid user ID");
+                //}
 
                 using (var context = dbContextFactory.CreateDbContext())
                 {
                     var products = await context.Products
-             .Where(p => p.UserId == userId)
-             .Include(p => p.UserWorkingActivity) 
-             .ToListAsync();
+                            .Include(p => p.UserWorkingActivity).ToListAsync();
 
                     return products.Select(p => new ProductsDTO
                     {

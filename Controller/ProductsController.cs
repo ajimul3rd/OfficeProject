@@ -19,8 +19,8 @@ namespace OfficeProject.Controller
 
 
         [HttpPost]
-        [Authorize(Policy = "AdminOrManager")]
-        public async Task<IActionResult> AddProductsAsync([FromBody] ProductsDTO productsDto)
+        //[Authorize(Policy = "AdminOrManager")]
+        public async Task<IActionResult> AddOrUpdateProductAsync([FromBody] ProductsDTO productsDto)
         {
             if (productsDto == null)
             {
@@ -70,7 +70,7 @@ namespace OfficeProject.Controller
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ProductsDTO>>> GetProduct()
+        public async Task<ActionResult<List<ProductsDTO>>> GetAllProductsDTOAsync()
         {
             try
             {

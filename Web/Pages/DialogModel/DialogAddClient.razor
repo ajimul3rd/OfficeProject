@@ -2,6 +2,7 @@
 @inject ApiService ApiService;
 @using OfficeProject.Models.DTO
 @inject IDataSerializer? DataSerializer
+@inject IUserService? userService
 
 @if (showForm)
 {
@@ -172,7 +173,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadUserList();
+        await GetUsers();
 
     }
 
@@ -192,11 +193,11 @@
         editContext = null;
     }
 
-    private async Task LoadUserList()
+    private async Task GetUsers()
     {
         try
         {
-            users = await ApiService.GetAllUsersDTOAsync();
+            users = await userService.GetAllUsersDTOAsync();
 
         }
         catch (Exception ex)
@@ -235,7 +236,7 @@
         {
             if (editContext!.Validate())
             {
-                var response = await ApiService.AddSingleClientAsync(Model!);
+                var response = await ApiService.AddClientAsync(Model!);
 
                 if (response.IsSuccessStatusCode)
                 {

@@ -20,7 +20,7 @@ namespace OfficeProject.Controller
 
         // ✅ Add a client 
         [HttpPost("single")]
-        [Authorize(Policy = "AdminOrManager")]
+        //[Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> AddSingleClient([FromBody] ClientsDTO clientDto)
         {
             if (clientDto == null)
@@ -46,7 +46,7 @@ namespace OfficeProject.Controller
 
         // ✅ Add a client with associated projects
         [HttpPost]
-        [Authorize(Policy = "AdminOrManager")]
+        //[Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> AddClient([FromBody] ClientsDTO clientDto)
         {
             if (clientDto == null)
@@ -73,7 +73,7 @@ namespace OfficeProject.Controller
         // ✅ Get all clients with their projects for the logged-in user
         // GET: api/clients
         [HttpGet]
-        [Authorize(Policy = "AdminOrManager")]
+        //[Authorize(Policy = "AdminOrManager")]
         public async Task<ActionResult<List<ClientsDTO>>> GetClients()
         {
             try

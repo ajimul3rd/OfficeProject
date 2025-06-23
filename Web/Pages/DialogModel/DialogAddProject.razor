@@ -12,6 +12,8 @@
 @inject ISeoServicess seoServicess
 @inject NavigationManager NavigationManager
 @inject IDataSerializer? DataSerializer
+@inject IJSRuntime JSRuntime
+
 
 
 
@@ -1039,9 +1041,25 @@ showModal="@showServiceModal" />
     }
 
     // close form
+    // private async Task CloseModal()
+    // {
+    //     showModal = false;
+    //     if (OnProjectAdded.HasDelegate)
+    //     {
+    //         await OnProjectAdded.InvokeAsync(false);
+    //     }
+
+    //     StateHasChanged();
+    // }
     private async Task CloseModal()
     {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", new object[] { "Are you sure you want to close the form?" });
+
+        if (!confirmed)
+            return; // User cancelled
+
         showModal = false;
+
         if (OnProjectAdded.HasDelegate)
         {
             await OnProjectAdded.InvokeAsync(false);
@@ -1049,6 +1067,8 @@ showModal="@showServiceModal" />
 
         StateHasChanged();
     }
+
+
 
     private async Task Submit()
     {
@@ -1296,4 +1316,6 @@ showModal="@showServiceModal" />
 
         StateHasChanged();
     }
+
+
 }

@@ -59,7 +59,7 @@ else
     </div>
 
 }
-<DialogAddUser registerModel="@registerModel" showForm="@showForm" isFormSubmit="@HandleLoadUsersAsync" />
+<DialogAddUser registerModel="@registerModel" showForm="@showForm" isFormSubmit="@HandleGetUsersAsync" />
 @if (showServiceModal)
 {
     <div class="activity-dialog-backdrop fade show"></div>
@@ -98,9 +98,7 @@ else
 <p>@message</p>
 
 @code {
- @inject IUserDesignationService userDesignationService;
-
-    private EditContext? editContext;
+ @inject IUserDesignationService userDesignationService; 
 
     private List<UserDTO> users = new();
 
@@ -122,11 +120,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadUsers();
+        await GetUsers();
 
     }
 
-    private async Task LoadUsers()
+    private async Task GetUsers()
     {
         try
         {
@@ -141,12 +139,11 @@ else
             isLoading = false;
         }
     }
-    private async Task HandleLoadUsersAsync(bool isFormSubmit)
+    private async Task HandleGetUsersAsync(bool isFormSubmit)
     {
-        if (isFormSubmit) ;
-        Console.WriteLine("isFormSubmit:" + isFormSubmit);
+        if (isFormSubmit)
         users.Clear();
-        await LoadUsers();
+        await GetUsers();
         CancelEdit();
         StateHasChanged();
 

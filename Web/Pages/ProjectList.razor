@@ -6,27 +6,37 @@
 @inject IDataSerializer? DataSerializer
 
 <h3>Project List</h3>
-<div class="row mb-3">
+<div class="row g-2 align-items-end mb-3">
+
     <div class="col-md-3">
-        <input class="form-control" placeholder="Search Client Name" 
-        @bind="searchClientName" @bind:event="oninput" />
+        <label class="form-label mb-1">Client Name</label>
+        <input class="form-control form-control-sm" placeholder="Search Client Name"
+               @bind="searchClientName" @bind:event="oninput" />
     </div>
+
     <div class="col-md-3">
-        <input class="form-control" placeholder="Search Service Name" 
-        @bind="searchServiceName" @bind:event="oninput" />
+        <label class="form-label mb-1">Service Name</label>
+        <input class="form-control form-control-sm" placeholder="Search Service Name"
+               @bind="searchServiceName" @bind:event="oninput" />
     </div>
+
     <div class="col-md-3">
-        <select class="form-select" @bind="filterStatus" >
+        <label class="form-label mb-1">Status</label>
+        <select class="form-select form-select-sm" @bind="filterStatus">
             <option value="">All</option>
             <option value="true">Active</option>
             <option value="false">Inactive</option>
         </select>
     </div>
 
-    <div class="col-md-3">
-        <button type="button" @onclick="AddProject">Add Project</button>
+    <div class="col-md-3 text-end">
+        <button type="button" class="btn btn-primary btn-sm" @onclick="AddProject">
+            <i class="fas fa-plus me-1"></i> Add Project
+        </button>
     </div>
+
 </div>
+
 
 @if (FilteredProjects.Any())
 {
@@ -35,10 +45,14 @@
             <tr>
                 <th>Client Name</th>
                 <th>Project Name</th>
+                 <AuthorizeView Roles="ADMIN,MANAGER">
                 <th>Project Cost</th>
+                </AuthorizeView>
                 <th>Total Services</th>
+                <AuthorizeView Roles="ADMIN,MANAGER">
                 <th>Status</th>
                 <th>Actions</th>
+                </AuthorizeView>
             </tr>
         </thead>
         <tbody>
@@ -47,8 +61,10 @@
                 <tr>
                     <td>@project.Client?.ClientName</td>
                     <td>@project.ProjectName</td>
-                    <td>@project.ProjectCost.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
+                     <AuthorizeView Roles="ADMIN,MANAGER"><td>@project.ProjectCost.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
+                         </AuthorizeView>
                     <td>@(project.Services?.Count ?? 0)</td>
+                    <AuthorizeView Roles="ADMIN,MANAGER">
                     <td>
                         <button class="btn btn-sm @(project.IsActive ? "btn-success" : "btn-danger")"
                         @onclick="() => ToggleProjectStatus(project.ProjectId, !project.IsActive)">
@@ -58,6 +74,7 @@
                     <td>
                         <button class="btn btn-primary btn-sm" @onclick="@(() => EditProject(project))">Edit</button>
                     </td>
+                    </AuthorizeView>
                 </tr>
             }
         </tbody>

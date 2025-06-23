@@ -147,7 +147,7 @@
   },
   {
     "ContainingType": "OfficeProject.Controller.ProductsController",
-    "Method": "AddProductsAsync",
+    "Method": "AddOrUpdateProductAsync",
     "RelativePath": "api/Products",
     "HttpMethod": "POST",
     "IsController": true,
@@ -163,7 +163,7 @@
   },
   {
     "ContainingType": "OfficeProject.Controller.ProductsController",
-    "Method": "GetProduct",
+    "Method": "GetAllProductsDTOAsync",
     "RelativePath": "api/Products",
     "HttpMethod": "GET",
     "IsController": true,
