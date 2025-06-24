@@ -19,7 +19,10 @@
             <div class="mb-3 d-flex align-items-center gap-2" style="max-width: 400px;">
                 @if (!isAddingNew)
                 {
-                    <select class="form-select flex-grow-1" @onchange="OnSelectionChanged">
+                    @* <select class="form-select flex-grow-1" @onchange="OnSelectionChanged"> *@
+
+                        <select class="form-select flex-grow-1"  @bind="SelectedSourceId">
+
                         <option value="">-- Select Client Source --</option>
                         @foreach (var source in clientSources)
                         {
@@ -184,6 +187,8 @@
 
     private List<ClientSources> clientSources;
 
+
+
     private bool isAddingNew = false;
 
     private string newClientSourceName;
@@ -197,6 +202,30 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadClientSources();
+    }
+
+    private int? SelectedSourceId
+    {
+        get
+        {
+            var selected = clientSources?.FirstOrDefault(cs => cs.ClientSourcesName == SelectedName);
+            return selected?.ClientSourcesId;
+        }
+        set
+        {
+            if (value == null)
+            {
+                SelectedNameChanged.InvokeAsync(null);
+            }
+            else
+            {
+                var selected = clientSources?.FirstOrDefault(cs => cs.ClientSourcesId == value);
+                if (selected != null)
+                {
+                    SelectedNameChanged.InvokeAsync(selected.ClientSourcesName);
+                }
+            }
+        }
     }
 
     private async Task LoadClientSources()

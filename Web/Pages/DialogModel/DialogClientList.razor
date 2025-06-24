@@ -255,7 +255,8 @@
                                                 <td>
                                                     <input type="checkbox"
                                                     @onchange="(e) => SelectClient(client, (bool)e.Value)"
-                                                    checked="@(selectedClientId == client.ClientId)" />
+                                                    checked="@(selectedClientId == client.ClientId)"
+                                                           class="custom-checkbox @(selectedClientId == client.ClientId ? "selected" : "")" />
 
                                                 </td>
                                             </tr>
@@ -278,27 +279,19 @@
 }
 
 <style>
-    .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1050;
+  
+    <!--Custom Checkbox on table select row-->
+    .custom-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: transparent;
+        cursor: pointer;
+    }
+  
+    .custom-checkbox.selected {
+        accent-color: green;
     }
 
-    .modal-content {
-    background-color: white;
-    border-radius: 8px;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
 </style>
 
 @code {

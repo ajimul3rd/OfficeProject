@@ -101,7 +101,8 @@
                                             <input type="checkbox"
                                             @onchange="(e) => ToggleActivitySelection(activity, (bool?)e.Value)"
                                             checked="@IsActivitySelectedOrAssigned(activity)"
-                                            disabled="@IsActivityPreAssigned(activity)" />
+                                            disabled="@IsActivityPreAssigned(activity)"
+                                                   class="custom-checkbox @(IsActivitySelectedOrAssigned(activity) ? "selected" : "")" />
                                         </td>
                                     </tr>
                                 }
@@ -122,31 +123,45 @@
     </div>          
 
 }
-
-
 <style>
-    .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1050;
+
+    <!-- Custom Checkbox on table select row-- >
+    .custom-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: transparent;
+        cursor: pointer;
     }
 
-    .modal-content {
-    background-color: white;
-    border-radius: 8px;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    .custom-checkbox.selected {
+        accent-color: green;
     }
+
 </style>
+
+@* <style> *@
+@*     .modal-overlay { *@
+@*     position: fixed; *@
+@*     top: 0; *@
+@*     left: 0; *@
+@*     width: 100vw; *@
+@*     height: 100vh; *@
+@*     background-color: rgba(0, 0, 0, 0.5); *@
+@*     display: flex; *@
+@*     align-items: center; *@
+@*     justify-content: center; *@
+@*     z-index: 1050; *@
+@*     } *@
+
+@*     .modal-content { *@
+@*     background-color: white; *@
+@*     border-radius: 8px; *@
+@*     max-height: 90vh; *@
+@*     overflow-y: auto; *@
+@*     padding: 20px; *@
+@*     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); *@
+@*     } *@
+@* </style> *@
 
 @code {
     private List<UserActivityMasterDto> _tableData = new();
