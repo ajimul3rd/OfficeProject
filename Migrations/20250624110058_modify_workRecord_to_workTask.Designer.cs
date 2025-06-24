@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OfficeProject.Data;
 
@@ -11,9 +12,11 @@ using OfficeProject.Data;
 namespace OfficeProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250624110058_modify_workRecord_to_workTask")]
+    partial class modify_workRecord_to_workTask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,12 +223,12 @@ namespace OfficeProject.Migrations
                     b.Property<DateTime>("TaskDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("WorkTaskId")
+                    b.Property<int>("WorkRecordId")
                         .HasColumnType("int");
 
                     b.HasKey("OthersTaskId");
 
-                    b.HasIndex("WorkTaskId");
+                    b.HasIndex("WorkRecordId");
 
                     b.ToTable("OthersTaskDetails");
                 });
@@ -434,12 +437,12 @@ namespace OfficeProject.Migrations
                     b.Property<DateTime>("TaskDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("WorkTaskId")
+                    b.Property<int>("WorkRecordId")
                         .HasColumnType("int");
 
                     b.HasKey("SeoTaskId");
 
-                    b.HasIndex("WorkTaskId");
+                    b.HasIndex("WorkRecordId");
 
                     b.ToTable("SeoTaskDetails");
                 });
@@ -717,12 +720,12 @@ namespace OfficeProject.Migrations
                     b.Property<DateTime>("TaskDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("WorkTaskId")
+                    b.Property<int>("WorkRecordId")
                         .HasColumnType("int");
 
                     b.HasKey("webDevTaskId");
 
-                    b.HasIndex("WorkTaskId");
+                    b.HasIndex("WorkRecordId");
 
                     b.ToTable("WebDeveTaskDetails");
                 });
@@ -798,11 +801,11 @@ namespace OfficeProject.Migrations
 
             modelBuilder.Entity("OfficeProject.Models.Entities.WorkTaskDetails", b =>
                 {
-                    b.Property<int>("WorkTaskId")
+                    b.Property<int>("WorkRecordId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WorkTaskId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WorkRecordId"));
 
                     b.Property<int>("CreatedReels")
                         .HasColumnType("int");
@@ -863,7 +866,7 @@ namespace OfficeProject.Migrations
                     b.Property<int>("Work_UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("WorkTaskId");
+                    b.HasKey("WorkRecordId");
 
                     b.HasIndex("ServiceId");
 
@@ -928,7 +931,7 @@ namespace OfficeProject.Migrations
                 {
                     b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
                         .WithMany("OthersTaskDetails")
-                        .HasForeignKey("WorkTaskId")
+                        .HasForeignKey("WorkRecordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -995,7 +998,7 @@ namespace OfficeProject.Migrations
                 {
                     b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
                         .WithMany("SeoTaskDetails")
-                        .HasForeignKey("WorkTaskId")
+                        .HasForeignKey("WorkRecordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1073,7 +1076,7 @@ namespace OfficeProject.Migrations
                 {
                     b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
                         .WithMany("WebDeveTaskDetails")
-                        .HasForeignKey("WorkTaskId")
+                        .HasForeignKey("WorkRecordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

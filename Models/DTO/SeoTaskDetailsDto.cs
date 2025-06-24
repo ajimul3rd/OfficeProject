@@ -10,7 +10,7 @@ namespace OfficeProject.Models.DTO
         public int? SeoTaskId { get; set; }
 
         [Required(ErrorMessage = "Reference Id is required")]
-        public int WorkRecordId { get; set; }
+        public int WorkTaskId { get; set; }
 
         [Required(ErrorMessage = "Reference Key Word is required")]
         public string KeyWord { get; set; }

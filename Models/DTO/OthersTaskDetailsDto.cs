@@ -11,7 +11,7 @@ namespace OfficeProject.Models.DTO
         public int? OthersTaskId { get; set; }
 
         [Required(ErrorMessage = "Reference Id is required")]
-        public int WorkRecordId { get; set; }
+        public int WorkTaskId { get; set; }
 
         [Required(ErrorMessage = " Lable name is required")]
         public string LableName { get; set; }

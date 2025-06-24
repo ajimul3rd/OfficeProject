@@ -5,11 +5,12 @@ using OfficeProject.Models.DTO;
 
 namespace OfficeProject.Models.Entities
 {
+    [Table("WorkTaskDetails")] 
     public class WorkTaskDetails
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int WorkRecordId { get; set; }
+        public int WorkTaskId { get; set; }
 
         [Required]
         [ForeignKey(nameof(Services))]

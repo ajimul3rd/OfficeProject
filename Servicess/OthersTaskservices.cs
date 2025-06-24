@@ -32,9 +32,9 @@ namespace OfficeProject.Servicess
                     throw new ArgumentNullException(nameof(data));
 
                 // Verify WorkRecord exists first
-                if (!await context.OthersTaskDetails.AnyAsync(w => w.WorkRecordId == data.WorkRecordId))
+                if (!await context.OthersTaskDetails.AnyAsync(w => w.WorkTaskId == data.WorkTaskId))
                 {
-                    throw new InvalidOperationException($"WorkRecord with ID {data.WorkRecordId} not found");
+                    throw new InvalidOperationException($"WorkRecord with ID {data.WorkTaskId} not found");
                 }
 
                 if (data.OthersTaskId > 0) // Update
@@ -48,7 +48,7 @@ namespace OfficeProject.Servicess
                         existing.SharedPost = data.SharedPost;
                         existing.Note = data.Note;
                         existing.TaskDate = data.TaskDate;
-                        // Don't update WorkRecordId for existing records
+                        // Don't update WorkTaskId for existing records
                         await context.SaveChangesAsync();
                         return true;
                     }
@@ -58,7 +58,7 @@ namespace OfficeProject.Servicess
                 {
                     var newEntity = new OthersTaskDetails
                     {
-                        WorkRecordId = data.WorkRecordId,
+                        WorkTaskId = data.WorkTaskId,
                         LableName = data.LableName,
                         SharedPost = data.SharedPost,
                         Note = data.Note,

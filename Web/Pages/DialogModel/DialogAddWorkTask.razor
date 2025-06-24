@@ -3,6 +3,7 @@
 @using System.Text.Json
 @inject ApiService api
 @inject IDataSerializer? DataSerializer
+@inject IService? projectService
 
 @if (IsVisible)
 {
@@ -38,7 +39,7 @@
 
                                 <div class="form-group">
                                     <label>Shared Post:</label>
-                                    <InputNumber @bind-Value="@WorkRecord.SharedPost" class="form-control" />
+                                    <InputNumber @bind-Value="@WorkRecord.SharedPost" class="form-control" readonly="@(!isPost)" />
                                     <ValidationMessage For="@(() =>WorkRecord.SharedPost)" />
                                 </div>
                             </div>
@@ -46,7 +47,7 @@
 
                                 <div class="form-group">
                                     <label>Created Reels:</label>
-                                    <InputNumber @bind-Value="@WorkRecord.CreatedReels" class="form-control" />
+                                    <InputNumber @bind-Value="@WorkRecord.CreatedReels" class="form-control" readonly="@(!isReels)" />
                                     <ValidationMessage For="@(() =>WorkRecord.CreatedReels)" />
                                 </div>
                             </div>
@@ -54,7 +55,7 @@
 
                                 <div class="form-group">
                                     <label>Used Ads Budget:</label>
-                                    <InputNumber @bind-Value="@WorkRecord.UsedAdsBudget" class="form-control" />
+                                    <InputNumber @bind-Value="@WorkRecord.UsedAdsBudget" class="form-control" readonly="@(!isAdsBudget)" />
                                     <ValidationMessage For="@(() =>WorkRecord.UsedAdsBudget)" />
                                 </div>
                             </div>
@@ -320,7 +321,7 @@
 
                         <div class="form-group mt-3">
                             <button type="submit" class="btn btn-primary">Submit</button>
-                            <button type="button" class="btn btn-secondary ms-2" @onclick="Close">Cancel</button>
+                            <button type="button" class="btn btn-danger ms-2" @onclick="Close">Cancel</button>
                         </div>
                     </EditForm>
                 </div>
@@ -368,7 +369,14 @@
 
     private List<WebDevelopmentDTO> webDevelopmentList{ get; set; }
 
-    protected override void OnParametersSet()
+    private bool isPost { get; set; } = false;
+
+    private bool isReels { get; set; } = false;
+
+    private bool isAdsBudget { get; set; } = false;
+
+    @* protected override void OnParametersSet() *@
+    protected override async Task OnParametersSetAsync()
     {
         // DataSerializer?.Serializer(service, "Service Data:");
         IncludeSeoDetails = false;
@@ -438,9 +446,16 @@
             editContext = new EditContext(WorkRecord);
             StateHasChanged();
         }
-
-        // DataSerializer?.Serializer(WorkRecord, "WorkRecord Data:");
-
+        try
+        {
+            isAdsBudget = await projectService.HasNonZeroAdsBudget(service.ServiceId.Value);
+            isPost = await projectService.HasNonZeroTotalPost(service.ServiceId.Value);
+            isReels = await projectService.HasNonZeroTotalReels(service.ServiceId.Value);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading service metrics: {ex.Message}");
+        }
     }
 
     private void AddSeoTask() => WorkRecord.SeoTaskDetailsDto.Add(new SeoTaskDetailsDto());

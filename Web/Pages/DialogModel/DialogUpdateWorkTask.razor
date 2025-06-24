@@ -81,7 +81,7 @@
 
                         <div class="form-group mt-3">
                             <button type="submit" class="btn btn-primary">Update</button>
-                            <button type="button" class="btn btn-secondary ms-2" @onclick="CloseDialog">Cancel</button>
+                            <button type="button" class="btn btn-danger ms-2" @onclick="CloseDialog">Cancel</button>
                         </div>
                     </EditForm>
                 </div>
@@ -111,7 +111,7 @@
         if (Data != null)
         {
             WorkRecord = new WorkTaskDetailsDto
-                {   WorkRecordId=Data.WorkRecordId,
+                {   WorkTaskId=Data.WorkTaskId,
                     ServiceId = Data.ServiceId,
                     WorkDate = Data.WorkDate,
                     SharedPost = Data.SharedPost,

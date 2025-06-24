@@ -122,6 +122,7 @@ builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
 provider.GetRequiredService<CustomAuthStateProvider>()); 
 builder.Services.AddScoped<ApiService>();
 builder.Services.AddScoped<IDataSerializer, DataSerializer>();
+builder.Services.AddScoped<IService, Service>();
 
 // HttpClient
 builder.Services.AddHttpClient<ApiService>(client =>

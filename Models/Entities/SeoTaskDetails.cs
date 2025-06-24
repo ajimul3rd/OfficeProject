@@ -11,7 +11,7 @@ namespace OfficeProject.Models.Entities
         public int SeoTaskId { get; set; }
 
         [ForeignKey(nameof(WorkRecords))]
-        public int WorkRecordId { get; set; }
+        public int WorkTaskId { get; set; }
 
         [MaxLength(150)]
         public string KeyWord { get; set; }   

@@ -41,13 +41,13 @@ namespace OfficeProject.Servicess
                 using var context = dbContextFactory.CreateDbContext();
 
                 WorkTaskDetails? existingRecords = null;
-                int workRecordId;
+                int WorkTaskId;
 
-                if (workingRecordsDto.WorkRecordId > 0)
+                if (workingRecordsDto.WorkTaskId > 0)
                 {
                     existingRecords = await context.WorkRecords
                         .FirstOrDefaultAsync(p => 
-                        p.WorkRecordId == workingRecordsDto.WorkRecordId &&
+                        p.WorkTaskId == workingRecordsDto.WorkTaskId &&
                         p.Work_UserId == currentUserId);
                 }
 
@@ -70,7 +70,7 @@ namespace OfficeProject.Servicess
 
                     context.WorkRecords.Add(newRecords);
                     await context.SaveChangesAsync();
-                    workRecordId = newRecords.WorkRecordId; // ✅ get generated ID
+                    WorkTaskId = newRecords.WorkTaskId; // ✅ get generated ID
                 }
                 else
                 {
@@ -86,7 +86,7 @@ namespace OfficeProject.Servicess
 
                     context.WorkRecords.Update(existingRecords);
                     await context.SaveChangesAsync();
-                    workRecordId = existingRecords.WorkRecordId;
+                    WorkTaskId = existingRecords.WorkTaskId;
                 }
 
 
@@ -101,7 +101,7 @@ namespace OfficeProject.Servicess
                         {
                             context.SeoTaskDetails.Add(new SeoTaskDetails
                             {
-                                WorkRecordId = workRecordId,
+                                WorkTaskId = WorkTaskId,
                                 KeyWord = seoTaskDto.KeyWord,
                                 CurrentRank = seoTaskDto.CurrentRank,
                                 Note = seoTaskDto.Note,
@@ -110,7 +110,7 @@ namespace OfficeProject.Servicess
                         }
                         else
                         {
-                            existingSeoTask.WorkRecordId = workRecordId;
+                            existingSeoTask.WorkTaskId = WorkTaskId;
                             existingSeoTask.KeyWord = seoTaskDto.KeyWord;
                             existingSeoTask.CurrentRank = seoTaskDto.CurrentRank;
                             existingSeoTask.Note = existingSeoTask.Note;
@@ -136,7 +136,7 @@ namespace OfficeProject.Servicess
                         {
                             context.OthersTaskDetails.Add(new OthersTaskDetails
                             {
-                                WorkRecordId = workRecordId,
+                                WorkTaskId = WorkTaskId,
                                 LableName = othersTaskDto.LableName,
                                 SharedPost = othersTaskDto.SharedPost,
                                 Note = othersTaskDto.Note
@@ -145,7 +145,7 @@ namespace OfficeProject.Servicess
                         }
                         else
                         {
-                            existingOthersTask.WorkRecordId = workRecordId;
+                            existingOthersTask.WorkTaskId = WorkTaskId;
                             existingOthersTask.LableName = othersTaskDto.LableName;
                             existingOthersTask.SharedPost = othersTaskDto.SharedPost;
                             existingOthersTask.Note = existingOthersTask.Note;
@@ -171,7 +171,7 @@ namespace OfficeProject.Servicess
                         {
                             context.WebDeveTaskDetails.Add(new WebDeveTaskDetails
                             {
-                                WorkRecordId = workRecordId,
+                                WorkTaskId = WorkTaskId,
                                 Task = webTaskDto.Task,
                                 Remarks = webTaskDto.Remarks,
                                 Note = webTaskDto.Note
@@ -181,7 +181,7 @@ namespace OfficeProject.Servicess
                         }
                         else
                         {
-                            existingWebTask.WorkRecordId = workRecordId;
+                            existingWebTask.WorkTaskId = WorkTaskId;
                             existingWebTask.Task = webTaskDto.Task;
                             existingWebTask.Remarks = webTaskDto.Remarks;
                             existingWebTask.Note = webTaskDto.Note;
@@ -225,7 +225,7 @@ namespace OfficeProject.Servicess
                     .Where(w => w.Work_UserId == currentUserId)
                     .Select(w => new WorkTaskDetailsDto
                     {
-                        WorkRecordId = w.WorkRecordId,
+                        WorkTaskId = w.WorkTaskId,
                         ServiceId = w.ServiceId,
                         ServiceName = w.Services != null ? w.Services.ServiceName : null, // requires navigation property
                         WorkDate = w.WorkDate,
@@ -286,7 +286,7 @@ namespace OfficeProject.Servicess
 
                 // Get the main work task record
                 var workTask = await context.WorkRecords
-                    .FirstOrDefaultAsync(w => w.WorkRecordId == workTaskId &&
+                    .FirstOrDefaultAsync(w => w.WorkTaskId == workTaskId &&
                     w.Work_UserId == currentUserId);
 
                 if (workTask == null)
@@ -299,7 +299,7 @@ namespace OfficeProject.Servicess
 
                 // Get related SEO tasks
                 workTaskDto.SeoTaskDetailsDto = await context.SeoTaskDetails
-                    .Where(s => s.WorkRecordId == workTaskId)
+                    .Where(s => s.WorkTaskId == workTaskId)
                     .Select(s => new SeoTaskDetailsDto
                     {
                         SeoTaskId = s.SeoTaskId,
@@ -311,7 +311,7 @@ namespace OfficeProject.Servicess
 
                 // Get related Others tasks
                 workTaskDto.OthersTaskDetailsDto = await context.OthersTaskDetails
-                    .Where(o => o.WorkRecordId == workTaskId)
+                    .Where(o => o.WorkTaskId == workTaskId)
                     .Select(o => new OthersTaskDetailsDto
                     {
                         OthersTaskId = o.OthersTaskId,
@@ -323,7 +323,7 @@ namespace OfficeProject.Servicess
 
                 // Get related Web Development tasks
                 workTaskDto.WebDeveTaskDetailsDto = await context.WebDeveTaskDetails
-                    .Where(w => w.WorkRecordId == workTaskId)
+                    .Where(w => w.WorkTaskId == workTaskId)
                     .Select(w => new WebDeveTaskDetailsDto
                     {
                         webDevTaskId = w.webDevTaskId,

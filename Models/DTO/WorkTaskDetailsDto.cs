@@ -6,7 +6,7 @@ namespace OfficeProject.Models.DTO
 {
     public class WorkTaskDetailsDto
     {
-        public int? WorkRecordId { get; set; }
+        public int? WorkTaskId { get; set; }
 
         [Required(ErrorMessage ="Service id is Required")]
         public int ServiceId { get; set; }

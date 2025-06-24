@@ -37,9 +37,9 @@ namespace OfficeProject.Servicess
                     throw new ArgumentNullException(nameof(data));
 
                 // Verify WorkRecord exists first
-                if (!await context.WorkRecords.AnyAsync(w => w.WorkRecordId == data.WorkRecordId))
+                if (!await context.WorkRecords.AnyAsync(w => w.WorkTaskId == data.WorkTaskId))
                 {
-                    throw new InvalidOperationException($"WorkRecord with ID {data.WorkRecordId} not found");
+                    throw new InvalidOperationException($"WorkRecord with ID {data.WorkTaskId} not found");
                 }
 
                 if (data.SeoTaskId > 0) // Update
@@ -53,7 +53,7 @@ namespace OfficeProject.Servicess
                         existing.CurrentRank = data.CurrentRank;
                         existing.Note = data.Note;
                         existing.TaskDate = data.TaskDate;
-                        // Don't update WorkRecordId for existing records
+                        // Don't update WorkTaskId for existing records
                         await context.SaveChangesAsync();
                         return true;
                     }
@@ -63,7 +63,7 @@ namespace OfficeProject.Servicess
                 {
                     var newEntity = new SeoTaskDetails
                     {
-                        WorkRecordId = data.WorkRecordId,
+                        WorkTaskId = data.WorkTaskId,
                         KeyWord = data.KeyWord,
                         CurrentRank = data.CurrentRank,
                         Note = data.Note,

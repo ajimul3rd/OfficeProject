@@ -266,7 +266,7 @@ namespace OfficeProject.Servicess
                     .ToListAsync();
 
                
-                DataSerializer?.Serializer(filteredRecords, "ProjectsService->GetWorkTaskSummary:");
+                //DataSerializer?.Serializer(filteredRecords, "ProjectsService->GetWorkTaskSummary:");
 
                 var summary = new WorkTaskSummaryDto
                 {

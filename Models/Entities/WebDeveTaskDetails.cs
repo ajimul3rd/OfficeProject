@@ -12,7 +12,7 @@ namespace OfficeProject.Models.Entities
 
         [Required]
         [ForeignKey(nameof(WorkRecords))]
-        public int WorkRecordId { get; set; }
+        public int WorkTaskId { get; set; }
 
         public string Task { get; set; }
 

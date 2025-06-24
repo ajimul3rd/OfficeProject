@@ -11,7 +11,7 @@ namespace OfficeProject.Models.DTO
         public int? webDevTaskId { get; set; }
 
         [Required(ErrorMessage = "Reference Id is required")]
-        public int WorkRecordId { get; set; }
+        public int WorkTaskId { get; set; }
 
         [Required(ErrorMessage = "User working task is required")]
         public string Task { get; set; }

@@ -144,7 +144,7 @@
             if (editingTask == null) return;
 
             // Ensure WorkRecordId is set
-            editingTask.WorkRecordId = workTaskId;
+            editingTask.WorkTaskId = workTaskId;
 
             var success = await othersTaskservices.SaveOrUpdateOthersTaskAsync(editingTask);
 
