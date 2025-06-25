@@ -1214,7 +1214,15 @@ showModal="@showServiceModal" />
                     await OnProjectAdded.InvokeAsync(true);
                 }
 
-                await CloseModal();
+                // await CloseModal();
+                showModal = false;
+
+                if (OnProjectAdded.HasDelegate)
+                {
+                    await OnProjectAdded.InvokeAsync(false);
+                }
+
+                StateHasChanged();
                 ResetForm();
             }
             catch (Exception ex)

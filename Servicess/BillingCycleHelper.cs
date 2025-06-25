@@ -16,11 +16,18 @@ namespace OfficeProject.Servicess
                 _ => throw new ArgumentOutOfRangeException()
             };
 
+            //if (billingType == BillingType.OneTime)
+            //{
+            //    if (billingType == BillingType.OneTime)
+            //    {
+            //        return (serviceStartDate, serviceStartDate.AddYears(1).AddDays(-1));
+            //    }
+            //}
             if (billingType == BillingType.OneTime)
             {
                 if (billingType == BillingType.OneTime)
                 {
-                    return (serviceStartDate, serviceStartDate.AddYears(1).AddDays(-1));
+                    return (serviceStartDate, DateTime.Now.Date);
                 }
             }
 
