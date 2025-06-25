@@ -15,16 +15,16 @@
                 <div class="col-md-4">
                     <input type="text" class="form-control" placeholder="Search by SID or Service Name" @bind="searchText" />
                 </div>
-                 <div class="col-md-4">
+                <div class="col-md-4">
                     <input type="date" class="form-control" @bind="searchDate" />
                 </div>
                 <div class="col-md-4">
                     <button class="btn btn-primary" @onclick="ClearSearch">Clear</button>
                 </div>
             </div>
-            
-            
-            
+
+
+
         </div>
 
     </div>
@@ -64,12 +64,15 @@
                             <td class="text-center">@item.SharedPost</td>
                             <td class="text-center">@item.CreatedReels</td>
                             <td class="text-center">@item.UsedAdsBudget</td>
-                            <td class="text-center">@item.Status</td>
+                            <td class="text-center @GetStatusClass(item.Status)">
+                                @item.Status
+                            </td>
+
                             <td>@item.Remarks</td>
                             <td class="text-center">
                                 <button class="btn btn-sm btn-warning"
-                                        @onclick:stopPropagation="true"
-                                        @onclick="() => EditWorkTask(item)">
+                                @onclick:stopPropagation="true"
+                                @onclick="() => EditWorkTask(item)">
                                     <i class="fas fa-edit"></i>
                                 </button>
                             </td>
@@ -82,12 +85,12 @@
 </div>
 
 <DialogUpdateWorkTask IsVisible="@IsVisible"
-                      isSubmit="@ReloadWorkTask"
-                      Data="@WorkRecord" />
+IsFormSubmit="@ReloadWorkTask"
+Data="@WorkRecord" />
 
 <TappanSeoTaskOthersTask IsVisible="@ShowDialog"
-                         workTaskId="@workTaskId"
-                         IsVisibleChanged="@((bool val) => ShowDialog = val)" />
+workTaskId="@workTaskId"
+IsVisibleChanged="@((bool val) => ShowDialog = val)" />
 
 
 @code {
@@ -106,10 +109,10 @@
 
 
     private void ClearSearch()
-{
-    searchText = "";
-    searchDate = null;
-}
+    {
+        searchText = "";
+        searchDate = null;
+    }
 
     private IEnumerable<WorkTaskDetailsDto> FilteredTableData =>
         tableData.Where(item =>
@@ -158,12 +161,11 @@
         if (isSuccess)
         {
             await LoadWorkList();
+            await isFormSubmit.InvokeAsync(true);
             StateHasChanged();
-        }
-        else
-        {
             IsVisible = false;
         }
+       
     }
 
     private void OnRowClick(WorkTaskDetailsDto item)
@@ -171,4 +173,15 @@
         ShowDialog = true;
         workTaskId = (int)item.WorkTaskId!;
     }
+    private string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Completed" => "text-success fw-bold",     // green
+            "In-Progress" => "text-primary fw-bold",   // blue
+            "Pending" => "text-warning fw-bold",       // yellow/orange
+            _ => ""
+        };
+    }
+
 }

@@ -65,7 +65,7 @@
                                     <InputSelect @bind-Value="@WorkRecord.Status" class="form-control">
                                         <option value="">-- Select Status --</option>
                                         <option>Completed</option>
-                                        <option>In Progress</option>
+                                        <option>In-Progress</option>
                                         <option>Pending</option>
                                     </InputSelect>
                                     <ValidationMessage For="@(() => WorkRecord.Status)" />
@@ -95,7 +95,7 @@
     public bool IsVisible { get; set; } = false;
 
     [Parameter]
-    public EventCallback<bool> IsSubmit { get; set; }
+    public EventCallback<bool> IsFormSubmit { get; set; }
 
     [Parameter]
     public WorkTaskDetailsDto Data { get; set; }
@@ -133,9 +133,9 @@
     private async Task CloseDialog()
     {
         IsVisible = false;
-        if (IsSubmit.HasDelegate)
+        if (IsFormSubmit.HasDelegate)
         {
-            await IsSubmit.InvokeAsync(false);
+            await IsFormSubmit.InvokeAsync(false);
         }
     }
 
@@ -144,9 +144,7 @@
         try
         {
             await api.AddOrUpdateUserWorkingRecordAsync(WorkRecord);
-            await IsSubmit.InvokeAsync(true);
-
-            IsVisible = false;
+            await IsFormSubmit.InvokeAsync(true);
         }
         catch (Exception ex)
         {
@@ -157,9 +155,9 @@
 
 
 
-        if (IsSubmit.HasDelegate)
+        if (IsFormSubmit.HasDelegate)
         {
-            await IsSubmit.InvokeAsync(true);
+            await IsFormSubmit.InvokeAsync(true);
         }
         IsVisible = false;
     }

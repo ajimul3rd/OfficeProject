@@ -33,7 +33,8 @@
                             isAddWorkFormSubmit="@HandleWorkFormSubmit" />
                         </div>
                         <div class="@GetTabPaneClass("workrecord")">
-                            <UserWorkRecord isFormSubmit="@HandleWorkFormSubmit" />
+                            <UserWorkRecord isFormSubmit="@HandleWorkFormSubmit" 
+                            />
                         </div>
                     </div>
                 </div>
@@ -70,11 +71,13 @@
 
     protected override void OnParametersSet()
     {
+
         base.OnParametersSet();
     }
 
     private async Task HandleWorkFormSubmit(bool isSuccess)
     {
         await isAddWorkFormSubmit.InvokeAsync(isSuccess);
+
     }
 }

@@ -261,7 +261,7 @@ namespace OfficeProject.Servicess
 
                 var filteredRecords = await context.WorkRecords
                     .Where(w => w.ServiceId == serviceId &&
-                                w.WorkDate >= startDate && w.WorkDate <= endDate)
+                                w.WorkDate >= startDate && w.WorkDate <= endDate && w.Status == "Completed")
                     .ToListAsync();
 
                

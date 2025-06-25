@@ -146,19 +146,21 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)"/>
     {
         try
         {
-            
-            data = new ProjectsDTO();
-            projects = await api.GetProjectPerUserAsync();
-            UserSelectedData = projects.FirstOrDefault(p =>
-                p.ProjectId == UserSelectedData?.ProjectId); //Or whatever unique identifier you use
-            if (UserSelectedData != null)
+            if (isSuccess)
             {
-                data = UserSelectedData;
+                data = new ProjectsDTO();
+                projects = new List<ProjectsDTO>();
+                // DataSerializer?.Serializer(data, "Before :: UserActivity:HandleWorkFormSubmit");
+                projects = await api.GetProjectPerUserAsync();
+
+                UserSelectedData = projects.FirstOrDefault(p =>
+                    p.ProjectId == UserSelectedData?.ProjectId); 
+                if (UserSelectedData != null)
+                {
+                    data = UserSelectedData;
+                    // DataSerializer?.Serializer(data, "After :: UserActivity:HandleWorkFormSubmit");
+                }
             }
-            // if (isSuccess)
-            // {
-            //     ShowDialog = false;
-            // }
         }
         catch (Exception ex)
         {           
