@@ -3,21 +3,38 @@
         <h4>Dialog Component</h4>
         <p>Do you want to complete the task?</p>
 
-        <button @onclick="HandleComplete">Complete Task</button>
-        <button @onclick="HandleCancel">Cancel</button>
+        <input class="form-control mb-2" placeholder="Enter username" @bind="userName" />
+        <input class="form-control mb-2" placeholder="Enter password" type="password" @bind="password" />
+
+        <button class="btn btn-success me-2" @onclick="HandleComplete">Complete Task</button>
+        <button class="btn btn-secondary" @onclick="HandleCancel">Cancel</button>
     </div>
 </div>
 
 @code {
+    [CascadingParameter]
+    public AppState AppState { get; set; } = default!;
+
     [Parameter]
     public EventCallback OnClose { get; set; }
 
     [Parameter]
     public EventCallback<TaskResult> OnTaskCompleted { get; set; }
 
+    private string userName = "Ajimul Haque";
+    private string password = "Admin@123";
+
     private async Task HandleComplete()
     {
-        var result = new TaskResult { Success = true, Data = "Task Data" };
+        // ✅ Set the global AppState
+        AppState.SetUser(userName, password);
+
+        var result = new TaskResult
+            {
+                Success = true,
+                Data = $"{AppState.UserName}, {AppState.Password}"
+            };
+
         await OnTaskCompleted.InvokeAsync(result);
         await OnClose.InvokeAsync();
     }
@@ -30,30 +47,6 @@
     public class TaskResult
     {
         public bool Success { get; set; }
-        public string Data { get; set; }
+        public string Data { get; set; } = string.Empty;
     }
 }
-<style>
-    .dialog-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-    }
-
-    .dialog-box {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 300px;
-        text-align: center;
-        box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    }
-
-</style>

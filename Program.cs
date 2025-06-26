@@ -11,6 +11,7 @@ using OfficeProject.Servicess;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using OfficeProject.Models.Mapings;
+DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +33,15 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddAutoMapper(typeof(MapingProfile));
 
 // Database
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("DB_CONNECTION is not set.");
+}
+
+
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
@@ -48,44 +57,56 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 // JWT Authentication
-var secret = builder.Configuration["Jwt:SecretKey"];
+//var secret = builder.Configuration["Jwt:SecretKey"];
+var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+
+if (string.IsNullOrEmpty(secret))
+{
+    throw new InvalidOperationException("JWT_SECRET is not set in .env or environment variables.");
+}
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 
-
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = true;
-    options.SaveToken = true; // Optional: Save token in context
-    options.TokenValidationParameters = new TokenValidationParameters
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret!)),
-        ClockSkew = TimeSpan.Zero,
+        options.RequireHttpsMetadata = true;
+        options.SaveToken = true;
 
-    };
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            var accessToken = context.Request.Query["accessToken"];
-            var path = context.HttpContext.Request.Path;
-            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/_blazor"))
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
+            ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")!)
+            ),
+            ClockSkew = TimeSpan.Zero,
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
             {
-                context.Token = accessToken;
+                var accessToken = context.Request.Query["accessToken"];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/_blazor"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
             }
-            return Task.CompletedTask;
-        }
-    };
-});
+        };
+    });
+
 
 // Local Storage for Blazor
 builder.Services.AddBlazoredLocalStorage(config =>
@@ -123,6 +144,8 @@ provider.GetRequiredService<CustomAuthStateProvider>());
 builder.Services.AddScoped<ApiService>();
 builder.Services.AddScoped<IDataSerializer, DataSerializer>();
 builder.Services.AddScoped<IService, Service>();
+builder.Services.AddSingleton<AppState>();
+
 
 // HttpClient
 builder.Services.AddHttpClient<ApiService>(client =>

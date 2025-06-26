@@ -13,7 +13,6 @@ using System.Data;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using OfficeProject.Data;
-
 namespace OfficeProject.Controller.Authentication
 {
     [Route("api/[controller]")]
@@ -190,23 +189,28 @@ namespace OfficeProject.Controller.Authentication
             }
         }
 
-      
-        
-        
-        
+
         private string GenerateJwtToken(IEnumerable<Claim> claims)
         {
-            // ✅ Already correct: Combines generation + serialization
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]!));
+            var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+            var issuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
+            var audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+
+            if (string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience))
+                throw new InvalidOperationException("JWT configuration is missing in environment variables.");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(12),
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
 
         private List<Claim> GenerateUserClaims(Users user)
         {

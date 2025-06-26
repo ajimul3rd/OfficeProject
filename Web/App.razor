@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject AppState appState
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,8 +20,13 @@
 
 <body>
 
-    <CascadingAuthenticationState>
-        <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
+    <!--<CascadingAuthenticationState>
+        @* <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" /> *@
+    </CascadingAuthenticationState>-->
+        <CascadingAuthenticationState>
+        <CascadingValue Value="appState">
+            <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
+        </CascadingValue>
     </CascadingAuthenticationState>
     <script src="_framework/blazor.web.js"></script>
 </body>
