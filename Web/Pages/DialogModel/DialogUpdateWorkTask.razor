@@ -1,0 +1,164 @@
+﻿@using OfficeProject.Models.DTO
+@inject ApiService api
+@inject IDataSerializer? DataSerializer
+@if (IsVisible)
+{
+
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
+            <div class="modal-content" style="height: 85vh;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Work Task</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="CloseDialog">X</button>
+                </div>
+
+                <div class="modal-body">
+                    <EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Service ID:</label>
+                                    <InputNumber @bind-Value="@WorkRecord.ServiceId" class="form-control" readonly />
+                                    <ValidationMessage For="@(() => WorkRecord.ServiceId)" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Work Date:</label>
+                                    <InputDate @bind-Value="@WorkRecord.WorkDate" class="form-control" readonly />
+                                    <ValidationMessage For="@(() => WorkRecord.WorkDate)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Shared Post:</label>
+                                    <InputNumber @bind-Value="@WorkRecord.SharedPost" class="form-control" />
+                                    <ValidationMessage For="@(() => WorkRecord.SharedPost)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Created Reels:</label>
+                                    <InputNumber @bind-Value="@WorkRecord.CreatedReels" class="form-control" />
+                                    <ValidationMessage For="@(() => WorkRecord.CreatedReels)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Used Ads Budget:</label>
+                                    <InputNumber @bind-Value="@WorkRecord.UsedAdsBudget" class="form-control" />
+                                    <ValidationMessage For="@(() => WorkRecord.UsedAdsBudget)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>User Task:</label>
+                                    <InputText @bind-Value="@WorkRecord.Task" class="form-control" />
+                                    <ValidationMessage For="@(() => WorkRecord.Task)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Status:</label>
+                                    <InputSelect @bind-Value="@WorkRecord.Status" class="form-control">
+                                        <option value="">-- Select Status --</option>
+                                        <option>Completed</option>
+                                        <option>In-Progress</option>
+                                        <option>Pending</option>
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => WorkRecord.Status)" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Remarks:</label>
+                                    <InputTextArea @bind-Value="@WorkRecord.Remarks" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="button" class="btn btn-danger ms-2" @onclick="CloseDialog">Cancel</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<bool> IsFormSubmit { get; set; }
+
+    [Parameter]
+    public WorkTaskDetailsDto Data { get; set; }
+
+    public WorkTaskDetailsDto WorkRecord { get; set; } = new();
+
+    @inject IDataSerializer? DataSerializer;
+
+    private EditContext editContext;
+
+    protected override void OnParametersSet()
+    {
+        if (Data != null)
+        {
+            WorkRecord = new WorkTaskDetailsDto
+                {   WorkTaskId=Data.WorkTaskId,
+                    ServiceId = Data.ServiceId,
+                    WorkDate = Data.WorkDate,
+                    SharedPost = Data.SharedPost,
+                    CreatedReels = Data.CreatedReels,
+                    UsedAdsBudget = Data.UsedAdsBudget,
+                    Task = Data.Task,
+                    Status = Data.Status,
+                    Remarks = Data.Remarks
+                };
+        }
+        else
+        {
+            WorkRecord = new WorkTaskDetailsDto();
+        }
+
+        editContext = new EditContext(WorkRecord);
+    }
+
+    private async Task CloseDialog()
+    {
+        IsVisible = false;
+        if (IsFormSubmit.HasDelegate)
+        {
+            await IsFormSubmit.InvokeAsync(false);
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await api.AddOrUpdateUserWorkingRecordAsync(WorkRecord);
+            await IsFormSubmit.InvokeAsync(true);
+        }
+        catch (Exception ex)
+        {
+            // Handle API errors
+            DataSerializer?.Serializer(ex, "Submission Error");
+        }
+       
+
+
+
+        if (IsFormSubmit.HasDelegate)
+        {
+            await IsFormSubmit.InvokeAsync(true);
+        }
+        IsVisible = false;
+    }
+}

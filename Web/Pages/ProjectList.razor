@@ -1,0 +1,194 @@
+﻿@page "/add-project"
+@using OfficeProject.Models.DTO
+@using System.Text.Json
+@using OfficeProject.Web.Pages.DialogModel
+@inject ApiService api
+@inject IDataSerializer? DataSerializer
+
+<h3>Project List</h3>
+<div class="row g-2 align-items-end mb-3">
+
+    <div class="col-md-3">
+        <label class="form-label mb-1">Client Name</label>
+        <input class="form-control form-control-sm" placeholder="Search Client Name"
+               @bind="searchClientName" @bind:event="oninput" />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label mb-1">Service Name</label>
+        <input class="form-control form-control-sm" placeholder="Search Service Name"
+               @bind="searchServiceName" @bind:event="oninput" />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label mb-1">Status</label>
+        <select class="form-select form-select-sm" @bind="filterStatus">
+            <option value="">All</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+        </select>
+    </div>
+
+    <div class="col-md-3 text-end">
+        <button type="button" class="btn btn-primary btn-sm" @onclick="AddProject">
+            <i class="fas fa-plus me-1"></i> Add Project
+        </button>
+    </div>
+
+</div>
+
+
+@if (FilteredProjects.Any())
+{
+    <table class="table table-bordered">
+        <thead class="table-info sticky-header">
+            <tr>
+                <th>Client Name</th>
+                <th>Project Name</th>
+                 <AuthorizeView Roles="ADMIN,MANAGER">
+                <th>Project Cost</th>
+                </AuthorizeView>
+                <th>Total Services</th>
+                <AuthorizeView Roles="ADMIN,MANAGER">
+                <th>Status</th>
+                <th>Actions</th>
+                </AuthorizeView>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in FilteredProjects) 
+            {
+                <tr>
+                    <td>@project.Client?.ClientName</td>
+                    <td>@project.ProjectName</td>
+                     <AuthorizeView Roles="ADMIN,MANAGER"><td>@project.ProjectCost.ToString("c", new System.Globalization.CultureInfo("en-IN"))</td>
+                         </AuthorizeView>
+                    <td>@(project.Services?.Count ?? 0)</td>
+                    <AuthorizeView Roles="ADMIN,MANAGER">
+                    <td>
+                        <button class="btn btn-sm @(project.IsActive ? "btn-success" : "btn-danger")"
+                        @onclick="() => ToggleProjectStatus(project.ProjectId, !project.IsActive)">
+                            @(project.IsActive ? "Active" : "Inactive")
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" @onclick="@(() => EditProject(project))">Edit</button>
+                    </td>
+                    </AuthorizeView>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No projects available.</p>
+}
+
+
+<DialogAddProject project="data"
+OnProjectAdded="ReloadProjects"
+iSNewFormData="iSNewFormData"
+showModal="@showProjectModal" />
+
+
+
+
+@code {
+    private List<ProjectsDTO> projects = new(); 
+
+    private ProjectsDTO data;
+
+    @inject IProjectsService projectsService
+    private string errorMessage = string.Empty;
+    private bool showProjectModal { get; set; } = false;
+    private bool iSNewFormData { get; set; } = false;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProjects();
+
+    }
+    private async Task LoadProjects()
+    {        
+        projects = await api.GetAllProjectAsync();
+        // string json = JsonSerializer.Serialize(projects, new JsonSerializerOptions
+        //     {
+        //         WriteIndented = true
+        //     });
+        // Console.WriteLine(json);
+        StateHasChanged();
+    }
+
+    private string searchClientName = string.Empty;
+    private string searchServiceName = string.Empty;
+    private string filterStatus = string.Empty;
+
+    private IEnumerable<ProjectsDTO> FilteredProjects =>
+      projects == null
+          ? Enumerable.Empty<ProjectsDTO>()
+          : projects
+              .Where(p =>
+                  (string.IsNullOrWhiteSpace(searchClientName) ||
+                   (p.Client?.ClientName?.Contains(searchClientName, StringComparison.OrdinalIgnoreCase) ?? false)) &&
+                  (string.IsNullOrWhiteSpace(searchServiceName) ||
+                   (p.Services?.Any(s => s.ServiceName?.Contains(searchServiceName, StringComparison.OrdinalIgnoreCase) ?? false) ?? false)) &&
+                  (string.IsNullOrWhiteSpace(filterStatus) ||
+                   p.IsActive.ToString().Equals(filterStatus, StringComparison.OrdinalIgnoreCase)));
+
+
+    private async Task ReloadProjects(bool isSuccess)
+    {
+        Console.WriteLine(isSuccess);
+        if (isSuccess)
+        {
+            await LoadProjects(); // Refresh the project list
+            StateHasChanged();   // Force UI update
+        }
+        else
+        {
+            showProjectModal = false;
+        }
+    }
+    private void AddProject()
+    {
+        data = new ProjectsDTO(); // Reset form for new project
+        showProjectModal = true;
+        iSNewFormData = true;
+        StateHasChanged();
+    }
+
+
+    private void EditProject(ProjectsDTO project)
+    {
+        data = project; //Load existing project data
+        showProjectModal = true;
+        iSNewFormData = false;
+        // string json = JsonSerializer.Serialize(project, new JsonSerializerOptions
+        //     {
+        //         WriteIndented = true
+        //     });
+        // Console.WriteLine("EditProject:" + json);
+
+        StateHasChanged();
+    }
+    private async Task ToggleProjectStatus(int? projectId, bool newStatus)
+    {
+        showProjectModal = false;
+        try
+        {
+            var project = await projectsService.GetProjectDTOById((int)projectId!);
+            if (project != null)
+            {
+                project.IsActive = newStatus;
+                await projectsService.UpdateProjectAsync(project);
+                await LoadProjects();
+               
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error updating user status: {ex.Message}";
+        }
+    }
+}

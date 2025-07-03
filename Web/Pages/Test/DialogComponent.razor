@@ -1,0 +1,52 @@
+<div class="dialog-overlay">
+    <div class="dialog-box">
+        <h4>Dialog Component</h4>
+        <p>Do you want to complete the task?</p>
+
+        <input class="form-control mb-2" placeholder="Enter username" @bind="userName" />
+        <input class="form-control mb-2" placeholder="Enter password" type="password" @bind="password" />
+
+        <button class="btn btn-success me-2" @onclick="HandleComplete">Complete Task</button>
+        <button class="btn btn-secondary" @onclick="HandleCancel">Cancel</button>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public AppState AppState { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskResult> OnTaskCompleted { get; set; }
+
+    private string userName = "Ajimul Haque";
+    private string password = "Admin@123";
+
+    private async Task HandleComplete()
+    {
+        // ✅ Set the global AppState
+        AppState.SetUser(userName, password);
+
+        var result = new TaskResult
+            {
+                Success = true,
+                Data = $"{AppState.UserName}, {AppState.Password}"
+            };
+
+        await OnTaskCompleted.InvokeAsync(result);
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task HandleCancel()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+    public class TaskResult
+    {
+        public bool Success { get; set; }
+        public string Data { get; set; } = string.Empty;
+    }
+}

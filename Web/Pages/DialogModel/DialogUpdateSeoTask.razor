@@ -1,0 +1,192 @@
+﻿@using OfficeProject.Models.DTO
+@inject ApiService api
+@inject ISeoTaskServicess seoTaskServicess
+@inject IDataSerializer? DataSerializer
+
+<div class="modal-body">
+    @if (isLoading)
+    {
+        <p>Loading...</p>
+    }
+    else if (!SeoTaskDetailsDto.Any())
+    {
+        <p>No SEO tasks found</p>
+    }
+    else
+    {
+
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+                <thead class="table-info">
+                    <tr>
+                        <th>Keyword</th>
+                        <th>Current Rank</th>
+                        <th>Note</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in SeoTaskDetailsDto)
+                    {
+                        <tr>
+                            @if (task == editingTask)
+                            {
+                                <td><InputText @bind-Value="editingTask.KeyWord" class="form-control form-control-sm" /></td>
+                                <td><InputNumber @bind-Value="editingTask.CurrentRank" class="form-control form-control-sm" /></td>
+                                <td><InputText @bind-Value="editingTask.Note" class="form-control form-control-sm" /></td>
+                                <td>
+                                    <button class="btn btn-sm btn-success" @onclick="SaveChanges">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-secondary" @onclick="CancelEdit">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+
+                      
+                            }
+                            else
+                            {
+                                <td>@task.KeyWord</td>
+                                <td>@task.CurrentRank</td>
+                                <td>@task.Note</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @onclick="() => EditSeoTask(task)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>      
+    }
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool> isFormSubmit { get; set; }
+
+    [Parameter]
+    public int workTaskId { get; set; }
+
+    [Parameter]
+    public List<SeoTaskDetailsDto> SeoTaskDetailsDto { get; set; }
+
+    private bool isLoading = true;
+
+    private SeoTaskDetailsDto editingTask = null;
+
+    private SeoTaskDetailsDto originalTask = null;
+
+    @inject IDataSerializer? DataSerializer;
+
+    private EditContext editContext;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync(); // ✅ Good practice to call the base implementation.
+
+        if (SeoTaskDetailsDto != null && SeoTaskDetailsDto.Count > 0)
+        {
+            isLoading = false; 
+           
+        }
+        editContext = new EditContext(SeoTaskDetailsDto);
+        await InvokeAsync(StateHasChanged);
+
+        // DataSerializer?.Serializer(SeoTaskDetailsDto, "LoadWorkTask");
+    }
+
+
+    private async Task LoadSeoTasks()
+    {
+       
+        try
+        {
+            isLoading = true;
+            var WorkTaskDetailsDto = await api.GetWorkTaskDetailsById(workTaskId);
+            SeoTaskDetailsDto = WorkTaskDetailsDto?.SeoTaskDetailsDto ?? new List<SeoTaskDetailsDto>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading SEO tasks: {ex.Message}");
+            SeoTaskDetailsDto = new List<SeoTaskDetailsDto>();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void EditSeoTask(SeoTaskDetailsDto task)
+    {
+        // Store the original task for cancellation
+        originalTask = new SeoTaskDetailsDto
+            {
+                KeyWord = task.KeyWord,
+                CurrentRank = task.CurrentRank,
+                Note = task.Note
+            // Copy other properties as needed
+            };
+
+        editingTask = task;
+        StateHasChanged();
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            if (editingTask == null) return;
+
+            // Ensure WorkTaskId is set
+            editingTask.WorkTaskId = workTaskId;
+
+            var success = await seoTaskServicess.SaveOrUpdateSeoTaskAsync(editingTask);
+
+            if (success)
+            {
+                editingTask = null;
+                originalTask = null;
+                await LoadSeoTasks();
+            }
+            else
+            {
+                // Handle update failure
+                Console.WriteLine("Failed to save SEO task");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving changes: {ex.Message}");
+            // Show error to user
+        }
+    }
+
+    private void CancelEdit()
+    {
+        if (editingTask != null && originalTask != null)
+        {
+            // Restore original values
+            editingTask.KeyWord = originalTask.KeyWord;
+            editingTask.CurrentRank = originalTask.CurrentRank;
+            editingTask.Note = originalTask.Note;
+
+            editingTask = null;
+            originalTask = null;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CloseDialog()
+    {
+        if (isFormSubmit.HasDelegate)
+        {
+            await isFormSubmit.InvokeAsync(false);
+        }
+    }
+}

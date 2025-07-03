@@ -1,0 +1,186 @@
+﻿@using OfficeProject.Models.DTO
+@using OfficeProject.Web.Pages.DialogModel
+@using OfficeProject.Web.Pages.TappanDialog
+@page "/userproject"
+@inject ApiService api
+@inject IDataSerializer? DataSerializer
+
+<h3>My Projects</h3>
+<div class="mb-3">
+    <input class="form-control"
+    type="text"
+    @bind="searchText"
+    @bind:event="oninput"
+    placeholder="Search by PID, Project Name or Client Name...." />
+</div>
+
+@if (isLoading)
+{
+    <div class="text-center mt-3">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (loadFailed)
+{
+    <div class="alert alert-danger">
+        Failed to load projects. Please try again.
+    </div>
+}
+else if (projects == null || !projects.Any())
+{
+    <div class="alert alert-info">
+        You don't have any assigned projects.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-info">
+                <tr>
+                    <th>PID</th>
+                    <th>Project Name</th>
+                    <th>Client</th>
+                    <th>Start Date</th>
+                    <th>GMB</th>
+                    <th>Fb</th>
+                    <th>Ig</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in filteredProjects)
+                {
+                    <tr @onclick="() => OpenDialog(project)" style="cursor: pointer;" class="hover-row">
+                        <td>@project.ProjectId</td>
+                        <td>@project.ProjectName</td>
+                        <td>@(project.Client?.ClientName ?? "N/A")</td>
+                        <td>@project.ProjectStartDate.ToString("d")</td>
+                        <td>@project.GmbRakning</td>
+                        <td>@project.FbFollowers</td>
+                        <td>@project.IgFollowers</td>
+                        <td>In-Complete</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+}
+
+<TappanWorkTask 
+isAddWorkFormSubmit="@HandleWorkFormSubmit"
+IsVisible="@ShowDialog" 
+projects="@data"
+IsVisibleChanged="@((bool val) => ShowDialog = val)"/>
+
+<style>
+    .hover-row:hover {
+    background-color: #f5f5f5;
+    }
+</style>
+
+@code {
+    // dialog code
+    private bool ShowDialog = false;
+
+    private string message { get; set; } = "";
+
+    private List<ProjectsDTO> projects;
+
+    private ProjectsDTO data { get; set; }
+
+    private ProjectsDTO UserSelectedData { get; set; }
+
+    private bool isLoading = true;
+
+    private bool loadFailed = false;
+
+    private CancellationTokenSource cts = new();
+
+    private Task CloseDialog()
+    {
+        Console.WriteLine("Dialog closed without submit");
+        return Task.CompletedTask;
+    }
+    private void OpenDialog(ProjectsDTO project)
+    {
+
+        // DataSerializer?.Serializer(project, "UserActivity:OpenDialog");
+        data ??= new ProjectsDTO();
+        data = project;
+        UserSelectedData = project;
+        ShowDialog=true;
+    }   
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            data ??= new ProjectsDTO();
+            projects ??= new List<ProjectsDTO>();
+            projects = await api.GetProjectPerUserAsync();
+            // DataSerializer?.Serializer(projects, "UserActivity:GetProjectPerUserAsync");
+
+            // Optional: Check if first project has no services, then clear the whole list
+            if (projects.Count > 0 && (projects[0].Services == null || projects[0].Services!.Count == 0))
+            {
+                projects = new List<ProjectsDTO>();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            loadFailed = true;
+            Console.WriteLine($"Error loading projects: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+    private async Task HandleWorkFormSubmit(bool isSuccess)
+    {
+        try
+        {
+            if (isSuccess)
+            {
+                data = new ProjectsDTO();
+                projects = new List<ProjectsDTO>();
+                // DataSerializer?.Serializer(data, "Before :: UserActivity:HandleWorkFormSubmit");
+                projects = await api.GetProjectPerUserAsync();
+
+                UserSelectedData = projects.FirstOrDefault(p =>
+                    p.ProjectId == UserSelectedData?.ProjectId); 
+                if (UserSelectedData != null)
+                {
+                    data = UserSelectedData;
+                    // DataSerializer?.Serializer(data, "After :: UserActivity:HandleWorkFormSubmit");
+                }
+            }
+        }
+        catch (Exception ex)
+        {           
+            Console.WriteLine($"Error in HandleWorkFormSubmit: {ex.Message}");
+            message = "Failed to update project data";
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private string searchText = "";
+
+    private IEnumerable<ProjectsDTO> filteredProjects => string.IsNullOrWhiteSpace(searchText)
+        ? projects
+        : projects.Where(p =>
+            (p.ProjectId.ToString()!.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(p.ProjectName) && p.ProjectName.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(p.Client?.ClientName) && p.Client.ClientName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+        );
+
+}
