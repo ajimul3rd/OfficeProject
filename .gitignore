@@ -1,0 +1,11 @@
+# Ignore environment files
+.env
+appsettings*.jsonappsettings*.json
+bin/
+# Ignore all appsettings variants
+appsettings*.json
+
+# Ignore all bin/obj folders
+bin/
+obj/
+publish/
