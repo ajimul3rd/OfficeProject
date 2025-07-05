@@ -13,9 +13,7 @@ namespace OfficeProject.Models.DTO
         public int? ProjectId { get; set; } = 0;
         public int? ClientId { get; set; } = 0;
         public int? UserId { get; set; } = 0;
-
         public bool IsActive { get; set; } = true;
-
         [Required(ErrorMessage = "Project name is required")]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "Project name must be between 3 and 100 characters")]
         public string ProjectName { get; set; }

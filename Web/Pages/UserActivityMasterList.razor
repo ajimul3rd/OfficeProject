@@ -3,6 +3,8 @@
 @using OfficeProject.Models.Entities
 @using OfficeProject.Web.Pages.DialogModel
 @inject IDataSerializer? DataSerializer
+<AuthorizeView>
+    <Authorized>
 
 <div class="container-fluid">
 
@@ -179,7 +181,13 @@
 
 
 
-
+    </Authorized>
+<NotAuthorized>
+    @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+</NotAuthorized>
+</AuthorizeView>
 @code {
     [Inject] public IUserActivityMasterService UserActivityMasterService { get; set; }
 
@@ -200,6 +208,8 @@
     private string successMessage;
 
     private UserActivityMasterDto? ActivityToEdit;
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {

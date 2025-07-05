@@ -4,14 +4,14 @@ namespace OfficeProject.Servicess
 {
     public interface IProjectsService
     {
-        Task AddProjectsAsync(ProjectsDTO project);
-        Task<ProjectsDTO?> GetProjectByIdAsync(int projectId );
+        Task AddProjectsAsync(ProjectsDTO Project);
+        Task<ProjectsDTO?> GetProjectByIdAsync(int ProjectId );
+        Task<List<ProjectsDTO?>> GetTeamWorksAsync(int UserId); 
         Task <List<ProjectsDTO?>> GetProjectPerUserAsync();
-        //Task<List<ProjectsDTO?>> GetWorkingRecordPerUserAsync();
         Task<List<ProjectsDTO?>> GetAllProjectAsync();
-        Task<ProjectsDTO?> GetProjectDTOById(int id);
-        Task UpdateProjectAsync(ProjectsDTO project);
-        Task SaveOrUpdateProjectsAsync(ProjectsDTO projectsDTO);
+        Task<ProjectsDTO?> GetProjectDTOById(int Id);
+        Task UpdateProjectAsync(ProjectsDTO Project);
+        Task SaveOrUpdateProjectsAsync(ProjectsDTO ProjectsDTO);
 
     }
 }

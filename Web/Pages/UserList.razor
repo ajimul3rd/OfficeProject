@@ -12,6 +12,9 @@
 @inject IDataSerializer? DataSerializer
 
 
+<AuthorizeView>
+<Authorized>
+
 <h3>User Management</h3>
 
 
@@ -96,7 +99,14 @@ else
     <div class="alert alert-danger">@errorMessage</div>
 }
 <p>@message</p>
-
+    </Authorized>
+    <NotAuthorized>
+        @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+    </NotAuthorized>
+</AuthorizeView>
+    
 @code {
  @inject IUserDesignationService userDesignationService; 
 
@@ -117,6 +127,8 @@ else
     public List<string> validationErrors = new List<string>();
 
     private string statusMessage = string.Empty;
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {

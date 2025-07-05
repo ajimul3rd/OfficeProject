@@ -2,11 +2,13 @@
 @using OfficeProject.Models.DTO
 @using System.ComponentModel.DataAnnotations
 @inject HttpClient Http
-@inject NavigationManager Navigation
 @inject ApiService ApiService
 @using OfficeProject.Web.Pages.DialogModel
 @using System.Text.Json
 
+ <AuthorizeView Context="outerAuthContext"> 
+ <Authorized> 
+  
 <h3>Product Management</h3>
 
 <!-- Add Button (Only visible when form is hidden) -->
@@ -304,6 +306,13 @@
 {
     <div class="alert alert-danger">@errorMessage</div>
 }
+ </Authorized> 
+ <NotAuthorized> 
+     @{ 
+             Navigation.NavigateTo("/login", replace: true); 
+         } 
+ </NotAuthorized> 
+ </AuthorizeView> 
 
 @code {
     @inject IUserWorkingActivityServices userWorkingActivityServices;
@@ -323,6 +332,8 @@
     private string errorMessage = string.Empty;
 
     public List<string> validationErrors = new List<string>();
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {

@@ -2,6 +2,9 @@
 @using OfficeProject.Models.Entities
 @inject IDataSerializer? DataSerializer
 
+<AuthorizeView>
+    <Authorized>
+
 <div class="container-fluid">
 
     @if (clientSources == null)
@@ -175,7 +178,13 @@
     z-index: 2;
     }</style>
 
-
+    </Authorized>
+<NotAuthorized>
+    @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+</NotAuthorized>
+</AuthorizeView>
 @code {
     [Inject] public IClientSources ClientSourcesService { get; set; }
 
@@ -184,6 +193,8 @@
     [Parameter] public EventCallback<string> SelectedNameChanged { get; set; }
 
     [Parameter] public bool showHeader { get; set; } = true;
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
 
     private List<ClientSources> clientSources;
 

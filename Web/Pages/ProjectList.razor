@@ -5,6 +5,8 @@
 @inject ApiService api
 @inject IDataSerializer? DataSerializer
 
+<AuthorizeView Context="outerAuthContext">
+    <Authorized>
 <h3>Project List</h3>
 <div class="row g-2 align-items-end mb-3">
 
@@ -92,12 +94,20 @@ iSNewFormData="iSNewFormData"
 showModal="@showProjectModal" />
 
 
-
+    </Authorized>
+    <NotAuthorized>
+        @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private List<ProjectsDTO> projects = new(); 
 
     private ProjectsDTO data;
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
 
     @inject IProjectsService projectsService
     private string errorMessage = string.Empty;

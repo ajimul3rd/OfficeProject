@@ -6,6 +6,10 @@
 @inject IDataSerializer? DataSerializer
 @inject IClientService clientService
 
+<AuthorizeView>
+    <Authorized>
+
+
 <h3 class="mb-4">Client Management</h3>
 
 <DialogAddClient Model="@Model" isFormSubmit="HandleGetProjectsAsync" showForm="@showDialog" />
@@ -99,6 +103,14 @@ else
 
 <DialogAddClient Model="@Model" isFormSubmit="HandleGetProjectsAsync" showForm="@showDialog" />
 
+</Authorized>
+<NotAuthorized>
+    @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+</NotAuthorized>
+</AuthorizeView>
+
 @code {
 
     private string statusMessage = string.Empty;
@@ -115,10 +127,13 @@ else
 
     private bool showDialog = false;
 
+    private bool isLoading = true;
 
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
+
         Model=  new ClientsDTO(); // Initialize model first
         await GetClientList();
 

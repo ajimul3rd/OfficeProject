@@ -1,30 +1,31 @@
 ﻿
 @attribute [Authorize] 
+@using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 
+
 		<div class="page">
-			<AuthorizeView>
-				<Authorized>
-			<div class="sidebar">
+			 <AuthorizeView> 
+			 	<Authorized> 
+	<div class="sidebar" >
 				<NavMenu />
 			</div>
 			
-				</Authorized>
+			</Authorized>
 			</AuthorizeView>
-
-			<main>
+			<main >
 				<div class="top-row px-4">
-			<AuthorizeView>
-				<Authorized>
+			 <AuthorizeView> 
+			 	<Authorized> 
 					<div>Hello, @context.User.Identity?.Name!</div>
 					<a href="/logout">LogOut</a>
-				</Authorized>
-				<NotAuthorized>
+				 </Authorized> 
+				 <NotAuthorized> 
 					<div>You're not authorized.</div>
 					<a href="/logout">Login</a>
 					
-				</NotAuthorized>
-			</AuthorizeView>
+			 	</NotAuthorized> 
+			 </AuthorizeView> 
 			
 				</div>
 
@@ -33,14 +34,11 @@
 				</article>
 			</main>
 		</div>
-		@using Microsoft.AspNetCore.Components.Authorization
+		
 		<div id="blazor-error-ui">
 			An unhandled error has occurred.
 			<a href="" class="reload">Reload</a>
 			<a class="dismiss">🗙</a>
 		</div>
 
-
-
-
-
+		

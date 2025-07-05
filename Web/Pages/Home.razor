@@ -1,8 +1,10 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthStateProvider
-@inject NavigationManager Navigation
 @inject IDataSerializer? DataSerializer
+
+<AuthorizeView>
+    <Authorized>
 <PageTitle>Dashboard</PageTitle>
 
 <div class="container-fluid py-4">
@@ -244,8 +246,18 @@
     </div>
 </div>
 
+
+    </Authorized>
+    <NotAuthorized>
+        @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+    </NotAuthorized>
+</AuthorizeView>
 @code {
     private string? userName;
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {

@@ -63,7 +63,7 @@ namespace OfficeProject.Models.DTO
         public Services? Services { get; set; } = null!;
 
         [JsonIgnore]
-        public Users? Users { get; set; } = null!;
+        public UserDTO? Users { get; set; } = null!;
 
         [ValidateComplexType]
         public List<SeoTaskDetailsDto>? SeoTaskDetailsDto { get; set; }

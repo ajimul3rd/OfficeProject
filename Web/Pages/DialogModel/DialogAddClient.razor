@@ -160,14 +160,21 @@
 @code {
     [Parameter]
     public bool showForm { get; set; } = false;
+
     [Parameter]
     public ClientsDTO? Model { get; set; }
+
     [Parameter]
     public EventCallback<bool> isFormSubmit{ get; set; }
+
     private EditContext? editContext;
+
     private List<UserDTO> users = new();
+
     private bool isSubmitting = false;
+
     private string statusMessage = string.Empty;
+
     private string errorMessage = string.Empty;
 
 
