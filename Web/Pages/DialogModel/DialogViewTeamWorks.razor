@@ -3,6 +3,7 @@
 @inject IUserService userService
 @inject IProjectsService ProjectsService
 @inject IJSRuntime JSRuntime
+@inject IWorkTaskDetailsService WorkTaskDetailsService
 
 
 
@@ -150,7 +151,7 @@
                                                             <span>@task.ServiceName</span>
                                                         </div>
                                                     </td>
-                                                    <td>@task.WorkDate.ToString("dd MMM yyyy")</td>
+                                                    <td>@task.WorkDate.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
                                                     <td>
                                                         <span class="badge @GetStatusBadgeClass(task.Status ?? "")">
                                                             @task.Status
@@ -166,7 +167,7 @@
                                                                     <i class="fas fa-link me-1"></i>View Link
                                                                 </a>
                                                             }
-                                                           
+
                                                             else
                                                             {
                                                                 <div class="d-flex align-items-center">
@@ -302,6 +303,7 @@
         try
         {
             users = await userService.GetAllUsersDTOAsync();
+           
         }
         catch (Exception ex)
         {
@@ -328,7 +330,7 @@
         try
         {
             // Get all data first (or modify your service to accept pagination parameters)
-            var allTasks = await ProjectsService.GetTeamWorksAsync(selectedUserId.Value) ?? new List<ProjectsDTO>();
+            var allTasks = await ProjectsService.GetTeamWorksAsync(selectedUserId.Value, ProjectId) ?? new List<ProjectsDTO>();
 
             // Flatten all work tasks and apply pagination
             var allWorkTasks = allTasks
@@ -336,7 +338,7 @@
                     .SelectMany(s => s.WorkTaskDetails?
                         .Select(w => new WorkTaskDetailsDto
                                 {
-                                ServiceName = p.ProjectName + "(" + s.ServiceName+")",
+                                ServiceName = p.ProjectName + "(" + s.ServiceName + "-PID:" + p.ProjectId + "-SId: " + s.ServiceId + "-PID: "+ProjectId+")",
                                 WorkDate = w.WorkDate,
                                 Status = w.Status,
                                 Task = w.Task,

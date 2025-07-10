@@ -261,11 +261,43 @@ namespace OfficeProject.Servicess
                         }).ToList()
                     }).ToListAsync();
 
+                //DataSerializer.Serializer(workTaskDtos, "WorkTaskDetailsService:GetWorkingRecordPerUserAsync:");
+
                 return workTaskDtos;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in GetWorkingRecordPerUserAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<List<WorkTaskDetailsDto?>> GetWorkingTaskDetailsAsync()
+        {
+            using var context = dbContextFactory.CreateDbContext();
+
+            try
+            {
+                var workTaskDtos = await context.WorkRecords
+                    .AsNoTracking()
+                    .Select(wr => new WorkTaskDetailsDto
+                    {
+                        WorkTaskId = wr.WorkTaskId,
+                        ServiceId = wr.ServiceId,
+                        WorkDate = wr.WorkDate,
+                        Task = wr.Task,
+                        Remarks = wr.Remarks,
+                        Work_UserId=wr.Work_UserId
+                    })
+                    .ToListAsync();
+
+                DataSerializer.Serializer(workTaskDtos, "WorkTaskDetailsService:GetWorkingTaskDetailsAsync:");
+
+                return workTaskDtos;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetWorkingTaskDetailsAsync: {ex.Message}");
                 throw;
             }
         }

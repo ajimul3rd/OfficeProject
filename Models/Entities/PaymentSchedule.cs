@@ -27,7 +27,7 @@ namespace OfficeProject.Models.Entities
         public string Status { get; set; } = "Pending";
 
         [DataType(DataType.Date)]
-        public DateTime? PaidDate { get; set; }
+        public DateTime? PaidDate { get; set; } = null;
 
         // Navigation property
         [JsonIgnore]

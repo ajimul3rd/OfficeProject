@@ -218,8 +218,8 @@
                                         @(item.ProductsStatus ? "Active" : "Inactive")
                                     </button>
                                 </td>
-                                <td>@item.ProductsEntryDate?.ToString("yyyy-MM-dd")</td>
-                                <td class="d-none d-md-table-cell">@item.ProductsModificationDate?.ToString("yyyy-MM-dd")</td>
+                                        <td>@item.ProductsEntryDate?.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
+                                        <td class="d-none d-md-table-cell">@item.ProductsModificationDate?.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
                                 <td>
                                     <button class="btn btn-sm btn-primary" @onclick="() => EditProduct(item)">
                                         <i class="fas fa-edit"></i>

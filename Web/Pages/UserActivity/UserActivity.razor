@@ -7,100 +7,101 @@
 <AuthorizeView>
     <Authorized>
 
-<h3>My Projects</h3>
-<div class="mb-3">
-    <input class="form-control"
-    type="text"
-    @bind="searchText"
-    @bind:event="oninput"
-    placeholder="Search by PID, Project Name or Client Name...." />
-</div>
-
-@if (isLoading)
-{
-    <div class="text-center mt-3">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
+        <h3>My Projects</h3>
+        <div class="mb-3">
+            <input class="form-control"
+            type="text"
+            @bind="searchText"
+            @bind:event="oninput"
+            placeholder="Search by PID, Project Name or Client Name...." />
         </div>
-    </div>
-}
-else if (loadFailed)
-{
-    <div class="alert alert-danger">
-        Failed to load projects. Please try again.
-    </div>
-}
-else if (projects == null || !projects.Any())
-{
-    <div class="alert alert-info">
-        You don't have any assigned projects.
-    </div>
-}
-else
-{
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead class="table-info">
-                <tr>
-                    <th>PID</th>
-                    <th>Project Name</th>
-                    <th>Client</th>
-                    <th>Start Date</th>
-                    <th>GMB</th>
-                    <th>Fb</th>
-                    <th>Ig</th>
-                    <th>View Team Works</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var project in filteredProjects)
-                {
-                    <tr @onclick="() => OpenDialog(project)" style="cursor: pointer;" class="hover-row" >
-                        <td>@project.ProjectId</td>
-                        <td>@project.ProjectName</td>
-                        <td>@(project.Client?.ClientName ?? "N/A")</td>
-                        <td>@project.ProjectStartDate.ToString("d")</td>
-                        <td>@project.GmbRakning</td>
-                        <td>@project.FbFollowers</td>
-                        <td>@project.IgFollowers</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary"
+
+        @if (isLoading)
+        {
+            <div class="text-center mt-3">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+        else if (loadFailed)
+        {
+            <div class="alert alert-danger">
+                Failed to load projects. Please try again.
+            </div>
+        }
+        else if (projects == null || !projects.Any())
+        {
+            <div class="alert alert-info">
+                You don't have any assigned projects.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-info">
+                        <tr>
+                            <th>PID</th>
+                            <th>Project Name</th>
+                            <th>Client</th>
+                            <th>Start Date</th>
+                            <th>GMB</th>
+                            <th>Fb</th>
+                            <th>Ig</th>
+                            <th>View Team Works</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var project in filteredProjects)
+                        {
+                            <tr @onclick="() => OpenDialog(project)" style="cursor: pointer;" class="hover-row" >
+                                <td>@project.ProjectId</td>
+                                <td>@project.ProjectName</td>
+                                <td>@(project.Client?.ClientName ?? "N/A")</td>
+                                <td>@project.ProjectStartDate.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
+                                <td>@project.GmbRakning</td>
+                                <td>@project.FbFollowers</td>
+                                <td>@project.IgFollowers</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary"
                                     @onclick="() => ViewTeamWork((int)project.ProjectId!)" @onclick:stopPropagation
                                     title="View Team Work">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                        
-                    </tr>
-                }
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
 
-            </tbody>
-        </table>
-    </div>
-}
+                            </tr>
+                        }
 
-<TappanWorkTask 
-isAddWorkFormSubmit="@HandleWorkFormSubmit"
-IsVisible="@ShowDialog" 
-projects="@data"
-IsVisibleChanged="@((bool val) => ShowDialog = val)"/>
+                    </tbody>
+                </table>
+            </div>
+        }
 
-<DialogViewTeamWorks ShowTeamWork="@ShowTeamWork"
-                     IsDialogClose="@((bool val) => ShowTeamWork = val)" />
-<style>
-    .hover-row:hover {
-    background-color: #f5f5f5;
-    }
-</style>
-</Authorized>
-<NotAuthorized>
-    @{
+        <TappanWorkTask 
+        isAddWorkFormSubmit="@HandleWorkFormSubmit"
+        IsVisible="@ShowDialog" 
+        projects="@data"
+        IsVisibleChanged="@((bool val) => ShowDialog = val)"/>
+
+        <DialogViewTeamWorks ShowTeamWork="@ShowTeamWork"
+        ProjectId="@ProjectId"
+        IsDialogClose="@((bool val) => ShowTeamWork = val)" />
+        <style>
+            .hover-row:hover {
+            background-color: #f5f5f5;
+            }
+        </style>
+    </Authorized>
+    <NotAuthorized>
+        @{
             Navigation.NavigateTo("/login", replace: true);
         }
-</NotAuthorized>
+    </NotAuthorized>
 </AuthorizeView>
 @code {
-
+    private int  ProjectId{ get; set; }
     private bool ShowDialog = false;
 
     private bool ShowTeamWork = false;
@@ -134,7 +135,8 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)"/>
         data = project;
         UserSelectedData = project;
         ShowDialog=true;
-    }   
+        ProjectId = (int)project.ProjectId!;
+    }  
 
     protected override async Task OnInitializedAsync()
     {
@@ -207,6 +209,7 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)"/>
     private void ViewTeamWork(int ProjectId)
     {
         ShowTeamWork = true;
+        this.ProjectId = ProjectId;
     }
 
 

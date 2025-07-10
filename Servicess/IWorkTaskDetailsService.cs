@@ -8,5 +8,7 @@ namespace OfficeProject.Servicess
         Task<WorkTaskDetailsDto> GetWorkTaskDetailsById(int workTaskId);
 
         Task<List<WorkTaskDetailsDto?>> GetWorkingRecordPerUserAsync();
+        Task<List<WorkTaskDetailsDto?>> GetWorkingTaskDetailsAsync();
+        
     }
 }

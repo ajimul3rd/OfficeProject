@@ -32,8 +32,10 @@
                             <ServiceListModel projects="@projects"
                             isAddWorkFormSubmit="@HandleWorkFormSubmit" />
                         </div>
-                        <div class="@GetTabPaneClass("workrecord")">
-                            <UserWorkRecord isFormSubmit="@HandleWorkFormSubmit" 
+                        <div class="@GetTabPaneClass("workrecord")"
+                             >
+                            <UserWorkRecord ProjectId="(int)projects.ProjectId!"
+                                isFormSubmit="@HandleWorkFormSubmit" 
                             />
                         </div>
                     </div>

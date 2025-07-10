@@ -17,7 +17,17 @@ namespace OfficeProject.Models.Entities
 
         [Required]
         [Precision(18, 2)]
-        public decimal Balance { get; set; } = 0;
+        public decimal OpeningBalance { get; set; } = 0;
+
+        public bool IsClosed { get; set; } = false;
+
+        [Required]
+        [Precision(18, 2)]
+        public decimal ClosedBalance { get; set; } = 0;
+
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime ClosedDate { get; set; }
 
         [Required]
         [Precision(18, 2)]
@@ -28,7 +38,6 @@ namespace OfficeProject.Models.Entities
         // Navigation property
         [JsonIgnore]
         public Clients Client { get; set; } = null!;
-
         
     }
 }

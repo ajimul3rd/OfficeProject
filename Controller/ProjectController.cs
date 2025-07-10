@@ -50,45 +50,6 @@ namespace OfficeProject.Controllers
             }
         }
 
-
-        //[HttpGet("team")]
-        //public async Task<ActionResult<ProjectsDTO>> GetTeamWorksAsync()
-        //{
-        //    try
-        //    {
-        //        var project = await _projectsService.GetTeamWorksAsync();
-        //        return Ok(project);
-        //    }
-        //    catch (UnauthorizedAccessException ex)
-        //    {
-        //        return Unauthorized(new { message = ex.Message });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new { message = "An error occurred while retrieving team work", error = ex.Message });
-        //    }
-
-        //}
-
-        //[HttpGet("user/work")]
-        ////[Authorize]
-        //public async Task<ActionResult<List<ProjectsDTO>>> GetWorkingRecordPerUserAsync()
-        //{
-        //    try
-        //    {
-        //        var project = await _projectsService.GetWorkingRecordPerUserAsync();
-        //        return Ok(project);
-        //    }
-        //    catch (UnauthorizedAccessException ex)
-        //    {
-        //        return Unauthorized(new { message = ex.Message });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new { message = "An error occurred while retrieving clients", error = ex.Message });
-        //    }
-        //}
-
         [HttpGet]
         //[Authorize]
         public async Task<ActionResult<List<ProjectsDTO>>> GetAllProjectAsync()
@@ -164,6 +125,31 @@ namespace OfficeProject.Controllers
             }
         }
 
+
+        [HttpGet("user-works/{projectId}")]
+        public async Task<ActionResult<List<ProjectsDTO>>> GetUserWorksAsync(int projectId)
+        {
+            try
+            {
+                var result = await _projectsService.GetUserWorksAsync(projectId);
+
+                if (result == null )
+                {
+                    return NotFound($"No work data found for ProjectId {projectId} for this user.");
+                }
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Optionally log: _logger.LogError(ex, "Error retrieving user works");
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
 
 
         [HttpPost("save-or-update")]

@@ -5,6 +5,7 @@
 @inject ApiService api
 @inject NavigationManager Navigation
 @inject IDataSerializer? DataSerializer
+@inject IWorkTaskDetailsService WorkTaskDetailsService
 
 <h5 class="mb-3">Work Task List</h5>
 
@@ -56,10 +57,10 @@
                 {
                     @foreach (var item in FilteredTableData)
                     {
-                        <tr @onclick="() => OnRowClick(item)" style="cursor: pointer;">
+                        <tr @onclick="() => OnRowClick(item)" style="cursor: pointer;" @onclick:stopPropagation="true">
                             <td class="text-center">@item.ServiceId</td>
                             <td>@item.ServiceName</td>
-                            <td>@item.WorkDate.ToString("yyyy-MM-dd")</td>
+                            <td>@item.WorkDate.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
                             <td>@item.Task</td>
                             <td class="text-center">@item.SharedPost</td>
                             <td class="text-center">@item.CreatedReels</td>
@@ -84,7 +85,7 @@
     </div>
 </div>
 
-<DialogUpdateWorkTask IsVisible="@IsVisible"
+<DialogUpdateWorkTask IsVisible="@IsVisible"                      
 IsFormSubmit="@ReloadWorkTask"
 Data="@WorkRecord" />
 
@@ -107,11 +108,18 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)" />
     [Parameter]
     public EventCallback<bool> isFormSubmit { get; set; }
 
+    [Parameter] public int ProjectId { get; set; }
 
     private void ClearSearch()
     {
         searchText = "";
         searchDate = null;
+    }
+
+    protected override void OnParametersSet()
+    {
+
+        base.OnParametersSet();
     }
 
     private IEnumerable<WorkTaskDetailsDto> FilteredTableData =>
@@ -138,9 +146,15 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)" />
     {
         try
         {
-            var workTasks = await api.GetWorkingRecordPerUserAsync();
-            // DataSerializer?.Serializer(workTasks, "UserWorkRecord:LoadWorkList");
-            tableData = workTasks ?? new();
+            var workTasks = await api.GetUserWorksAsync(ProjectId);
+
+            tableData = workTasks
+                .SelectMany(p => p.Services ?? new List<ServicesDTO>())
+                .SelectMany(s => s.WorkTaskDetails ?? new List<WorkTaskDetailsDto>())
+                .ToList();
+
+            // Optionally:
+            // DataSerializer?.Serializer(tableData, "UserWorkRecord:LoadWorkList");
         }
         catch (Exception ex)
         {
@@ -149,6 +163,7 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)" />
         }
     }
 
+
     private void EditWorkTask(WorkTaskDetailsDto work)
     {
         IsVisible = true;
@@ -156,6 +171,18 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)" />
         WorkRecord = work;
     }
 
+    // private async Task ReloadWorkTask(bool isSuccess)
+    // {
+    //     if (isSuccess)
+    //     {
+    //         await LoadWorkList();
+    //         await isFormSubmit.InvokeAsync(true);
+    //         StateHasChanged();
+    //         IsVisible = false;
+    //     }  
+
+       
+    // }
     private async Task ReloadWorkTask(bool isSuccess)
     {
         if (isSuccess)
@@ -163,14 +190,17 @@ IsVisibleChanged="@((bool val) => ShowDialog = val)" />
             await LoadWorkList();
             await isFormSubmit.InvokeAsync(true);
             StateHasChanged();
-            IsVisible = false;
         }
-       
+
+        IsVisible = false;
+        ShowDialog = false; // <--- Add this line
     }
+
 
     private void OnRowClick(WorkTaskDetailsDto item)
     {
         ShowDialog = true;
+        IsVisible = false;
         workTaskId = (int)item.WorkTaskId!;
     }
     private string GetStatusClass(string status)
