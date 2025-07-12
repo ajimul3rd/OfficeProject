@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -758,7 +760,6 @@ namespace OfficeProject.Servicess
                     existingProject.ProjectName = projectDto.ProjectName;
                     existingProject.BillingType = projectDto.BillingType;
                     existingProject.ProjectStartDate = projectDto.ProjectStartDate;
-                    //existingProject.ProjectType = projectDto.ProjectType;
                     existingProject.ProjectCost = projectDto.ProjectCost;
                     existingProject.CurrentIssue = projectDto.CurrentIssue;
                     existingProject.InternalRemark = projectDto.InternalRemark;
@@ -834,7 +835,12 @@ namespace OfficeProject.Servicess
                                 DeadLine = serviceDto.DeadLine,
                                 ExtraField1 = serviceDto.ExtraField1,
                                 ExtraField2 = serviceDto.ExtraField2,
-                                ExtraField3 = serviceDto.ExtraField3
+                                ExtraField3 = serviceDto.ExtraField3,
+                                PaymentSchedule = new PaymentSchedule
+                                {
+                                    DueDate = serviceDto.StartDate,
+                                    Amount = serviceDto.FinalPrice
+                                }
                             };
                             context.Services.Add(newService);
                             await context.SaveChangesAsync();
@@ -1014,6 +1020,7 @@ namespace OfficeProject.Servicess
                 throw;
             }
         }
+
         public Task<ProjectsDTO?> GetProjectByIdAsync(int projectId)
         {
             throw new NotImplementedException();

@@ -28,6 +28,6 @@ namespace OfficeProject.Models.DTO
 
         // Navigation property
         [JsonIgnore]
-        public Projects? Project { get; set; } = null!;
+        public ServicesDTO Services { get; set; } = null!;
     }
 }

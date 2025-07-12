@@ -64,6 +64,8 @@ namespace OfficeProject.Models.DTO
         [ValidateComplexType]
         public List<WebDevelopmentDTO>? WebDevelopment { get; set; }
 
+        public PaymentScheduleDTO? PaymentSchedule { get; set; }
+
         public bool IsDesignationMatched { get; set; }
     }
 }

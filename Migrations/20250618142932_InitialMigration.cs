@@ -347,11 +347,7 @@ namespace OfficeProject.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PaymentSchedule", x => x.ScheduleId);
-                    table.ForeignKey(
-                        name: "FK_PaymentSchedule_Projects_ProjectsProjectId",
-                        column: x => x.ProjectsProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "ProjectId");
+                    
                     table.ForeignKey(
                         name: "FK_PaymentSchedule_Services_ServiceId",
                         column: x => x.ServiceId,

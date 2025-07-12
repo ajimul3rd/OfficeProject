@@ -65,10 +65,10 @@ namespace OfficeProject.Models.Entities
         public List<WorkTaskDetails>? WorkTaskDetails { get; set; }
         public List<WebDevelopment>? WebDevelopment { get; set; }
 
+        public PaymentSchedule? PaymentSchedule { get; set; }
+
         // Navigation properties
         [JsonIgnore]
         public Projects Projects { get; set; } = null!;
-
-
     }
 }
