@@ -21,10 +21,21 @@ namespace OfficeProject.Models.DTO
         //public string ServiceName { get; set; }
 
         public int SharedPost { get; set; } = 0;
-
         public int CreatedReels { get; set; } = 0;
-
         public int UsedAdsBudget { get; set; } = 0;
+        public int Backlink { get; set; } = 0;
+        public int Clasified { get; set; } = 0;
+        public int SocialSharing { get; set; }= 0;
+
+       
+        //[Required(ErrorMessage = "Backlink URL is required")]
+        public string? BacklinkURL { get; set; }
+       
+        //[Required(ErrorMessage = "Clasified URL is required")]
+        public string? ClasifiedURL { get; set; }
+       
+        //[Required(ErrorMessage = "Social Sharing URL is required")]
+        public string? SocialSharingURL { get; set; }
 
         [Required(ErrorMessage = "User Task is required")]
         public string Task { get; set; }

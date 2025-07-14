@@ -222,7 +222,6 @@ namespace OfficeProject.Servicess
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
                         ProjectStartDate = project.ProjectStartDate,
-                        //ProjectType = project.ProjectType,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
                         InternalRemark = project.InternalRemark,
@@ -257,6 +256,9 @@ namespace OfficeProject.Servicess
                                 TotalPost = service.TotalPost,
                                 TotalReels = service.TotalReels,
                                 AdsBudget = service.AdsBudget,
+                                Backlink=service.Backlink,
+                                Clasified=service.Clasified,
+                                SocialSharing=service.SocialSharing,
                                 DeadLine = service.DeadLine,
                                 ExtraField1 = service.ExtraField1,
                                 ExtraField2 = service.ExtraField2,
@@ -271,6 +273,12 @@ namespace OfficeProject.Servicess
                                     SharedPost = w.SharedPost,
                                     CreatedReels = w.CreatedReels,
                                     UsedAdsBudget = w.UsedAdsBudget,
+                                    Backlink = w.Backlink,
+                                    BacklinkURL = w.BacklinkURL,
+                                    Clasified = w.Clasified,
+                                    ClasifiedURL = w.ClasifiedURL,
+                                    SocialSharing = w.SocialSharing,
+                                    SocialSharingURL = w.SocialSharingURL,
                                     Task = w.Task,
                                     Status = w.Status,
                                     Remarks = w.Remarks,
@@ -352,7 +360,6 @@ namespace OfficeProject.Servicess
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
                         ProjectStartDate = project.ProjectStartDate,
-                        //ProjectType = project.ProjectType,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
                         InternalRemark = project.InternalRemark,
@@ -398,6 +405,15 @@ namespace OfficeProject.Servicess
                                 TotalPost = service.TotalPost,
                                 TotalReels = service.TotalReels,
                                 AdsBudget = service.AdsBudget,
+                                Backlink = service.Backlink,
+                                Clasified = service.Clasified,
+                                SocialSharing = service.SocialSharing,
+                                IsBacklink = service.IsBacklink,
+                                IsClasified = service.IsClasified,
+                                IsSocialSharing = service.IsSocialSharing,
+                                IsPost = service.IsPost,
+                                IsReels = service.IsReels,
+                                IsAdsBudget = service.IsAdsBudget,
                                 DeadLine = service.DeadLine,
                                 ExtraField1 = service.ExtraField1,
                                 ExtraField2 = service.ExtraField2,
@@ -455,6 +471,7 @@ namespace OfficeProject.Servicess
                                     Task = wr.Task,
                                     Remarks = wr.Remarks,
                                     Work_UserId = wr.Work_UserId
+
                                 }).ToList()
 
                             }).ToList()
@@ -501,7 +518,10 @@ namespace OfficeProject.Servicess
                     {
                         service.CompletePost = summary.TotalSharedPost;
                         service.CompleteReels = summary.TotalCreatedReels;
-                        service.UsedAdsBudget= summary.TotalUsedAdsBudget;
+                        service.CompleteUsedAdsBudget = summary.TotalUsedAdsBudget;
+                        service.CompleteBacklink = summary.TotalBacklink;
+                        service.CompleteClasified = summary.TotalClasified;
+                        service.CompleteSocialSharing = summary.TotalSocialSharing;
                     }
                 }
             }
@@ -520,14 +540,17 @@ namespace OfficeProject.Servicess
                                 w.WorkDate >= startDate && w.WorkDate <= endDate && w.Status == "Completed")
                     .ToListAsync();
 
-               
+
                 //DataSerializer?.Serializer(filteredRecords, "ProjectsService->GetWorkTaskSummary:");
 
                 var summary = new WorkTaskSummaryDto
                 {
                     TotalSharedPost = filteredRecords.Sum(w => w.SharedPost),
                     TotalCreatedReels = filteredRecords.Sum(w => w.CreatedReels),
-                    TotalUsedAdsBudget = filteredRecords.Sum(w => w.UsedAdsBudget)
+                    TotalUsedAdsBudget = filteredRecords.Sum(w => w.UsedAdsBudget),
+                    TotalBacklink = filteredRecords.Sum(w => w.Backlink),
+                    TotalClasified = filteredRecords.Sum(w => w.Clasified),
+                    TotalSocialSharing = filteredRecords.Sum(w => w.SocialSharing)
                 };
 
                 return summary;
@@ -608,6 +631,15 @@ namespace OfficeProject.Servicess
                             TotalPost = service.TotalPost,
                             TotalReels = service.TotalReels,
                             AdsBudget = service.AdsBudget,
+                            Backlink = service.Backlink,
+                            Clasified = service.Clasified,
+                            SocialSharing = service.SocialSharing,
+                            IsBacklink = service.IsBacklink,
+                            IsClasified = service.IsClasified,
+                            IsSocialSharing = service.IsSocialSharing,
+                            IsPost = service.IsPost,
+                            IsReels = service.IsReels,
+                            IsAdsBudget = service.IsAdsBudget,
                             DeadLine = service.DeadLine,
                             ExtraField1 = service.ExtraField1,
                             ExtraField2 = service.ExtraField2,
@@ -685,9 +717,6 @@ namespace OfficeProject.Servicess
                 var existingProject = await context.Projects.FindAsync(project.ProjectId);
                 if (existingProject != null)
                 {
-                    // Update basic fields
-                    //existingProject.ClientId = project.ClientId;
-                    //existingProject.UserId = project.UserId;
                     existingProject.IsActive = project.IsActive;
                     existingProject.ProjectName = project.ProjectName;
                     existingProject.CurrentIssue = project.CurrentIssue;
@@ -699,17 +728,8 @@ namespace OfficeProject.Servicess
                     existingProject.ProjectStartDate = project.ProjectStartDate;
                     existingProject.ProjectCost = project.ProjectCost;
                     existingProject.BillingType = project.BillingType;
-                    //existingProject.ProjectType = project.ProjectType;
                     existingProject.ProjectCreatedAt = project.ProjectCreatedAt;
 
-                    // Optional: Update child collections only if needed (custom logic may apply)
-                    // This is a deep update, so be cautious and consider whether to:
-                    // - Replace child objects entirely
-                    // - Patch individual child elements
-                    // For example:
-                    // context.Entry(existingProject).Collection(p => p.MarketingPhase).CurrentValue = project.MarketingPhase;
-
-                    // Save changes
                     await context.SaveChangesAsync();
                 }
             }
@@ -832,6 +852,15 @@ namespace OfficeProject.Servicess
                                 TotalPost = serviceDto.TotalPost,
                                 TotalReels = serviceDto.TotalReels,
                                 AdsBudget = serviceDto.AdsBudget,
+                                Backlink = serviceDto.Backlink,
+                                Clasified = serviceDto.Clasified,
+                                SocialSharing = serviceDto.SocialSharing,
+                                IsBacklink = serviceDto.IsBacklink,
+                                IsClasified = serviceDto.IsClasified,
+                                IsSocialSharing = serviceDto.IsSocialSharing,
+                                IsPost = serviceDto.IsPost,
+                                IsReels = serviceDto.IsReels,
+                                IsAdsBudget = serviceDto.IsAdsBudget,
                                 DeadLine = serviceDto.DeadLine,
                                 ExtraField1 = serviceDto.ExtraField1,
                                 ExtraField2 = serviceDto.ExtraField2,
@@ -858,6 +887,15 @@ namespace OfficeProject.Servicess
                             existingService.TotalPost = serviceDto.TotalPost;
                             existingService.TotalReels = serviceDto.TotalReels;
                             existingService.AdsBudget = serviceDto.AdsBudget;
+                            existingService.Backlink = serviceDto.Backlink;
+                            existingService.Clasified = serviceDto.Clasified;
+                            existingService.SocialSharing = serviceDto.SocialSharing;
+                            existingService.IsBacklink = serviceDto.IsBacklink;
+                            existingService.IsClasified = serviceDto.IsClasified;
+                            existingService.IsSocialSharing = serviceDto.IsSocialSharing;
+                            existingService.IsPost = serviceDto.IsPost;
+                            existingService.IsReels = serviceDto.IsReels;
+                            existingService.IsAdsBudget = serviceDto.IsAdsBudget;
                             existingService.DeadLine = serviceDto.DeadLine;
                             existingService.ExtraField1 = serviceDto.ExtraField1;
                             existingService.ExtraField2 = serviceDto.ExtraField2;

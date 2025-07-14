@@ -75,8 +75,6 @@
 
     private bool isLoading = true;
 
-
-
     private WebDeveTaskDetailsDto editingTask = null;
 
     private WebDeveTaskDetailsDto originalTask = null;
@@ -107,8 +105,8 @@
         try
         {
             isLoading = true;
-            var WorkTaskDetailsDto = await api.GetWorkTaskDetailsById(workTaskId);
-            WebDeveTaskDetailsDto = WorkTaskDetailsDto?.WebDeveTaskDetailsDto ?? new List<WebDeveTaskDetailsDto>();
+            // var WorkTaskDetailsDto = await api.GetWorkTaskDetailsById(workTaskId);
+            // WebDeveTaskDetailsDto = WorkTaskDetailsDto?.WebDeveTaskDetailsDto ?? new List<WebDeveTaskDetailsDto>();
         }
         catch (Exception ex)
         {

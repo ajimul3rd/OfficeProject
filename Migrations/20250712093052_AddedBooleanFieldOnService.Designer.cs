@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OfficeProject.Data;
 
@@ -11,9 +12,11 @@ using OfficeProject.Data;
 namespace OfficeProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250712093052_AddedBooleanFieldOnService")]
+    partial class AddedBooleanFieldOnService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -677,23 +680,6 @@ namespace OfficeProject.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.UserTask", b =>
-                {
-                    b.Property<int>("UserTaskId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserTaskId"));
-
-                    b.Property<string>("UserTaskName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserTaskId");
-
-                    b.ToTable("UserTask");
-                });
-
             modelBuilder.Entity("OfficeProject.Models.Entities.UserWorkingActivity", b =>
                 {
                     b.Property<int>("workingActivityId")
@@ -877,18 +863,6 @@ namespace OfficeProject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WorkTaskId"));
 
-                    b.Property<int>("Backlink")
-                        .HasColumnType("int");
-
-                    b.Property<string>("BacklinkURL")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Clasified")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ClasifiedURL")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("CreatedReels")
                         .HasColumnType("int");
 
@@ -929,12 +903,6 @@ namespace OfficeProject.Migrations
 
                     b.Property<int>("SharedPost")
                         .HasColumnType("int");
-
-                    b.Property<int>("SocialSharing")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SocialSharingURL")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()

@@ -7,7 +7,7 @@
 
 @if (IsVisible)
 {
-   
+
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
             <div class="modal-content" style="height: 85vh;">
@@ -35,36 +35,107 @@
                                     <ValidationMessage For="@(() =>WorkRecord.WorkDate)" />
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            @if (flags.IsPost)
+                            {
+                                <div class="col-md-6">
 
-                                <div class="form-group">
-                                    <label>Shared Post:</label>
-                                    <InputNumber @bind-Value="@WorkRecord.SharedPost" class="form-control" readonly="@(!isPost)" />
-                                    <ValidationMessage For="@(() =>WorkRecord.SharedPost)" />
+                                    <div class="form-group">
+                                        <label>Post:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.SharedPost" class="form-control" readonly="@(!flags.IsPost)" />
+                                        <ValidationMessage For="@(() =>WorkRecord.SharedPost)" />
+                                    </div>
+                                </div>
+                            }
+                            @if (flags.IsReels)
+                            {
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label>Reels:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.CreatedReels" class="form-control" readonly="@(!flags.IsReels)" />
+                                        <ValidationMessage For="@(() =>WorkRecord.CreatedReels)" />
+                                    </div>
+                                </div>
+                            }
+                            @if (flags.IsAdsBudget)
+                            {
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label>Used Ads Budget:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.UsedAdsBudget" class="form-control" readonly="@(!flags.IsAdsBudget)" />
+                                        <ValidationMessage For="@(() =>WorkRecord.UsedAdsBudget)" />
+                                    </div>
+                                </div>
+                            }
+                           
+                            @if (flags.IsBacklink)
+                            {
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Used Backlink:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.Backlink" class="form-control" />
+                                        <ValidationMessage For="@(() => WorkRecord.Backlink)" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Backlink URL:</label>
+                                        <InputText @bind-Value="@WorkRecord.BacklinkURL" class="form-control" />
+                                        @* <ValidationMessage For="@(() => WorkRecord.BacklinkURL)" /> *@
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            }
+                            @if (flags.IsClasified)
+                            {
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Used Clasified:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.Clasified" class="form-control" readonly="@(!flags.IsClasified)" />
+                                        <ValidationMessage For="@(() => WorkRecord.Clasified)" />
+                                    </div>
+                                </div>
 
-                                <div class="form-group">
-                                    <label>Created Reels:</label>
-                                    <InputNumber @bind-Value="@WorkRecord.CreatedReels" class="form-control" readonly="@(!isReels)" />
-                                    <ValidationMessage For="@(() =>WorkRecord.CreatedReels)" />
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Clasified URL:</label>
+                                        <InputText @bind-Value="@WorkRecord.ClasifiedURL" class="form-control" readonly="@(!flags.IsClasified)" />
+                                        @* <ValidationMessage For="@(() => WorkRecord.ClasifiedURL)" /> *@
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            }
 
-                                <div class="form-group">
-                                    <label>Used Ads Budget:</label>
-                                    <InputNumber @bind-Value="@WorkRecord.UsedAdsBudget" class="form-control" readonly="@(!isAdsBudget)" />
-                                    <ValidationMessage For="@(() =>WorkRecord.UsedAdsBudget)" />
+                            @if(flags.IsSocialSharing){
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Used Social Sharing:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.SocialSharing" class="form-control"  />
+                                        <ValidationMessage For="@(() => WorkRecord.SocialSharing)" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Social Sharing URL:</label>
+                                        <InputText @bind-Value="@WorkRecord.SocialSharingURL" class="form-control"  />
+                                        @* <ValidationMessage For="@(() => WorkRecord.SocialSharingURL)" /> *@
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            }
 
+
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>User Task:</label>
-                                    <InputText @bind-Value="@WorkRecord.Task" class="form-control" />
-                                    <ValidationMessage For="@(() =>WorkRecord.Task)" />
+                                    <label>Select Work Task:</label>
+                                    <UserTaskComponent @bind-SelectedTask="WorkRecord.Task" showHeader="false" />
+                                    <ValidationMessage For="@(() => WorkRecord.Task)" class="text-danger small" />
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -369,13 +440,9 @@
 
     private List<WebDevelopmentDTO> webDevelopmentList{ get; set; }
 
-    private bool isPost { get; set; } = false;
+    private ServiceFlagsDTO flags { get; set; } = new();
 
-    private bool isReels { get; set; } = false;
-
-    private bool isAdsBudget { get; set; } = false;
-
-    @* protected override void OnParametersSet() *@
+ 
     protected override async Task OnParametersSetAsync()
     {
         // DataSerializer?.Serializer(service, "Service Data:");
@@ -448,9 +515,11 @@
         }
         try
         {
-            isAdsBudget = await projectService.HasNonZeroAdsBudget(service.ServiceId.Value);
-            isPost = await projectService.HasNonZeroTotalPost(service.ServiceId.Value);
-            isReels = await projectService.HasNonZeroTotalReels(service.ServiceId.Value);
+            flags = await projectService?.GetServiceFlagsAsync(service.ServiceId.Value) ?? new ServiceFlagsDTO();
+
+            @* isAdsBudget = await projectService.HasNonZeroAdsBudget(service.ServiceId.Value); *@
+            @* isPost = await projectService.HasNonZeroTotalPost(service.ServiceId.Value); *@
+            @* isReels = await projectService.HasNonZeroTotalReels(service.ServiceId.Value); *@
         }
         catch (Exception ex)
         {
@@ -590,8 +659,8 @@
        
         try
         {
+            @* DataSerializer?.Serializer(WorkRecord, "DialogAddWorkTask:HandleValidSubmit"); *@
             await api.AddOrUpdateUserWorkingRecordAsync(WorkRecord);
-            DataSerializer?.Serializer(WorkRecord, "Form Submit");
             await isAddWorkFormSubmit.InvokeAsync(true);
 
             // Reset form state

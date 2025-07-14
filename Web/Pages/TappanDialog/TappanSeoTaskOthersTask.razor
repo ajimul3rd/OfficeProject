@@ -21,7 +21,7 @@
                         {
                             <li class="nav-item">
                                 <button class="nav-link @(activeTab == "seoTask" ? "active" : "")"
-                                @onclick="@(() => SwitchTab("seoTask"))">
+                                        @onclick="@(() => SwitchTab("seoTask"))">
                                     Seo Task Details
                                 </button>
                             </li>
@@ -30,7 +30,7 @@
                         {
                             <li class="nav-item">
                                 <button class="nav-link @(activeTab == "othersTask" ? "active" : "")"
-                                @onclick="@(() => SwitchTab("othersTask"))">
+                                        @onclick="@(() => SwitchTab("othersTask"))">
                                     Others Task Details
                                 </button>
                             </li>
@@ -39,7 +39,7 @@
                         {
                             <li class="nav-item">
                                 <button class="nav-link @(activeTab == "webTask" ? "active" : "")"
-                                @onclick="@(() => SwitchTab("webTask"))">
+                                        @onclick="@(() => SwitchTab("webTask"))">
                                     Web Task Details
                                 </button>
                             </li>
@@ -57,17 +57,16 @@
 
                             <div class="@GetTabPaneClass("seoTask")">
                                 <DialogUpdateSeoTask workTaskId="@workTaskId"
-                                SeoTaskDetailsDto="@WorkRecord.SeoTaskDetailsDto"
-
-                                isFormSubmit="@HandleSeoTaskSubmit" />
+                                                     SeoTaskDetailsDto="@WorkRecord.SeoTaskDetailsDto"
+                                                     isFormSubmit="@HandleSeoTaskSubmit" />
                             </div>
                         }
                         @if (othersFlag)
                         {
                             <div class="@GetTabPaneClass("othersTask")">
                                 <DialogUpdateOthersTask workTaskId="@workTaskId"
-                                OthersTaskDetailsDto="@WorkRecord.OthersTaskDetailsDto"
-                                isFormSubmit="@HandleOthersTaskSubmit" />
+                                                        OthersTaskDetailsDto="@WorkRecord.OthersTaskDetailsDto"
+                                                        isFormSubmit="@HandleOthersTaskSubmit" />
                             </div>
                         }
                         @if (webFlag)
@@ -75,13 +74,13 @@
 
                             <div class="@GetTabPaneClass("webTask")">
                                 <DialogUpdateWebDevTask workTaskId="@workTaskId"
-                                WebDeveTaskDetailsDto="@WorkRecord.WebDeveTaskDetailsDto"
-                                isFormSubmit="@HandleWebTaskSubmit" />
+                                                        WebDeveTaskDetailsDto="@WorkRecord.WebDeveTaskDetailsDto"
+                                                        isFormSubmit="@HandleWebTaskSubmit" />
                             </div>
                         }
                     </div>
                 </div>
-              
+
             </div>
         </div>
     </div>
@@ -104,7 +103,7 @@
 
     [Parameter] public int workTaskId { get; set; }
 
-    public WorkTaskDetailsDto WorkRecord { get; set; }
+    [Parameter] public WorkTaskDetailsDto WorkRecord { get; set; }
 
     private string activeTab = "othersTask";
 
@@ -112,31 +111,7 @@
 
     private string GetTabPaneClass(string tabName) =>
         activeTab == tabName ? "tab-pane fade show active" : "tab-pane fade";
-    // private string GetTabPaneClass(string tabName)
-    // {
-        
-    //     Set the first available tab as active
-    //     if (seoFlag)
-    //     {
-    //         activeTab = "seoTask";
-    //     }
-    //     else if (othersFlag)
-    //     {
-    //         activeTab = "othersTask";
-    //     }
-    //     else if (webFlag)
-    //     {
-    //         activeTab = "webTask";
-    //     }
-    //     else
-    //     {
-    //         activeTab = ""; No tabs
-    //     }
-
-       
-       
-    //     return activeTab = "webTask";
-    // }
+   
 
     private async Task CloseDialog()
     {
@@ -160,43 +135,35 @@
         {
             await LoadWorkTask();
         }
+       
     }
 
     private async Task LoadWorkTask()
     {
         try
         {
-            // Clear previous data
-            WorkRecord = null;
-
-            // Fetch new data
-            WorkRecord = await api.GetWorkTaskDetailsById(workTaskId);
-            // DataSerializer?.Serializer(WorkRecord.SeoTaskDetailsDto, "LoadWorkTask");
-
-            // Process the record if needed
-            if (WorkRecord != null)
-            {
-                // Set flags based on what data exists
+                   
                 seoFlag = WorkRecord.SeoTaskDetailsDto?.Count > 0;
                 othersFlag = WorkRecord.OthersTaskDetailsDto?.Count > 0;
                 webFlag = WorkRecord.WebDeveTaskDetailsDto?.Count > 0;
+            
+            if (seoFlag)
+            {
+                activeTab = "seoTask";
             }
-                if (seoFlag)
-                {
-                    activeTab = "seoTask";
-                }
-                else if (othersFlag)
-                {
-                    activeTab = "othersTask";
-                }
-                else if (webFlag)
-                {
-                    activeTab = "webTask";
-                }
-                else
-                {
-                    activeTab = ""; //No tabs
-                }
+            else if (othersFlag)
+            {
+                activeTab = "othersTask";
+            }
+            else if (webFlag)
+            {
+                activeTab = "webTask";
+            }
+            else
+            {
+                activeTab = ""; //No tabs
+            }
+
 
         }
         catch (Exception ex)
@@ -221,5 +188,5 @@
     {
         await isFormSubmit.InvokeAsync(isSuccess);
     }
-    
+
 }

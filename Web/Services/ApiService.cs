@@ -423,7 +423,7 @@ public class ApiService
         await AddAuthHeaderAsync();
         return await http.PostAsJsonAsync("api/Products", productsDTO);
     }
-    public async Task<List<ProductsDTO>?> GetAlGetAllProductsDTOAsync()   {
+    public async Task<List<ProductsDTO>?> GetAllProductsDTOAsync()   {
         await AddAuthHeaderAsync();
         var response = await http.GetAsync("api/Products");
 

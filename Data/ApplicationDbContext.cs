@@ -29,6 +29,7 @@ namespace OfficeProject.Data
         public DbSet<OthersTaskDetails> OthersTaskDetails { get; set; }
         public DbSet<SeoTaskDetails> SeoTaskDetails { get; set; }
         public DbSet<WebDeveTaskDetails> WebDeveTaskDetails { get; set; }
+        public DbSet<UserTask> UserTask { get; set; }
 
 
 

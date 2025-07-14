@@ -361,12 +361,13 @@
                                                                     <label class="form-label">Final Price</label>
                                                                     <InputNumber @bind-Value="service.FinalPrice" class="form-control" />
                                                                 </div>
-
+                                                                  @if (service.IsAdsBudget)
+                                                                {
                                                                 <div class="col-md-4">
                                                                     <label class="form-label">Ads Budget</label>
                                                                     <InputNumber @bind-Value="service.AdsBudget" class="form-control" />
                                                                 </div>
-
+                                                                }
                                                                 <div class="col-md-6">
                                                                     <label class="form-label">Start Date</label>
                                                                     <InputDate @bind-Value="service.StartDate" class="form-control" />
@@ -377,24 +378,56 @@
                                                                     <InputDate @bind-Value="service.EndDate" class="form-control" />
                                                                 </div>
 
+
+                                                                @if (service.IsPost)
+                                                                {
+
                                                                 <div class="col-md-4">
                                                                     <label class="form-label">Total Posts</label>
                                                                     <InputNumber @bind-Value="service.TotalPost" class="form-control" />
                                                                 </div>
+                                                                   }
+                                                                @if (service.IsReels)
+                                                                {
 
                                                                 <div class="col-md-4">
                                                                     <label class="form-label">Total Reels</label>
                                                                     <InputNumber @bind-Value="service.TotalReels" class="form-control" />
                                                                 </div>
-
+                                                                  }
+                                                                @if (service.IsBacklink)
+                                                                {
+                                                                 <div class="col-md-4">
+                                                                    <label class="form-label">Total Backlink</label>
+                                                                    <InputNumber @bind-Value="service.Backlink" class="form-control" />
+                                                                </div>
+                                                                 }
+                                                                @if (service.IsClasified)
+                                                                {
+                                                                 <div class="col-md-4">
+                                                                    <label class="form-label">Total Clasified</label>
+                                                                    <InputNumber @bind-Value="service.Clasified" class="form-control" />
+                                                                </div>
+                                                                 }
+                                                                @if (service.IsSocialSharing)
+                                                                {
                                                                 <div class="col-md-4">
+                                                                    <label class="form-label">Total Social Share</label>
+                                                                    <InputNumber @bind-Value="service.SocialSharing" class="form-control" />
+                                                                </div>
+                                                                }
+                                                                
+                                                                
+                                                                    <div class="col-md-4">
                                                                     <label class="form-label">Dead Line</label>
                                                                     <InputDate @bind-Value="service.DeadLine" class="form-control" />
                                                                 </div>
+                                                                 
                                                                 <div class="col-md-12">
                                                                     <label class="form-label">Note</label>
                                                                     <InputText @bind-Value="service.ExtraField1" class="form-control" />
                                                                 </div>
+                                                                
                                                             </div>
                                                         </div>
                                                     </div>
@@ -786,14 +819,13 @@ showModal="@showServiceModal" />
                     Services = new List<ServicesDTO>(),
                     AssignedUsers = new List<AssignedUsersDTO>()
                 };
-
         }
+        // DataSerializer.Serializer(projectDTO, "DialogAddProject:OnParametersSetAsync");
         showSuccessMessage = false;
         formErrorMessage = string.Empty;
         showFormError = false;
         editContext = new EditContext(projectDTO);
-        await InvokeAsync(StateHasChanged);
-
+        await InvokeAsync(StateHasChanged); 
     }
 
     private ProjectsDTO DeepClone(ProjectsDTO source)
@@ -826,6 +858,8 @@ showModal="@showServiceModal" />
     {
 
         productVsService = projectDTO.Services;
+
+    
 
 
         showServiceModal = true;
@@ -891,6 +925,8 @@ showModal="@showServiceModal" />
         servicesDTO ??= new List<ServicesDTO>();
         projectDTO.Services ??= new List<ServicesDTO>();
 
+        // DataSerializer.Serializer(model, "DialogAddProject:HandleServiceSelected");
+
         foreach (var product in model)
         {
             // Check if a service with the same ProductsId already exists
@@ -912,6 +948,12 @@ showModal="@showServiceModal" />
                         TotalPost = 0,
                         TotalReels = 0,
                         AdsBudget = 0,
+                        IsBacklink = product.IsBacklink,
+                        IsClasified = product.IsClasified,
+                        IsSocialSharing = product.IsSocialSharing,
+                        IsPost = product.IsPost,
+                        IsReels = product.IsReels,
+                        IsAdsBudget = product.IsAdsBudget,
                         DeadLine = DateTime.Today.AddMonths(1)
                     };
 
@@ -1078,17 +1120,7 @@ showModal="@showServiceModal" />
         await InvokeAsync(StateHasChanged);
     }
 
-    // close form
-    // private async Task CloseModal()
-    // {
-    //     showModal = false;
-    //     if (OnProjectAdded.HasDelegate)
-    //     {
-    //         await OnProjectAdded.InvokeAsync(false);
-    //     }
 
-    //     StateHasChanged();
-    // }
     private async Task CloseModal()
     {
         bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", new object[] { "Are you sure you want to close the form?" });

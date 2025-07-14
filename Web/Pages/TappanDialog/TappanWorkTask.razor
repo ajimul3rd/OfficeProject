@@ -15,13 +15,13 @@
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <button class="nav-link @(activeTab == "servicelist" ? "active" : "")"
-                            @onclick="@(() => SwitchTab("servicelist"))">
+                                    @onclick="@(() => SwitchTab("servicelist"))" @onclick:stopPropagation="true">
                                 Services
                             </button>
                         </li>
                         <li class="nav-item">
                             <button class="nav-link @(activeTab == "workrecord" ? "active" : "")"
-                            @onclick="@(() => SwitchTab("workrecord"))">
+                                    @onclick="@(() => SwitchTab("workrecord"))" @onclick:stopPropagation="true">
                                 Works
                             </button>
                         </li>

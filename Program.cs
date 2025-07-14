@@ -142,6 +142,8 @@ builder.Services.AddScoped<ApiService>();
 builder.Services.AddScoped<IDataSerializer, DataSerializer>();
 builder.Services.AddScoped<IService, Service>();
 builder.Services.AddSingleton<AppState>();
+builder.Services.AddScoped<IUserTaskService, UserTaskService>();
+
 
 // HttpClient registration using IHttpClientFactory (recommended)
 builder.Services.AddHttpClient<ApiService>(client =>

@@ -17,14 +17,16 @@ namespace OfficeProject.Servicess
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMapper Mapper;
         private readonly IDataSerializer? DataSerializer;
+        private readonly IService? Service;
         public ProductsService(
             IDbContextFactory<ApplicationDbContext> dbContextFactory,
-            IHttpContextAccessor httpContextAccessor, IMapper mapper, IDataSerializer? dataSerializer)
+            IHttpContextAccessor httpContextAccessor, IMapper mapper, IDataSerializer? dataSerializer, IService? Service)
         {
             this.dbContextFactory = dbContextFactory;
             this.httpContextAccessor = httpContextAccessor;
             this.Mapper = mapper;
-            this.DataSerializer = dataSerializer;   
+            this.DataSerializer = dataSerializer;
+            this.Service = Service;
 
         }
 
@@ -74,6 +76,12 @@ namespace OfficeProject.Servicess
                     ProductsDescription = productsDTO.ProductsDescription,
                     ProductsSellingPrice = productsDTO.ProductsSellingPrice,
                     ProductsCostingPrice = productsDTO.ProductsCostingPrice,
+                    IsBacklink = productsDTO.IsBacklink,
+                    IsClasified = productsDTO.IsClasified,
+                    IsSocialSharing = productsDTO.IsSocialSharing,
+                    IsPost = productsDTO.IsPost,
+                    IsReels = productsDTO.IsReels,
+                    IsAdsBudget = productsDTO.IsAdsBudget,
                     ProductsStatus = productsDTO.ProductsStatus,
                     ProductsEntryDate = productsDTO.ProductsEntryDate,
                     ProductsModificationDate = productsDTO.ProductsModificationDate
@@ -90,9 +98,24 @@ namespace OfficeProject.Servicess
                 existingProduct.ProductsDescription = productsDTO.ProductsDescription;
                 existingProduct.ProductsSellingPrice = productsDTO.ProductsSellingPrice;
                 existingProduct.ProductsCostingPrice = productsDTO.ProductsCostingPrice;
+                existingProduct.IsBacklink = productsDTO.IsBacklink;
+                existingProduct.IsClasified = productsDTO.IsClasified;
+                existingProduct.IsSocialSharing = productsDTO.IsSocialSharing;
+                existingProduct.IsPost = productsDTO.IsPost;
+                existingProduct.IsReels = productsDTO.IsReels;
+                existingProduct.IsAdsBudget = productsDTO.IsAdsBudget;
                 existingProduct.ProductsStatus = productsDTO.ProductsStatus;
                 existingProduct.ProductsEntryDate = productsDTO.ProductsEntryDate;
                 existingProduct.ProductsModificationDate = productsDTO.ProductsModificationDate;
+
+                await Service.UpdateServiceFieldsByProductIdAsync((int)productsDTO.ProductsId!,
+        productsDTO.ProductsName,
+        productsDTO.IsBacklink,
+        productsDTO.IsClasified,
+        productsDTO.IsSocialSharing,
+        productsDTO.IsPost,
+        productsDTO.IsReels,
+        productsDTO.IsAdsBudget);
 
                 await context.SaveChangesAsync();
 
@@ -158,63 +181,11 @@ namespace OfficeProject.Servicess
             }
         }
 
-        //public async Task<List<ProductsDTO>> GetAllProductsDTOAsync()
-        //{
-        //    try
-        //    {
-        //        var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
-
-        //        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-        //        {
-        //            throw new UnauthorizedAccessException("User not authenticated or invalid user ID");
-        //        }
-
-        //        using (var context = dbContextFactory.CreateDbContext())
-        //        {
-        //            var products = await context.Products
-        //     .Where(p => p.UserId == userId)
-        //     .Include(p => p.UserWorkingActivity)
-        //     .ToListAsync();
-
-        //            return products.Select(p => new ProductsDTO
-        //            {
-        //                ProductsId = p.ProductsId,
-        //                UserId = p.UserId,
-        //                ProductsAlias = p.ProductsAlias,
-        //                ProductsName = p.ProductsName,
-        //                ProductsDescription = p.ProductsDescription,
-        //                ProductsSellingPrice = p.ProductsSellingPrice,
-        //                ProductsCostingPrice = p.ProductsCostingPrice,
-        //                ProductsStatus = p.ProductsStatus,
-        //                ProductsEntryDate = p.ProductsEntryDate,
-        //                ProductsModificationDate = p.ProductsModificationDate,
-
-        //                UserWorkingActivity = p.UserWorkingActivity?.Select(a => new UserWorkingActivityDto
-        //                {
-        //                    WorkingActivityId = a.workingActivityId,
-        //                    ProductsId = a.ProductsId,
-        //                    WorkingActivityName = a.WorkingActivityName
-        //                }).ToList()
-        //            }).ToList();
-
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error retrieving clients: {ex.Message}");
-        //        throw;
-        //    }
-        //}
         public async Task<List<ProductsDTO>> GetAllProductsDTOAsync()
         {
             try
             {
-                //var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
 
-                //if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-                //{
-                //    throw new UnauthorizedAccessException("User not authenticated or invalid user ID");
-                //}
 
                 using (var context = dbContextFactory.CreateDbContext())
                 {
@@ -230,6 +201,12 @@ namespace OfficeProject.Servicess
                         ProductsDescription = p.ProductsDescription,
                         ProductsSellingPrice = p.ProductsSellingPrice,
                         ProductsCostingPrice = p.ProductsCostingPrice,
+                        IsBacklink = p.IsBacklink,
+                        IsClasified = p.IsClasified,
+                        IsSocialSharing = p.IsSocialSharing,
+                        IsPost = p.IsPost,
+                        IsReels = p.IsReels,
+                        IsAdsBudget = p.IsAdsBudget,
                         ProductsStatus = p.ProductsStatus,
                         ProductsEntryDate = p.ProductsEntryDate,
                         ProductsModificationDate = p.ProductsModificationDate,

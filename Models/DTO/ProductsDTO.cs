@@ -51,6 +51,13 @@ namespace OfficeProject.Models.DTO
 
         public bool ProductsStatus { get; set; } = true;
 
+        public bool IsBacklink { get; set; } = false;
+        public bool IsClasified { get; set; } = false;
+        public bool IsSocialSharing { get; set; } = false;
+        public bool IsPost { get; set; } = false;
+        public bool IsReels { get; set; } = false;
+        public bool IsAdsBudget { get; set; } = false;
+
         [Required(ErrorMessage = "Entry Date is required")]
         public DateTime? ProductsEntryDate { get; set; } = DateTime.Now;
 

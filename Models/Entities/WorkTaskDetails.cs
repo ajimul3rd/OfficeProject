@@ -32,6 +32,13 @@ namespace OfficeProject.Models.Entities
 
         public int UsedAdsBudget { get; set; }
 
+        public int Backlink { get; set; }
+        public int Clasified { get; set; }
+        public int SocialSharing { get; set; }
+        public string? BacklinkURL { get; set; }
+        public string? ClasifiedURL { get; set; }
+        public string? SocialSharingURL { get; set; }
+
         public string Task { get; set; }
 
         [MaxLength(50)]

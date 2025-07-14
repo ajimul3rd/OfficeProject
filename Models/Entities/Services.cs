@@ -39,13 +39,22 @@ namespace OfficeProject.Models.Entities
 
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
-
         public int TotalPost { get; set; }
-
         public int TotalReels { get; set; }
+        public int Backlink { get; set; }
+        public int Clasified { get; set; }
+        public int SocialSharing { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal AdsBudget { get; set; }
+        public bool IsBacklink { get; set; } = false;
+        public bool IsClasified { get; set; } = false;
+        public bool IsSocialSharing { get; set; } = false;
+        public bool IsPost { get; set; } = false;
+        public bool IsReels { get; set; } = false;
+        public bool IsAdsBudget { get; set; } = false;
+
+       
 
         [DataType(DataType.Date)]
         public DateTime DeadLine { get; set; }

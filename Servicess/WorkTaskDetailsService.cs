@@ -62,6 +62,12 @@ namespace OfficeProject.Servicess
                         SharedPost = workingRecordsDto.SharedPost,
                         CreatedReels = workingRecordsDto.CreatedReels,
                         UsedAdsBudget = workingRecordsDto.UsedAdsBudget,
+                        Backlink = workingRecordsDto.Backlink,
+                        BacklinkURL = workingRecordsDto.BacklinkURL,
+                        Clasified = workingRecordsDto.Clasified,
+                        ClasifiedURL = workingRecordsDto.ClasifiedURL,
+                        SocialSharing = workingRecordsDto.SocialSharing,
+                        SocialSharingURL = workingRecordsDto.SocialSharingURL,
                         Task = workingRecordsDto.Task,
                         Status = workingRecordsDto.Status,
                         Remarks = workingRecordsDto.Remarks
@@ -79,6 +85,12 @@ namespace OfficeProject.Servicess
                     //existingRecords.ServiceName = workingRecordsDto.ServiceName;
                     existingRecords.SharedPost = workingRecordsDto.SharedPost;
                     existingRecords.CreatedReels = workingRecordsDto.CreatedReels;
+                    existingRecords.Backlink = workingRecordsDto.Backlink;
+                    existingRecords.BacklinkURL = workingRecordsDto.BacklinkURL;
+                    existingRecords.Clasified = workingRecordsDto.Clasified;
+                    existingRecords.ClasifiedURL = workingRecordsDto.ClasifiedURL;
+                    existingRecords.SocialSharing = workingRecordsDto.SocialSharing;
+                    existingRecords.SocialSharingURL = workingRecordsDto.SocialSharingURL;
                     existingRecords.UsedAdsBudget = workingRecordsDto.UsedAdsBudget;
                     existingRecords.Task = workingRecordsDto.Task;
                     existingRecords.Status = workingRecordsDto.Status;

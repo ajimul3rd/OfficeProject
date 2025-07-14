@@ -381,6 +381,7 @@
             if (!selectedProducts.Any(p => p.ProductsId == product.ProductsId))
             {
                 selectedProducts.Add(product);
+                // DataSerializer.Serializer(product, "DialogProductsList:ToggleProductSelection");
             }
         }
         else

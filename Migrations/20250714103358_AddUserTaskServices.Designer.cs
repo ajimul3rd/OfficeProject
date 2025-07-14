@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OfficeProject.Data;
 
@@ -11,9 +12,11 @@ using OfficeProject.Data;
 namespace OfficeProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250714103358_AddUserTaskServices")]
+    partial class AddUserTaskServices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -881,12 +884,14 @@ namespace OfficeProject.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("BacklinkURL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Clasified")
                         .HasColumnType("int");
 
                     b.Property<string>("ClasifiedURL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CreatedReels")
@@ -934,6 +939,7 @@ namespace OfficeProject.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SocialSharingURL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")

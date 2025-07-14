@@ -178,6 +178,8 @@ showModal="@showProjectModal" />
         //         WriteIndented = true
         //     });
         // Console.WriteLine("EditProject:" + json);
+        DataSerializer.Serializer(project, "ProjectList:EditProject");
+
 
         StateHasChanged();
     }
