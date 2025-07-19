@@ -376,6 +376,15 @@ namespace OfficeProject.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsAdminMarkAsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUserMarkAsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUserWorkDone")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("ProjectCost")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -389,6 +398,10 @@ namespace OfficeProject.Migrations
 
                     b.Property<DateTime>("ProjectStartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ProjectType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -677,7 +690,7 @@ namespace OfficeProject.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("OfficeProject.Models.Entities.UserTask", b =>
+            modelBuilder.Entity("OfficeProject.Models.Entities.UserTaskMaster", b =>
                 {
                     b.Property<int>("UserTaskId")
                         .ValueGeneratedOnAdd()
@@ -689,7 +702,12 @@ namespace OfficeProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserTask_UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("UserTaskId");
+
+                    b.HasIndex("UserTask_UserId");
 
                     b.ToTable("UserTask");
                 });
@@ -738,6 +756,9 @@ namespace OfficeProject.Migrations
 
                     b.Property<DateTime?>("JoiningDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("PreeAssignUserRole")
+                        .HasColumnType("bit");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
@@ -1147,6 +1168,17 @@ namespace OfficeProject.Migrations
                         .HasForeignKey("UsersUserId");
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("OfficeProject.Models.Entities.UserTaskMaster", b =>
+                {
+                    b.HasOne("OfficeProject.Models.Entities.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserTask_UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OfficeProject.Models.Entities.UserWorkingActivity", b =>

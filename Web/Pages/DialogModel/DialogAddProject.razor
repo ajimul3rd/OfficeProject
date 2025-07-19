@@ -67,6 +67,12 @@
                   $"{clientsDTO.ClientName} (ID: {clientsDTO.ClientId})" :
                   "No client selected")"
                                                                readonly style="cursor: pointer;" />
+                                                        @if (projectDTO.ClientId == null || projectDTO.ClientId==0)
+                                                        {
+                                                            <div class="form-text text-danger mt-1">
+                                                                <i class="fas fa-exclamation-circle me-1"></i> Please select client
+                                                            </div>
+                                                        }
                                                     </div>
                                                     <div class="mb-2">
                                                         <label class="form-label small required">Project Name</label>
@@ -209,7 +215,7 @@
                                                         }
                                                         else
                                                         {
-                                                            
+
                                                             <div class="d-flex flex-wrap gap-2 align-items-center">
                                                                 @foreach (var user in projectDTO.AssignedUsers)
                                                                 {
@@ -282,7 +288,7 @@
                                                                 @for (int i = 0; i < projectDTO.Services?.Count; i++)
                                                                 {
                                                                     var service = projectDTO.Services[i];
-                                                                    
+
                                                                     <span class="badge bg-primary rounded-pill d-flex align-items-center">
                                                                         @service.ServiceName
                                                                         <button class="btn-close custom-close ms-1"
@@ -361,12 +367,12 @@
                                                                     <label class="form-label">Final Price</label>
                                                                     <InputNumber @bind-Value="service.FinalPrice" class="form-control" />
                                                                 </div>
-                                                                  @if (service.IsAdsBudget)
+                                                                @if (service.IsAdsBudget)
                                                                 {
-                                                                <div class="col-md-4">
-                                                                    <label class="form-label">Ads Budget</label>
-                                                                    <InputNumber @bind-Value="service.AdsBudget" class="form-control" />
-                                                                </div>
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Ads Budget</label>
+                                                                        <InputNumber @bind-Value="service.AdsBudget" class="form-control" />
+                                                                    </div>
                                                                 }
                                                                 <div class="col-md-6">
                                                                     <label class="form-label">Start Date</label>
@@ -382,52 +388,52 @@
                                                                 @if (service.IsPost)
                                                                 {
 
-                                                                <div class="col-md-4">
-                                                                    <label class="form-label">Total Posts</label>
-                                                                    <InputNumber @bind-Value="service.TotalPost" class="form-control" />
-                                                                </div>
-                                                                   }
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Total Posts</label>
+                                                                        <InputNumber @bind-Value="service.TotalPost" class="form-control" />
+                                                                    </div>
+                                                                }
                                                                 @if (service.IsReels)
                                                                 {
 
-                                                                <div class="col-md-4">
-                                                                    <label class="form-label">Total Reels</label>
-                                                                    <InputNumber @bind-Value="service.TotalReels" class="form-control" />
-                                                                </div>
-                                                                  }
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Total Reels</label>
+                                                                        <InputNumber @bind-Value="service.TotalReels" class="form-control" />
+                                                                    </div>
+                                                                }
                                                                 @if (service.IsBacklink)
                                                                 {
-                                                                 <div class="col-md-4">
-                                                                    <label class="form-label">Total Backlink</label>
-                                                                    <InputNumber @bind-Value="service.Backlink" class="form-control" />
-                                                                </div>
-                                                                 }
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Total Backlink</label>
+                                                                        <InputNumber @bind-Value="service.Backlink" class="form-control" />
+                                                                    </div>
+                                                                }
                                                                 @if (service.IsClasified)
                                                                 {
-                                                                 <div class="col-md-4">
-                                                                    <label class="form-label">Total Clasified</label>
-                                                                    <InputNumber @bind-Value="service.Clasified" class="form-control" />
-                                                                </div>
-                                                                 }
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Total Clasified</label>
+                                                                        <InputNumber @bind-Value="service.Clasified" class="form-control" />
+                                                                    </div>
+                                                                }
                                                                 @if (service.IsSocialSharing)
                                                                 {
-                                                                <div class="col-md-4">
-                                                                    <label class="form-label">Total Social Share</label>
-                                                                    <InputNumber @bind-Value="service.SocialSharing" class="form-control" />
-                                                                </div>
-                                                                }
-                                                                
-                                                                
                                                                     <div class="col-md-4">
+                                                                        <label class="form-label">Total Social Share</label>
+                                                                        <InputNumber @bind-Value="service.SocialSharing" class="form-control" />
+                                                                    </div>
+                                                                }
+
+
+                                                                <div class="col-md-4">
                                                                     <label class="form-label">Dead Line</label>
                                                                     <InputDate @bind-Value="service.DeadLine" class="form-control" />
                                                                 </div>
-                                                                 
+
                                                                 <div class="col-md-12">
                                                                     <label class="form-label">Note</label>
                                                                     <InputText @bind-Value="service.ExtraField1" class="form-control" />
                                                                 </div>
-                                                                
+
                                                             </div>
                                                         </div>
                                                     </div>
@@ -526,7 +532,7 @@
                                                                     <span class="text-info">Other Services</span>
                                                                     @service.OthersServices.Count
                                                                 </h6>
-                                                                
+
                                                                 <h6 class="mb-0"><i class="fas fa-tasks me-2"></i>Other Services</h6>
                                                                 <span class="badge bg-primary">@service.OthersServices.Count service(s)</span>
                                                             </div>
@@ -589,13 +595,13 @@
 
                                                             <div class="card my-4 p-4 border shadow-sm">
                                                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                                                   <h6 class="mb-0">
-                                                                    <i class="fas fa-search me-2"></i>
-                                                                    @($"{service.ServiceName}: ")
+                                                                    <h6 class="mb-0">
+                                                                        <i class="fas fa-search me-2"></i>
+                                                                        @($"{service.ServiceName}: ")
                                                                         <span class="text-info">Web Development Service</span>
                                                                         @displayWebServiceNumber
-                                                                       
-                                                                </h6>
+
+                                                                    </h6>
 
                                                                     <button class="btn btn-sm btn-outline-danger"
                                                                             @onclick="@(async () => await RemoveWebDevelopment(index, web))"
@@ -726,20 +732,44 @@
 
 }
 
-<DialogClientList OnClientSelected="HandleClientSelected"
-selectedClientId="selectedClientId"
-showModalChanged="@((value) => showClientModal = value)"
-showModal="@showClientModal" />
+@* <DialogClientList OnClientSelected="HandleClientSelected"
+                  selectedClientId="selectedClientId"
+                  showModalChanged="@((value) => showClientModal = value)"
+                  showModal="@showClientModal" />
 
 <DialogUserList onSelectUser="HandleUserSelected"
-assignedUsers="assignUser"
-showModalChanged="@((value) => showUserModal = value)"
-showModal="@showUserModal" />
+                assignedUsers="assignUser"
+                showModalChanged="@((value) => showUserModal = value)"
+                showModal="@showUserModal" />
 
 <DialogProductsList OnProductSelected="HandleServiceSelected"
-callerSelectedProducts="@productVsService"
-showModalChanged="@((value) => showServiceModal = value)"
-showModal="@showServiceModal" />
+                    callerSelectedProducts="@productVsService"
+                    showModalChanged="@((value) => showServiceModal = value)"
+                    showModal="@showServiceModal" /> *@
+
+
+@if (showClientModal)
+{
+    <DialogClientList OnClientSelected="HandleClientSelected"
+                      selectedClientId="selectedClientId"
+                      showModalChanged="@((value) => showClientModal = value)"
+                      showModal="@showClientModal" />
+}
+@if (showServiceModal)
+{
+
+    <DialogProductsList OnProductSelected="HandleServiceSelected"
+                        callerSelectedProducts="@productVsService"
+                        showModalChanged="@((value) => showServiceModal = value)"
+                        showModal="@showServiceModal" />
+}
+@if (showUserModal)
+{
+    <DialogUserList onSelectUser="HandleUserSelected"
+                    assignedUsers="assignUser"
+                    showModalChanged="@((value) => showUserModal = value)"
+                    showModal="@showUserModal" />
+}
 
 <style>
     .custom-close {
@@ -784,9 +814,9 @@ showModal="@showServiceModal" />
     private List<OthersServiceDTO> OthersServices { get; set; } = new();
     private List<AssignedUsersDTO> assignedUsersDTOs { get; set; } = new();
     private List<AssignedUsersDTO> assignUser { get; set; }
-    private int selectedClientId{ get; set; }
+    private int selectedClientId { get; set; }
     private List<ServicesDTO> productVsService { get; set; }
-    private List<int> assignUserDeleteList = new List<int>(); 
+    private List<int> assignUserDeleteList = new List<int>();
     private List<int> serviceDeleteList = new List<int>();
     private List<int> seoDeleteList = new List<int>();
     private List<int> webDelete = new List<int>();
@@ -814,18 +844,20 @@ showModal="@showServiceModal" />
         else
         {
 
-            projectDTO = new ProjectsDTO
+            projectDTO ??= new ProjectsDTO
                 {
                     Services = new List<ServicesDTO>(),
-                    AssignedUsers = new List<AssignedUsersDTO>()
+                    AssignedUsers = new List<AssignedUsersDTO>(),
                 };
         }
-        // DataSerializer.Serializer(projectDTO, "DialogAddProject:OnParametersSetAsync");
+
         showSuccessMessage = false;
         formErrorMessage = string.Empty;
         showFormError = false;
         editContext = new EditContext(projectDTO);
-        await InvokeAsync(StateHasChanged); 
+
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private ProjectsDTO DeepClone(ProjectsDTO source)
@@ -833,6 +865,7 @@ showModal="@showServiceModal" />
         var json = JsonSerializer.Serialize(source);
         return JsonSerializer.Deserialize<ProjectsDTO>(json);
     }
+
     private void MarkAsTouched(object model, string fieldName)
     {
         var fieldIdentifier = new FieldIdentifier(model, fieldName);
@@ -840,15 +873,16 @@ showModal="@showServiceModal" />
     }
 
     private void getClients()
-    {selectedClientId = (int)projectDTO.ClientId!;
+    {
+        selectedClientId = (int)projectDTO.ClientId!;
 
         showClientModal = true;
     }
 
     // private void getUsers() => showUserModal = true;
     private void getUsers()
-    {        
-        assignUser = projectDTO.AssignedUsers;       
+    {
+        assignUser = projectDTO.AssignedUsers;
 
         showUserModal = true;
 
@@ -859,7 +893,7 @@ showModal="@showServiceModal" />
 
         productVsService = projectDTO.Services;
 
-    
+
 
 
         showServiceModal = true;
@@ -878,11 +912,6 @@ showModal="@showServiceModal" />
 
     private void HandleUserSelected(List<UserDTO> model)
     {
-        // string json = JsonSerializer.Serialize(model, new JsonSerializerOptions
-        //     {
-        //         WriteIndented = true
-        //     });
-        // Console.WriteLine("HandleUserSelected:" + json);
 
         if (model == null) return;
 
@@ -978,7 +1007,6 @@ showModal="@showServiceModal" />
     private async Task RemoveUser(AssignedUsersDTO user)
     {
         if (user == null) return;
-
         // Add to delete list if this is an existing user (has an ID)
         if (user.AssignedUsersId.HasValue && user.AssignedUsersId != 0)
         {
@@ -995,11 +1023,6 @@ showModal="@showServiceModal" />
             projectDTO.AssignedUsers.Remove(user);
         }
 
-        string json = JsonSerializer.Serialize(projectDTO.AssignedUsers, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-        Console.WriteLine("Removed User:"+json);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -1034,10 +1057,10 @@ showModal="@showServiceModal" />
         service.OthersServices ??= new List<OthersServiceDTO>();
 
         service.OthersServices.Add(new OthersServiceDTO
-        {
-            OthersId=0,
-                ServiceId=(int)service.ServiceId!,
-        });
+            {
+                OthersId = 0,
+                ServiceId = (int)service.ServiceId!,
+            });
 
         StateHasChanged();
     }
@@ -1052,10 +1075,10 @@ showModal="@showServiceModal" />
         service.WebDevelopment ??= new List<WebDevelopmentDTO>();
 
         service.WebDevelopment.Add(new WebDevelopmentDTO
-        {
-            WebDevelopmentId=0,
-                ServiceId=(int)service.ServiceId!,
-        });
+            {
+                WebDevelopmentId = 0,
+                ServiceId = (int)service.ServiceId!,
+            });
 
 
         StateHasChanged();
@@ -1147,8 +1170,8 @@ showModal="@showServiceModal" />
         formErrorMessage = null;
         editContext?.MarkAsUnmodified();
         var validationErrors = new List<string>();
-
         // Validation checks
+       
         if (projectDTO.AssignedUsers == null || !projectDTO.AssignedUsers.Any())
         {
             validationErrors.Add("At least one team member must be assigned");
@@ -1182,7 +1205,7 @@ showModal="@showServiceModal" />
                     foreach (var service in projectDTO.Services!)
                     {
 
-                        if ( service.ProjectId != 0)
+                        if (service.ProjectId != 0)
                         {
                             service.ProjectId = (int)projectDTO.ProjectId!;
                         }
@@ -1221,11 +1244,12 @@ showModal="@showServiceModal" />
                     {
                         if (ass_user.AssignedUsersId == null)
                         {
-                            ass_user.AssignedUsersId=0;
+                            ass_user.AssignedUsersId = 0;
                             ass_user.ProjectId = projectDTO.ProjectId;
 
                         }
                     }
+
                     await DeleteAssignedUsersAsync();
 
                     await DeleteservicesAsync();
@@ -1237,8 +1261,9 @@ showModal="@showServiceModal" />
                     await DeleteWebServicessAsync();
 
                     await api.SaveOrUpdateProjects(projectDTO);
+
                 }
-                      showSuccessMessage = true;
+                showSuccessMessage = true;
                 StateHasChanged();
 
                 if (OnProjectAdded.HasDelegate)
@@ -1272,10 +1297,19 @@ showModal="@showServiceModal" />
         }
     }
 
+    private async Task CheckData()
+    {
+
+
+
+    }
+
+
     private async Task DeleteAssignedUsersAsync()
     {
         try
         {
+
             if (assignUserDeleteList?.Count > 0 && assignedUsers != null)
             {
                 foreach (var userId in assignUserDeleteList)
@@ -1318,7 +1352,7 @@ showModal="@showServiceModal" />
     {
         try
         {
-            if (seoDeleteList?.Count > 0 && projectDTO.Services!= null)
+            if (seoDeleteList?.Count > 0 && projectDTO.Services != null)
             {
                 foreach (var seoId in seoDeleteList)
                 {

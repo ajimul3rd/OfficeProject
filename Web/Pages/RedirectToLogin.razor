@@ -9,7 +9,7 @@
     <NotAuthorized>
         @code {
         protected override async Task OnInitializedAsync()
-        {        
+        {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 

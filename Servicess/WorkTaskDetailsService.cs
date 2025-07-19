@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using OfficeProject.Data;
 using OfficeProject.Models.DTO;
 using OfficeProject.Models.Entities;
+using OfficeProject.Models.Enums;
 
 namespace OfficeProject.Servicess
 {
@@ -207,7 +208,13 @@ namespace OfficeProject.Servicess
                         Console.WriteLine($"Error saving SeoTaskDetails: {ex.Message}");
                     }
                 }
-
+                //Console.WriteLine("workingRecordsDto.ProjectId:"+ workingRecordsDto.ProjectId);
+                //Console.WriteLine("workingRecordsDto.Task:" + workingRecordsDto.Status);
+                if (workingRecordsDto.ProjectId > 0&& workingRecordsDto.Status == "Completed")
+                {
+                    await UpdateProjectsUserWorkDoneFlagAsync((int)workingRecordsDto.ProjectId);
+                }
+                
             }
             catch (Exception ex)
             {
@@ -215,6 +222,49 @@ namespace OfficeProject.Servicess
                 throw;
             }
         }
+
+        public async Task UpdateProjectsUserWorkDoneFlagAsync(int ProjectId)
+        {
+            try
+            {
+                Console.WriteLine("UpdateProjectsUserWorkDoneFlagAsync:");
+                using var context = dbContextFactory.CreateDbContext();
+
+                Projects? existingProject = null;
+
+                if (ProjectId > 0)
+                {
+                    existingProject = await context.Projects.FirstOrDefaultAsync(p => p.ProjectId == ProjectId);
+                }
+
+                if (existingProject != null)
+                {
+                    if (existingProject.ProjectType == ProjectType.EXTRA_SERVICE)
+                    {
+                        existingProject.IsUserWorkDone = true;
+                        context.Projects.Update(existingProject);
+                        await context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        // Optionally handle updates for non-EXTRA_SERVICE types if needed
+                        Console.WriteLine($"Project {existingProject.ProjectId} is not of type EXTRA_SERVICE, no update performed.");
+                        
+                    }
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Critical failure in UpdateProjectsAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+
+
+
+
 
         //public Task<List<WorkTaskDetailsDto?>> GetWorkingRecordPerUserAsync()
         //{

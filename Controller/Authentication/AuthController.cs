@@ -55,6 +55,7 @@ namespace OfficeProject.Controller.Authentication
                 UserContact = model.UserContact,
                 UserPassword = _passwordService.HashPassword(model.UserPassword),
                 Role = model.Role,
+                PreeAssignUserRole=model.PreeAssignUserRole,
                 CompanyName = model.CompanyName,
                 Address = model.Address,
                 UserDesignation = model.UserDesignation,

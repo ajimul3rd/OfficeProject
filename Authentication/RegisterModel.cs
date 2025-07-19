@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using DocumentFormat.OpenXml.Spreadsheet;
 using OfficeProject.Models.Entities;
 using OfficeProject.Models.Enums;
 
@@ -32,6 +33,8 @@ namespace OfficeProject.Authentication
         public UserRole? Role { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public bool PreeAssignUserRole { get; set; } = false;
 
         [Required(ErrorMessage = "Company name must be under 100 characters")]
         public string? CompanyName { get; set; }

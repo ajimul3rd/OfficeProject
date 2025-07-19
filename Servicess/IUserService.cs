@@ -16,5 +16,8 @@ namespace OfficeProject.Servicess
         Task RevokeRefreshToken(string username);
         Task<UserDTO?> GetAllUsersDTOClientAsync(UserWithClientsDto userWithClientsDto);//old
 
+        Task<UserDTO?> GetCurrentLoggedUserAsync();
+        Task<List<UserDTO>> GetPreeAssignUsersAsync();
+
     }
 }

@@ -17,14 +17,14 @@ namespace OfficeProject.Servicess
         }
 
         public async Task<bool> DeleteWebServiceAsync(int webId)
-    {
-        var webService = await _context.WebDevelopment.FindAsync(webId);
-        if (webService == null)
-            return false;
+        {
+            var webService = await _context.WebDevelopment.FindAsync(webId);
+            if (webService == null)
+                return false;
 
-        _context.WebDevelopment.Remove(webService);
-        await _context.SaveChangesAsync();
-        return true;
+            _context.WebDevelopment.Remove(webService);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
-}
 }

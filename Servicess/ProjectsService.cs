@@ -94,8 +94,8 @@ namespace OfficeProject.Servicess
                         ClientId = project.ClientId,
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
+                        ProjectType = project.ProjectType,
                         ProjectStartDate = project.ProjectStartDate,
-                        //ProjectType = project.ProjectType,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
                         InternalRemark = project.InternalRemark,
@@ -221,6 +221,7 @@ namespace OfficeProject.Servicess
                         ClientId = project.ClientId,
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
+                        ProjectType = project.ProjectType,
                         ProjectStartDate = project.ProjectStartDate,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
@@ -359,6 +360,7 @@ namespace OfficeProject.Servicess
                         ClientId = project.ClientId,
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
+                        ProjectType = project.ProjectType,
                         ProjectStartDate = project.ProjectStartDate,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
@@ -368,6 +370,7 @@ namespace OfficeProject.Servicess
                         IgFollowers = project.IgFollowers,
                         GmbRakning = project.GmbRakning,
                         IsActive = project.IsActive,
+                        IsUserWorkDone=project.IsUserWorkDone,
 
                         AssignedUsers = project.AssignedUsers?.Select(user => new AssignedUsersDTO
                         {
@@ -589,8 +592,8 @@ namespace OfficeProject.Servicess
                         ClientId = project.ClientId,
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
+                        ProjectType = project.ProjectType,
                         ProjectStartDate = project.ProjectStartDate,
-                        //ProjectType = project.ProjectType,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
                         InternalRemark = project.InternalRemark,
@@ -599,6 +602,7 @@ namespace OfficeProject.Servicess
                         IgFollowers = project.IgFollowers,
                         GmbRakning = project.GmbRakning,
                         IsActive = project.IsActive,
+                        IsUserWorkDone= project.IsUserWorkDone,
 
                         AssignedUsers = project.AssignedUsers?.Select(user => new AssignedUsersDTO
                         {
@@ -710,6 +714,7 @@ namespace OfficeProject.Servicess
             }
         }
 
+
         public async Task UpdateProjectAsync(ProjectsDTO project)
         {
             using (var context = dbContextFactory.CreateDbContext())
@@ -728,13 +733,27 @@ namespace OfficeProject.Servicess
                     existingProject.ProjectStartDate = project.ProjectStartDate;
                     existingProject.ProjectCost = project.ProjectCost;
                     existingProject.BillingType = project.BillingType;
+                    existingProject.ProjectType = project.ProjectType;
                     existingProject.ProjectCreatedAt = project.ProjectCreatedAt;
 
                     await context.SaveChangesAsync();
                 }
             }
         }
- 
+
+        public async Task PushProjectToTeamAsync(ProjectsDTO project)
+        {
+            using (var context = dbContextFactory.CreateDbContext())
+            {
+                var existingProject = await context.Projects.FindAsync(project.ProjectId);
+                if (existingProject != null)
+                {
+                    existingProject.IsUserWorkDone = project.IsUserWorkDone;
+                    await context.SaveChangesAsync();
+                }
+            }
+        }
+
         public async Task SaveOrUpdateProjectsAsync(ProjectsDTO projectDto)
         {
             try
@@ -757,8 +776,8 @@ namespace OfficeProject.Servicess
                         ClientId = (int)projectDto.ClientId,
                         ProjectName = projectDto.ProjectName,
                         BillingType = projectDto.BillingType,
+                        ProjectType = projectDto.ProjectType,
                         ProjectStartDate = projectDto.ProjectStartDate,
-                        //ProjectType = projectDto.ProjectType,
                         ProjectCost = projectDto.ProjectCost,
                         CurrentIssue = projectDto.CurrentIssue,
                         InternalRemark = projectDto.InternalRemark,
@@ -779,6 +798,7 @@ namespace OfficeProject.Servicess
                     existingProject.ClientId = (int)projectDto.ClientId;
                     existingProject.ProjectName = projectDto.ProjectName;
                     existingProject.BillingType = projectDto.BillingType;
+                    existingProject.ProjectType = projectDto.ProjectType;
                     existingProject.ProjectStartDate = projectDto.ProjectStartDate;
                     existingProject.ProjectCost = projectDto.ProjectCost;
                     existingProject.CurrentIssue = projectDto.CurrentIssue;

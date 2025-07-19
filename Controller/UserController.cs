@@ -107,6 +107,43 @@ namespace OfficeProject.Controllers
         }
 
 
+        [HttpGet("current")]
+        public async Task<ActionResult<UserDTO>> GetCurrentLoggedUserAsync()
+        {
+            try
+            {
+                var user = await userService.GetCurrentLoggedUserAsync();
+
+                return Ok(user);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the user.", error = ex.Message });
+            }
+        }        
+        [HttpGet("pree-assign-user")]
+        public async Task<ActionResult<UserDTO>> GetPreeAssignUsersAsync()
+        {
+            try
+            {
+                var user = await userService.GetPreeAssignUsersAsync();
+
+                return Ok(user);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the user.", error = ex.Message });
+            }
+        }
+
 
     }
 }

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OfficeProject.Data;
 using OfficeProject.Models.DTO;
 using OfficeProject.Models.Entities;
+using System.Security.Claims;
 
 namespace OfficeProject.Servicess
 {
@@ -14,9 +16,9 @@ namespace OfficeProject.Servicess
 
         private readonly IDataSerializer? DataSerializer;
 
-        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpClient;
         public UserService(
-            IDbContextFactory<ApplicationDbContext> dbContextFactory, IMapper mapper, IDataSerializer? dataSerializer, HttpClient httpClient)
+            IDbContextFactory<ApplicationDbContext> dbContextFactory, IMapper mapper, IDataSerializer? dataSerializer, IHttpContextAccessor httpClient)
         {
             this.dbContextFactory = dbContextFactory;
             this.Mapper = mapper;
@@ -41,6 +43,7 @@ namespace OfficeProject.Servicess
                     UserContact = user.UserContact,
                     Role = user.Role,
                     IsActive = user.IsActive,
+                    PreeAssignUserRole = user.PreeAssignUserRole,
                     CompanyName = user.CompanyName,
                     Address = user.Address,
                     CreatedAt = (DateTime)user.CreatedAt!,
@@ -57,7 +60,6 @@ namespace OfficeProject.Servicess
                 return userDtos;
             }
         }
-
         public async Task<List<Users>> GetAllUsersAsync()
         {
             using (var context = dbContextFactory.CreateDbContext())
@@ -65,8 +67,6 @@ namespace OfficeProject.Servicess
                 return await context.Users.ToListAsync();
             }
         }
-
-
         public async Task<UserDTO?> GetUserDTOById(int id)
         {
             using (var context = dbContextFactory.CreateDbContext())
@@ -86,6 +86,7 @@ namespace OfficeProject.Servicess
                     UserContact = user.UserContact,
                     Role = user.Role,
                     IsActive = user.IsActive,
+                    PreeAssignUserRole = user.PreeAssignUserRole,
                     CompanyName = user.CompanyName,
                     Address = user.Address,
                     CreatedAt = user.CreatedAt ?? DateTime.UtcNow,
@@ -100,8 +101,6 @@ namespace OfficeProject.Servicess
                 };
             }
         }
-
-
         // ✅ Get User By Id 
         public async Task<Users?> GetUserById(int id)
         {
@@ -110,8 +109,6 @@ namespace OfficeProject.Servicess
                 return await context.Users.FindAsync(id); // Pass the 'id' parameter
             }
         }
-
-
         // ✅ Get User and UsersDTO By Name
         public async Task<UserDTO?> GetUserDTOByUsername(string username)
         {
@@ -121,7 +118,6 @@ namespace OfficeProject.Servicess
                 return Mapper.Map<UserDTO>(await context.Users.FirstOrDefaultAsync(u => u.UserName == username));
             }
         }
-
         public async Task<Users?> GetUserByUsername(string username)
         {
             using (var context = dbContextFactory.CreateDbContext())
@@ -130,9 +126,6 @@ namespace OfficeProject.Servicess
                 return await context.Users.FirstOrDefaultAsync(u => u.UserName == username);
             }
         }
-
-
-
         // ✅ Add a User
         public async Task AddUserAsync(Users user)
         {
@@ -150,8 +143,6 @@ namespace OfficeProject.Servicess
                 throw;
             }
         }
-
-
         public async Task UpdateUserAsync(UserDTO user)
         {
             using (var context = dbContextFactory.CreateDbContext())
@@ -172,6 +163,7 @@ namespace OfficeProject.Servicess
                 existingUser.UserContact = user.UserContact;
                 existingUser.Role = user.Role;
                 existingUser.IsActive = user.IsActive;
+                existingUser.PreeAssignUserRole = user.PreeAssignUserRole;
                 existingUser.CompanyName = user.CompanyName;
                 existingUser.Address = user.Address;
                 existingUser.JoiningDate = user.JoiningDate;
@@ -245,8 +237,6 @@ namespace OfficeProject.Servicess
                 await context.SaveChangesAsync();
             }
         }
-
-
         public async Task<UserDTO?> GetAllUsersDTOClientAsync(UserWithClientsDto userWithClientsDto)
         {
             using (var context = dbContextFactory.CreateDbContext())
@@ -271,7 +261,7 @@ namespace OfficeProject.Servicess
                     UserContact = userWithClientsDto.UserContact,
                     CompanyName = userWithClientsDto.CompanyName,
                     Address = userWithClientsDto.Address,
-                    UserDesignation= Designation,
+                    UserDesignation = Designation,
                     JoiningDate = userWithClientsDto.JoiningDate,
                     Role = userWithClientsDto.Role,
                     Clients = userWithClientsDto.Clients.Select(c => new Clients
@@ -328,5 +318,65 @@ namespace OfficeProject.Servicess
             }
         }
 
+        public async Task<UserDTO?> GetCurrentLoggedUserAsync()
+        {
+            try
+            {
+                var userIdClaim = _httpClient.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    throw new UnauthorizedAccessException("User is not authenticated.");
+                }
+
+                using (var context = dbContextFactory.CreateDbContext())
+                {
+                    // Get user with designation
+                    var user = await context.Users
+                        .Include(u => u.UserDesignation)
+                        .FirstOrDefaultAsync(u => u.UserId == userId);
+
+                    if (user == null)
+                    {
+                        throw new UnauthorizedAccessException("User not found.");
+                    }
+
+
+                    return new UserDTO
+                    {
+                        UserId = user.UserId,
+                        UserName = user.UserName,
+                        Role = user.Role,
+                    }
+    ;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving user: {ex.Message}");
+                throw;
+            }
+        }
+        public async Task<List<UserDTO>> GetPreeAssignUsersAsync()
+        {
+            using (var context = dbContextFactory.CreateDbContext())
+            {
+                var users = await context.Users
+                    .Where(u => u.PreeAssignUserRole)
+                    .Select(u => new UserDTO
+                    {
+                        UserId = u.UserId,
+                        UserName = u.UserName,
+                        Role = u.Role,
+                    })
+                    .ToListAsync();
+
+                return users;
+            }
+        }
+
+
+
     }
+
 }

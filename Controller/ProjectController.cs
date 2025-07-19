@@ -154,7 +154,7 @@ namespace OfficeProject.Controllers
 
         [HttpPost("save-or-update")]
         [Authorize(Policy = "AdminOrManager")]
-        public async Task<IActionResult> SaveOrUpdateProjects([FromBody] ProjectsDTO projectsDTO)
+        public async Task<IActionResult> SaveOrUpdateProjectsAsync([FromBody] ProjectsDTO projectsDTO)
         {
             if (projectsDTO == null )
                 return BadRequest("Project data is missing.");

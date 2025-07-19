@@ -134,7 +134,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Select Work Task:</label>
-                                    <UserTaskComponent @bind-SelectedTask="WorkRecord.Task" showHeader="false" />
+                                    <UserTaskMasterList @bind-SelectedTask="WorkRecord.Task" showHeader="false" />
                                     <ValidationMessage For="@(() => WorkRecord.Task)" class="text-danger small" />
                                 </div>
                             </div>
@@ -457,6 +457,7 @@
         if (service != null)
         {
             WorkRecord.ServiceId = (int)service.ServiceId!;
+            WorkRecord.ProjectId = (int)service.ProjectId!;
 
             if (service.SeoServiceDetails != null && service.SeoServiceDetails.Count>0)
             {
@@ -660,7 +661,7 @@
         try
         {
             @* DataSerializer?.Serializer(WorkRecord, "DialogAddWorkTask:HandleValidSubmit"); *@
-            await api.AddOrUpdateUserWorkingRecordAsync(WorkRecord);
+            await api.SaveOrUpdateProjectsAsync(WorkRecord);
             await isAddWorkFormSubmit.InvokeAsync(true);
 
             // Reset form state

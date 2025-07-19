@@ -11,6 +11,7 @@ namespace OfficeProject.Models.DTO
     {
 
         public int? ProjectId { get; set; } = 0;
+
         public int? ClientId { get; set; } = 0;
         public int? UserId { get; set; } = 0;
         public bool IsActive { get; set; } = true;
@@ -39,6 +40,8 @@ namespace OfficeProject.Models.DTO
         // Backing field for the ProjectType
         private BillingType? _billingType;
 
+
+
         [Required(ErrorMessage = "Billing Type is required")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public BillingType? BillingType {
@@ -55,6 +58,14 @@ namespace OfficeProject.Models.DTO
             }
 
         }
+        [Column(TypeName = "nvarchar(50)")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ProjectType ProjectType { get; set; } = ProjectType.SERVICE;
+
+        public bool IsUserWorkDone { get; set; } = false;
+        public bool IsUserMarkAsRead { get; set; } = false;
+        public bool IsAdminMarkAsRead { get; set; } = false;
+
 
         [Required(ErrorMessage = "Project creation date is required")]
         public DateTime ProjectCreatedAt { get; set; } = DateTime.UtcNow;       

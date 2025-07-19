@@ -109,11 +109,11 @@ builder.Services.AddBlazoredLocalStorage(config =>
 
 // Services registration
 builder.Services.AddScoped<IClientService, ClientService>();
-//builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddHttpClient<IUserService, UserService>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7153/");
-});
+builder.Services.AddScoped<IUserService, UserService>();
+//builder.Services.AddHttpClient<IUserService, UserService>(client =>
+//{
+//    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7153/");
+//});
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
@@ -142,7 +142,7 @@ builder.Services.AddScoped<ApiService>();
 builder.Services.AddScoped<IDataSerializer, DataSerializer>();
 builder.Services.AddScoped<IService, Service>();
 builder.Services.AddSingleton<AppState>();
-builder.Services.AddScoped<IUserTaskService, UserTaskService>();
+builder.Services.AddScoped<IUserTaskMasterService, UserTaskMasterService>();
 
 
 // HttpClient registration using IHttpClientFactory (recommended)

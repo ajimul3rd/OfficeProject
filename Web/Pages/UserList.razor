@@ -13,92 +13,96 @@
 
 
 <AuthorizeView>
-<Authorized>
+    <Authorized>
 
-<h3>User Management</h3>
+        <h3>User Management</h3>
 
 
-@if (isLoading)
-{
-    <p>Loading users...</p>
-}
-else
-{
-    <button class="btn btn-primary mb-3" @onclick="OpenAddUserDialog">Add New User</button>
+        @if (isLoading)
+        {
+            <p>Loading users...</p>
+        }
+        else
+        {
+            <button class="btn btn-primary mb-3" @onclick="OpenAddUserDialog">Add New User</button>
 
-    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-        <table class="table table-bordered table-sm custom-tight-table mb-0">
-            <thead class="table-info sticky-header">
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Contact</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in users)
-                {
-                    <tr>
-                        <td>@user.UserName</td>
-                        <td>@user.UserEmail</td>
-                        <td>@user.UserContact</td>
-                        <td>@user.Role</td>
-                        <td>
-                            <button class="btn btn-sm @(user.IsActive ? "btn-success" : "btn-danger")"
-                            @onclick="() => ToggleUserStatus(user.UserId, !user.IsActive)">
-                                @(user.IsActive ? "Active" : "Inactive")
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-info" @onclick="() => EditUser(user.UserId)">Edit</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
-}
-<DialogAddUser registerModel="@registerModel" showForm="@showForm" isFormSubmit="@HandleGetUsersAsync" />
-@if (showServiceModal)
-{
-    <div class="activity-dialog-backdrop fade show"></div>
-    <div class="modal fade show d-block activity-dialog-modal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <DialogUserActivityMaster OnSelectedMaster="HandleSelectedMaster"
-                CallerSelectedData="@data"
-                showModalChanged="@((value) => showServiceModal = value)"
-                showModal="@showServiceModal" />
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-bordered table-sm custom-tight-table mb-0">
+                    <thead class="table-info sticky-header">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Contact</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in users)
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                <td>@user.UserEmail</td>
+                                <td>@user.UserContact</td>
+                                <td>@user.Role</td>
+                                <td>
+                                    <button class="btn btn-sm @(user.IsActive ? "btn-success" : "btn-danger")"
+                                    @onclick="() => ToggleUserStatus(user.UserId, !user.IsActive)">
+                                        @(user.IsActive ? "Active" : "Inactive")
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" @onclick="() => EditUser(user.UserId)">Edit</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        </div>
-    </div>
-}
+
+        }
+        @if (showForm)
+        {
+            <DialogAddUser RegisterModel="@registerModel" showForm="@showForm" isFormSubmit="@HandleGetUsersAsync" />
+        }
+      
+        @if (showServiceModal)
+        {
+            <div class="activity-dialog-backdrop fade show"></div>
+            <div class="modal fade show d-block activity-dialog-modal" tabindex="-1">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <DialogUserActivityMaster OnSelectedMaster="HandleSelectedMaster"
+                        CallerSelectedData="@data"
+                        showModalChanged="@((value) => showServiceModal = value)"
+                        showModal="@showServiceModal" />
+                    </div>
+                </div>
+            </div>
+        }
 
 
-<style>
-    .table-responsive {
-    max-height: 500px;
-    overflow-y: auto;
-    position: relative;
-    }
+        <style>
+            .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+            position: relative;
+            }
 
-    .sticky-header th {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background-color: #e0f3ff; /* Same color as you set */
-    }
-</style>
+            .sticky-header th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #e0f3ff; /* Same color as you set */
+            }
+        </style>
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-danger">@errorMessage</div>
-}
-<p>@message</p>
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+        <p>@message</p>
     </Authorized>
     <NotAuthorized>
         @{
@@ -106,7 +110,7 @@ else
         }
     </NotAuthorized>
 </AuthorizeView>
-    
+
 @code {
  @inject IUserDesignationService userDesignationService; 
 
@@ -154,7 +158,7 @@ else
     private async Task HandleGetUsersAsync(bool isFormSubmit)
     {
         if (isFormSubmit)
-        users.Clear();
+            users.Clear();
         await GetUsers();
         CancelEdit();
         StateHasChanged();
@@ -163,7 +167,7 @@ else
 
     private void OpenAddUserDialog()
     {
-        registerModel ??= new RegisterModel
+        registerModel= new RegisterModel
             {
                 UserDesignation = new List<UserDesignation>() // Initialize here
             };
@@ -186,6 +190,7 @@ else
                 registerModel.UserPassword = "AAAaaa@1234";//temp password for padd validation
                 registerModel.Role = user.Role;
                 registerModel.IsActive = user.IsActive;
+                registerModel.PreeAssignUserRole = user.PreeAssignUserRole;
                 registerModel.CompanyName = user.CompanyName;
                 registerModel.Address = user.Address;
                 registerModel.UserDesignation = user.UserDesignation ?? new List<UserDesignation>();

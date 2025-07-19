@@ -6,6 +6,9 @@ using System.Text.Json;
 using OfficeProject.Authentication;
 using OfficeProject.Models.DTO;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Internal;
+using System.Security.Claims;
 
 public class ApiService
 {
@@ -122,6 +125,92 @@ public class ApiService
         await AddAuthHeaderAsync();
         return await http.PostAsJsonAsync("api/user/revoke-refresh-token", username);
     }
+
+    // ✅ GET CURRENT LOGGED USER
+    public async Task<UserDTO?> GetCurrentLoggedUserAsync()
+    {
+        await AddAuthHeaderAsync();
+
+        var response = await http.GetAsync("api/user/current");
+
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<UserDTO>();
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error {response.StatusCode}: {error}");
+        }
+    }
+    // ✅ GET CURRENT LOGGED USER
+    public async Task<List<UserDTO>> GetPreeAssignUsersAsync()
+    {
+        await AddAuthHeaderAsync();
+        var response = await http.GetAsync("api/user/pree-assign-user");
+
+        if (response.IsSuccessStatusCode)
+        {
+
+            var content = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
+                        return JsonSerializer.Deserialize<List<UserDTO>>(content, options) ?? new List<UserDTO>();
+        }
+        else
+        {
+            // Handle non-success codes gracefully
+            return new List<UserDTO>();
+        }
+    }
+
+
+    //#################################################### UserTask########################################################
+
+    // ✅ GET USER TASKS (current authenticated user)
+    public async Task<List<UserTaskMaster>> GetUserTasksMasterAsync()
+    {
+        await AddAuthHeaderAsync();
+
+        var response = await http.GetAsync("api/UserTaskMaster");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
+
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<UserTaskMaster>>(content, options) ?? new List<UserTaskMaster>();
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error fetching tasks: {response.StatusCode} - {error}");
+        }
+    }
+
+    // ✅ ADD OR UPDATE USER TASK
+    public async Task<HttpResponseMessage> AddOrUpdateUserTasksMasterAsync(UserTaskMaster task)
+    {
+        await AddAuthHeaderAsync();
+
+        return await http.PostAsJsonAsync("api/UserTaskMaster", task);
+    }
+    // ✅ DELETE USER TASK
+    public async Task<HttpResponseMessage> DeleteUserTaskMasterAsync(int taskId)
+    {
+        await AddAuthHeaderAsync();
+        return await http.DeleteAsync($"api/UserTaskMaster/{taskId}");
+    }
+
+
+
 
 
 
@@ -364,7 +453,7 @@ public class ApiService
 
     //############################################### Work Task  Services ##################################################
 
-    public async Task<HttpResponseMessage> AddOrUpdateUserWorkingRecordAsync(WorkTaskDetailsDto dto)
+    public async Task<HttpResponseMessage> SaveOrUpdateProjectsAsync(WorkTaskDetailsDto dto)
     {
         await AddAuthHeaderAsync();
         return await http.PostAsJsonAsync("api/WorkTask/save-or-update", dto);

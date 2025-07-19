@@ -12,6 +12,7 @@ namespace OfficeProject.Servicess
         Task<List<ProjectsDTO?>> GetAllProjectAsync();
         Task<ProjectsDTO?> GetProjectDTOById(int Id);
         Task UpdateProjectAsync(ProjectsDTO Project);
+        Task PushProjectToTeamAsync(ProjectsDTO Project);
         Task SaveOrUpdateProjectsAsync(ProjectsDTO ProjectsDTO);
 
     }

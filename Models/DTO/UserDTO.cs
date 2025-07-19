@@ -28,7 +28,9 @@ namespace OfficeProject.Models.DTO
             public UserRole? Role { get; set; }
             public bool IsActive { get; set; } = true;
 
-            [Required(ErrorMessage = "Company name must be under 100 characters")]
+        public bool PreeAssignUserRole { get; set; } = false;
+
+        [Required(ErrorMessage = "Company name must be under 100 characters")]
             public string? CompanyName { get; set; }
 
             [Required(ErrorMessage = "Address must be under 200 characters")]

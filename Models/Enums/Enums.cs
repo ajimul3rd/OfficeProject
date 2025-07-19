@@ -25,11 +25,11 @@
     }
 
 
-    //public enum ProjectType
-    //{
-    //    WEB_DEVELOPMENT,
-    //    DIGITAL_MARKETING,
-    //}
+    public enum ProjectType
+    {
+        SERVICE,
+        EXTRA_SERVICE,
+    }
 
     public enum ProjectPhaseType
     {

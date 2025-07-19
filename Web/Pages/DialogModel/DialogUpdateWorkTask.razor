@@ -139,7 +139,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Select Work Task:</label>
-                                    <UserTaskComponent @bind-SelectedTask="WorkRecord.Task" showHeader="false" />
+                                    <UserTaskMasterList @bind-SelectedTask="WorkRecord.Task" showHeader="false" />
                                     <ValidationMessage For="@(() => WorkRecord.Task)" class="text-danger small" />
                                 </div>
                             </div>
@@ -238,7 +238,7 @@
         try
         {
             // DataSerializer?.Serializer(WorkRecord, "DialogUpdateWorkTask:HandleValidSubmit");
-            await api.AddOrUpdateUserWorkingRecordAsync(WorkRecord);
+            await api.SaveOrUpdateProjectsAsync(WorkRecord);
             await IsFormSubmit.InvokeAsync(true);
         }
         catch (Exception ex)

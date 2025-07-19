@@ -26,7 +26,7 @@ namespace OfficeProject.Models.Entities
         public string? CustomerNote { get; set; }
         public string? FbFollowers { get; set; }
         public string? IgFollowers { get; set; }
-        public string? GmbRakning { get; set; }        
+        public string? GmbRakning { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime ProjectStartDate { get; set; } = DateTime.UtcNow;
@@ -35,11 +35,19 @@ namespace OfficeProject.Models.Entities
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public BillingType? BillingType { get; set; }
 
+        [Column(TypeName = "nvarchar(50)")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ProjectType ProjectType { get; set; } = ProjectType.SERVICE;
+
+        public bool IsUserWorkDone { get; set; } = false;
+        public bool IsUserMarkAsRead { get; set; } = false;
+        public bool IsAdminMarkAsRead { get; set; } = false;
+
         [Precision(18, 2)]
         public decimal ProjectCost { get; set; } = 0;
 
         [DataType(DataType.DateTime)]
-        public DateTime ProjectCreatedAt { get; set; } = DateTime.UtcNow; 
+        public DateTime ProjectCreatedAt { get; set; } = DateTime.UtcNow;
         public List<AssignedUsers>? AssignedUsers { get; set; } = null!;
         public List<PaymentSchedule>? PaymentSchedule { get; set; } = null!;
         public List<Services>? Services { get; set; } = null!;

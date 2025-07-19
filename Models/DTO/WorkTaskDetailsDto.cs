@@ -12,6 +12,7 @@ namespace OfficeProject.Models.DTO
         public int ServiceId { get; set; }
         public string? ServiceName { get; set; }
         public int Work_UserId { get; set; }
+        public int? ProjectId { get; set; }= 0;
 
         [Required]
         [DataType(DataType.Date)]
