@@ -1,0 +1,354 @@
+﻿@page "/client-source"
+@using OfficeProject.Models.Entities
+@inject IDataSerializer? DataSerializer
+
+<AuthorizeView>
+    <Authorized>
+
+<div class="container-fluid">
+
+    @if (clientSources == null)
+    {
+        <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <span class="ms-3">Loading client sources...</span>
+        </div>
+    }
+    else if (!showHeader)
+    {
+        {
+            <div class="mb-3 d-flex align-items-center gap-2" style="max-width: 400px;">
+                @if (!isAddingNew)
+                {
+                    @* <select class="form-select flex-grow-1" @onchange="OnSelectionChanged"> *@
+
+                        <select class="form-select flex-grow-1"  @bind="SelectedSourceId">
+
+                        <option value="">-- Select Client Source --</option>
+                        @foreach (var source in clientSources)
+                        {
+                            <option value="@source.ClientSourcesId">@source.ClientSourcesName</option>
+                        }
+                        <option value="new">+ Add new...</option>
+                    </select>
+                    <button class="btn btn-outline-primary" @onclick="()=>isAddingNew=true" title="Add new client source">
+                        +
+                    </button>
+                }
+                else
+                {
+                    <input type="text" class="form-control flex-grow-1" placeholder="Enter new client source"
+                    @bind="newClientSourceName" @onkeydown="HandleKeyDown" />
+                    <button class="btn btn-success" @onclick="AddNewClientSource" disabled="@string.IsNullOrWhiteSpace(newClientSourceName)">
+                        Save
+                    </button>
+                    <button class="btn btn-secondary" @onclick="CancelAdd">
+                        Cancel
+                    </button>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success" role="alert" style="max-width:400px;">
+                    @successMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert" style="max-width:400px;">
+                    @errorMessage
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <!-- Full Admin UI -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-users-cog me-2 text-primary"></i>
+                Client Source Manager
+            </h1>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Manage Client Sources</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        @if (!isAddingNew)
+                        {
+                            <div class="input-group mb-3">
+                                <select class="form-select" @onchange="OnSelectionChanged">
+                                    <option value="">-- Select Client Source --</option>
+                                    @foreach (var source in clientSources)
+                                    {
+                                        <option value="@source.ClientSourcesId">@source.ClientSourcesName</option>
+                                    }
+                                </select>
+                                <button class="btn btn-primary" @onclick="() => isAddingNew = true">
+                                    <i class="fas fa-plus me-1"></i> Add New
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Enter new client source name"
+                                @bind="newClientSourceName" @onkeydown="HandleKeyDown" />
+                                <button class="btn btn-success" @onclick="AddNewClientSource" disabled="@string.IsNullOrWhiteSpace(newClientSourceName)">
+                                    <i class="fas fa-save me-1"></i> Save
+                                </button>
+                                <button class="btn btn-outline-secondary" @onclick="CancelAdd">
+                                    <i class="fas fa-times me-1"></i> Cancel
+                                </button>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(successMessage))
+                        {
+                            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                <i class="fas fa-check-circle me-2"></i> @successMessage
+                                <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i> @errorMessage
+                                <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Available Client Sources</h5>
+                <span class="badge bg-primary">@clientSources.Count Total</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-bordered table-sm custom-tight-table mb-0">
+                        <thead class="table-info sticky-header">
+                            <tr>
+                                <th>ID</th>
+                                <th>Source Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var source in clientSources)
+                            {
+                                <tr>
+                                    <td>@source.ClientSourcesId</td>
+                                    <td>@source.ClientSourcesName</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => EditSource(source)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteSource(source)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<style>
+    .sticky-header th {
+    position: sticky;
+    top: 0;
+    background-color: #e0f3ff; /* or any header color */
+    z-index: 2;
+    }</style>
+
+    </Authorized>
+<NotAuthorized>
+    @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+</NotAuthorized>
+</AuthorizeView>
+@code {
+    [Inject] public IClientSources ClientSourcesService { get; set; }
+
+    [Parameter] public string SelectedName { get; set; }
+
+    [Parameter] public EventCallback<string> SelectedNameChanged { get; set; }
+
+    [Parameter] public bool showHeader { get; set; } = true;
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+
+    private List<ClientSources> clientSources;
+
+
+
+    private bool isAddingNew = false;
+
+    private string newClientSourceName;
+
+    private string errorMessage;
+
+    private string successMessage;
+
+    private ClientSources? sourceToEdit;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadClientSources();
+    }
+
+    private int? SelectedSourceId
+    {
+        get
+        {
+            var selected = clientSources?.FirstOrDefault(cs => cs.ClientSourcesName == SelectedName);
+            return selected?.ClientSourcesId;
+        }
+        set
+        {
+            if (value == null)
+            {
+                SelectedNameChanged.InvokeAsync(null);
+            }
+            else
+            {
+                var selected = clientSources?.FirstOrDefault(cs => cs.ClientSourcesId == value);
+                if (selected != null)
+                {
+                    SelectedNameChanged.InvokeAsync(selected.ClientSourcesName);
+                }
+            }
+        }
+    }
+
+    private async Task LoadClientSources()
+    {
+        try
+        {
+            clientSources = await ClientSourcesService.GetAll();
+            isAddingNew = false;
+            newClientSourceName = null;
+            errorMessage = null;
+            successMessage = null;
+            sourceToEdit = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load client sources: {ex.Message}";
+        }
+    }
+
+    private async void OnSelectionChanged(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+        if (value == "new")
+        {
+            isAddingNew = true;
+            await SelectedNameChanged.InvokeAsync(null);
+        }
+        else if (int.TryParse(value, out int id))
+        {
+            var selected = clientSources.FirstOrDefault(cs => cs.ClientSourcesId == id);
+            if (selected != null)
+            {
+                await SelectedNameChanged.InvokeAsync(selected.ClientSourcesName);
+            }
+        }
+        else
+        {
+            await SelectedNameChanged.InvokeAsync(null);
+        }
+
+        errorMessage = null;
+        successMessage = null;
+    }
+
+    private async Task AddNewClientSource()
+    {
+        if (string.IsNullOrWhiteSpace(newClientSourceName))
+        {
+            errorMessage = "Please enter a name for the client source.";
+            return;
+        }
+
+        try
+        {
+           
+
+            var newSource = new ClientSources { ClientSourcesName = newClientSourceName };
+            await ClientSourcesService.AddOrUpdate(newSource);
+            successMessage = $"Client source '{newClientSourceName}' added successfully!";
+            await LoadClientSources();
+            newClientSourceName = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving client source: {ex.Message}";
+        }
+    }
+
+    private void CancelAdd()
+    {
+        isAddingNew = false;
+        newClientSourceName = null;
+        errorMessage = null;
+        successMessage = null;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(newClientSourceName))
+        {
+            await AddNewClientSource();
+        }
+        else if (e.Key == "Escape")
+        {
+            CancelAdd();
+        }
+    }
+
+    private void EditSource(ClientSources source)
+    {
+        sourceToEdit = source;
+        newClientSourceName = source.ClientSourcesName;
+        isAddingNew = true;
+    }
+
+     private async Task DeleteSource(ClientSources source)
+     {
+       try
+        {
+           await ClientSourcesService.Delete(source.ClientSourcesId);
+            successMessage = $"Client source '{source.ClientSourcesName}' deleted successfully!";
+             await LoadClientSources();
+         }
+         catch (Exception ex)
+         {
+             errorMessage = $"Error deleting client source: {ex.Message}";
+         }
+     }
+}
+<style>
+    .container-fluid {
+        padding-right: 0;
+        padding-left: 0;
+    }
+</style>

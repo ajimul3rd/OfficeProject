@@ -1,0 +1,190 @@
+﻿@using OfficeProject.Models.DTO
+@inject ApiService api
+@inject IWebDeveTaskService webDeveTaskService
+@inject IDataSerializer? DataSerializer
+
+<div class="modal-body">
+    @if (isLoading)
+    {
+        <p>Loading...</p>
+    }
+    else if (!WebDeveTaskDetailsDto.Any())
+    {
+        <p>No Web Development tasks found</p>
+    }
+    else
+    {
+
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+                <thead class="table-info">
+                    <tr>
+                        <th>Task</th>
+                        <th>Remarks</th>
+                        <th>Note</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in WebDeveTaskDetailsDto)
+                    {
+                        <tr>
+                            @if (task == editingTask)
+                            {
+                                <td><InputText @bind-Value="editingTask.Task" class="form-control form-control-sm" /></td>
+                                <td><InputText @bind-Value="editingTask.Remarks" class="form-control form-control-sm" /></td>
+                                <td><InputText @bind-Value="editingTask.Note" class="form-control form-control-sm" /></td>
+                                <td>
+                                    <button class="btn btn-sm btn-success" @onclick="SaveChanges">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-secondary" @onclick="CancelEdit">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+
+
+                            }
+                            else
+                            {
+                                <td>@task.Task</td>
+                                <td>@task.Remarks</td>
+                                <td>@task.Note</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @onclick="() => EditSeoTask(task)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+	[Parameter]
+	public EventCallback<bool> isFormSubmit { get; set; }
+	[Parameter]
+	public int workTaskId { get; set; }
+	[Parameter]
+	public List<WebDeveTaskDetailsDto> WebDeveTaskDetailsDto{ get; set; }
+
+    private bool isLoading = true;
+
+    private WebDeveTaskDetailsDto editingTask = null;
+
+    private WebDeveTaskDetailsDto originalTask = null;
+
+    @inject IDataSerializer? DataSerializer;
+
+    private EditContext editContext;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync(); // ✅ Good practice to call the base implementation.
+
+        if (WebDeveTaskDetailsDto != null && WebDeveTaskDetailsDto.Count > 0)
+        {
+            isLoading = false;
+
+        }
+        editContext = new EditContext(WebDeveTaskDetailsDto);
+        await InvokeAsync(StateHasChanged);
+
+        // DataSerializer?.Serializer(WebDeveTaskDetailsDto, "LoadWorkTask");
+    }
+
+
+    private async Task LoadSeoTasks()
+    {
+
+        try
+        {
+            isLoading = true;
+            // var WorkTaskDetailsDto = await api.GetWorkTaskDetailsById(workTaskId);
+            // WebDeveTaskDetailsDto = WorkTaskDetailsDto?.WebDeveTaskDetailsDto ?? new List<WebDeveTaskDetailsDto>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading SEO tasks: {ex.Message}");
+            WebDeveTaskDetailsDto = new List<WebDeveTaskDetailsDto>();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void EditSeoTask(WebDeveTaskDetailsDto task)
+    {
+        // Store the original task for cancellation
+        originalTask = new WebDeveTaskDetailsDto
+            {
+                Task = task.Task,
+                Remarks = task.Remarks,
+                Note = task.Note
+            // Copy other properties as needed
+            };
+
+        editingTask = task;
+        StateHasChanged();
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            if (editingTask == null) return;
+
+            // Ensure WorkTaskId is set
+            editingTask.WorkTaskId = workTaskId;
+
+            var success = await webDeveTaskService.SaveOrUpdateWebTaskAsync(editingTask);
+
+            if (success)
+            {
+                editingTask = null;
+                originalTask = null;
+                await LoadSeoTasks();
+            }
+            else
+            {
+                // Handle update failure
+                Console.WriteLine("Failed to save SEO task");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving changes: {ex.Message}");
+            // Show error to user
+        }
+    }
+
+    private void CancelEdit()
+    {
+        if (editingTask != null && originalTask != null)
+        {
+            // Restore original values
+            editingTask.Task = originalTask.Task;
+            editingTask.Remarks = originalTask.Remarks;
+            editingTask.Note = originalTask.Note;
+
+            editingTask = null;
+            originalTask = null;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CloseDialog()
+    {
+        if (isFormSubmit.HasDelegate)
+        {
+            await isFormSubmit.InvokeAsync(false);
+        }
+    }
+}

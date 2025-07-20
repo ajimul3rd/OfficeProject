@@ -1,0 +1,1348 @@
+﻿@using OfficeProject.Models.DTO
+@using OfficeProject.Models.Enums
+@using OfficeProject.Web.Pages.DialogModel
+@using OfficeProject.Authentication
+@using System.Text.Json
+@inject ApiService api
+@inject IAssignedUsersService assignedUsers
+@inject IProductVsServices productVsServices
+@inject IOthersServices othersServices
+@inject IWebDevelopmentService webDevelopmentService
+@inject ISeoServicess seoServicess
+@inject NavigationManager NavigationManager
+@inject IDataSerializer? DataSerializer
+@inject IJSRuntime JSRuntime
+@inject IUserService UserService
+
+
+
+
+@if (ExtraServiceModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
+            <div class="modal-content" style="height: 85vh;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Project</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="CloseModal">X</button>
+                </div>
+
+                <div class="modal-body" style="overflow-y: auto; max-height: calc(85vh - 100px); padding: 1rem;">
+                    @if (showSuccessMessage)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                            <i class="fas fa-check-circle me-2"></i> Project added successfully!
+                            <button type="button" class="btn-close" @onclick="() => showSuccessMessage = false"></button>
+                        </div>
+                    }
+
+                    @if (showFormError)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i> @formErrorMessage
+                            <button type="button" class="btn-close" @onclick="() => showFormError = false"></button>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <EditForm EditContext="editContext" OnValidSubmit="Submit">
+                            <ObjectGraphDataAnnotationsValidator />
+                            <div class="row g-3">
+                                <!-- Project Information -->
+                                <div class="col-12">
+                                    <div class="card mb-3 border-0 shadow-sm">
+                                        <div class="card-header bg-light-subtle py-2">
+                                            <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Project Information</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row g-3">
+                                                <!-- Column 1 -->
+                                                <div class="col-md-6 col-lg-4">
+
+                                                    <div class="mb-2" @onclick="getClients">
+                                                        <label class="form-label small">Selected Client</label>
+                                                        <input class="form-control form-control-sm @(projectDTO.ClientId == null && clientsDTO == null ? "is-invalid" : "")"
+                                                               value="@(projectDTO.ClientId != null ?
+                  $"{projectDTO.Client?.ClientName} (ID: {projectDTO.ClientId})" :
+                  clientsDTO != null ?
+                  $"{clientsDTO.ClientName} (ID: {clientsDTO.ClientId})" :
+                  "No client selected")"
+                                                               readonly style="cursor: pointer;" />
+                                                        @if (projectDTO.ClientId == null || projectDTO.ClientId == 0)
+                                                        {
+                                                            <div class="form-text text-danger mt-1">
+                                                                <i class="fas fa-exclamation-circle me-1"></i> Please select client
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <label class="form-label small required">Project Name</label>
+                                                        <InputText @bind-Value="@projectDTO.ProjectName"
+                                                                   @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectName)))"
+                                                                   class="form-control form-control-sm" />
+                                                        <ValidationMessage For="@(() => projectDTO.ProjectName)" class="text-danger small" />
+                                                    </div>
+                                                </div>
+
+                                                <!-- Column 2 -->
+                                                <div class="col-md-6 col-lg-4">
+                                                    <div class="mb-2">
+                                                        <label class="form-label small required">Billing Type</label>
+                                                        <InputSelect class="form-select form-select-sm"
+                                                                     @bind-Value="projectDTO.BillingType"
+                                                                     @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.BillingType)))">
+                                                            <option value="">Select Type</option>
+                                                            <option value="@BillingType.Monthly">Monthly</option>
+                                                            <option value="@BillingType.Quarterly">Quarterly</option>
+                                                            <option value="@BillingType.HalfYearly">HalfYearly</option>
+                                                            <option value="@BillingType.Yearly">Yearly</option>
+                                                            <option value="@BillingType.OneTime">OneTime</option>
+                                                        </InputSelect>
+                                                        <ValidationMessage For="@(() => projectDTO.BillingType)" class="small text-danger" />
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <label class="form-label small">Project Cost</label>
+                                                        <InputNumber @bind-Value="@projectDTO.ProjectCost"
+                                                                     @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectCost)))"
+                                                                     class="form-control form-control-sm" readonly />
+                                                    </div>
+
+
+                                                </div>
+
+                                                <!-- Column 3 -->
+                                                <div class="col-md-6 col-lg-4">
+                                                    <div class="mb-2">
+                                                        <label class="form-label small required">Start Date</label>
+                                                        <InputDate @bind-Value="@projectDTO.ProjectStartDate"
+                                                                   @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectStartDate)))"
+                                                                   class="form-control form-control-sm" />
+                                                        <ValidationMessage For="@(() => projectDTO.ProjectStartDate)" class="text-danger small" />
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <AuthorizeView Roles="ADMIN,MANAGER">
+                                    <Authorized Context="adminContext">
+                                        @* user assign info *@
+                                        <div class="col-12">
+                                            <div class="card mb-3 border-0 shadow-sm">
+                                                <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
+                                                    <h6 class="mb-0"><i class="fas fa-users me-2"></i>User Assignment</h6>
+                                                    <span class="badge bg-primary">@(projectDTO.AssignedUsers?.Count ?? 0) assigned</span>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-semibold">Assign Team Members</label>
+                                                        <div class="input-group">
+                                                            <div class="form-control p-2 @(projectDTO.AssignedUsers == null || !projectDTO.AssignedUsers.Any() ? "border-danger" : "")"
+                                                                 style="min-height: 38px; cursor: pointer;"
+                                                                 @onclick="getUsers">
+                                                                @if (projectDTO.AssignedUsers == null || !projectDTO.AssignedUsers.Any())
+                                                                {
+                                                                    <div class="text-muted d-flex align-items-center">
+                                                                        <i class="fas fa-user-plus me-2"></i>
+                                                                        <span>Click to select team members</span>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+
+                                                                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                                                                        @foreach (var user in projectDTO.AssignedUsers)
+                                                                        {
+                                                                            <span class="badge bg-primary rounded-pill d-flex align-items-center">
+                                                                                @user.UserName
+                                                                                <button class="btn-close custom-close ms-1"
+                                                                                        @onclick="@(() => RemoveUser(user))"
+                                                                                @onclick:stopPropagation
+                                                                                @onclick:preventDefault
+                                                                                        aria-label="Remove">
+                                                                                </button>
+                                                                            </span>
+                                                                        }
+                                                                    </div>
+
+                                                                }
+                                                            </div>
+                                                            <button class="btn btn-primary" @onclick="getUsers" type="button">
+                                                                <i class="fas fa-edit me-1"></i> Edit
+                                                            </button>
+                                                        </div>
+
+                                                        @if (projectDTO.AssignedUsers == null || !projectDTO.AssignedUsers.Any())
+                                                        {
+                                                            <div class="form-text text-danger">
+                                                                <i class="fas fa-exclamation-circle me-1"></i> Please assign at least one team member
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="form-text text-muted">
+                                                                Click to add or remove team members
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Authorized>
+                                </AuthorizeView>
+
+                                <!-- Service Information -->
+                                <div class="col-12">
+                                    <div class="card mb-4 border-0 shadow-sm">
+                                        <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0"><i class="fas fa-cogs me-2"></i>Service Products</h6>
+                                            <span class="badge bg-primary">
+                                                @(projectDTO.Services?.Count ?? 0) @(projectDTO.Services?.Count == 1 ? "product" : "products")
+                                            </span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold d-block mb-2">
+                                                    <i class="fas fa-box-open me-2"></i>Select Products
+                                                </label>
+
+                                                <div class="input-group">
+                                                    <div class="form-control p-2 @(projectDTO.Services == null || !projectDTO.Services.Any() ? "border-danger" : "border-primary")"
+                                                         style="min-height: 42px; cursor: pointer;"
+                                                         @onclick="getServices">
+
+                                                        @if (projectDTO.Services == null || !projectDTO.Services.Any())
+                                                        {
+                                                            <div class="text-muted d-flex align-items-center h-100">
+                                                                <i class="fas fa-search me-2"></i>
+                                                                <span>Click to browse products</span>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                                                @for (int i = 0; i < projectDTO.Services?.Count; i++)
+                                                                {
+                                                                    var service = projectDTO.Services[i];
+
+                                                                    <span class="badge bg-primary rounded-pill d-flex align-items-center">
+                                                                        @service.ServiceName
+                                                                        <button class="btn-close custom-close ms-1"
+                                                                                @onclick="@(async (e) => {await RemoveService(service);})"
+                                                                        @onclick:stopPropagation
+                                                                        @onclick:preventDefault
+                                                                                aria-label="Remove">
+                                                                        </button>
+                                                                    </span>
+                                                                }
+                                                            </div>
+
+                                                        }
+                                                    </div>
+                                                    <button class="btn btn-primary" @onclick="getServices" type="button">
+                                                        <i class="fas fa-plus me-1"></i> Add
+                                                    </button>
+                                                </div>
+
+                                                @if (projectDTO.Services == null || !projectDTO.Services.Any())
+                                                {
+                                                    <div class="form-text text-danger mt-1">
+                                                        <i class="fas fa-exclamation-circle me-1"></i> Please select at least one product
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="form-text text-muted mt-1">
+                                                        <i class="fas fa-info-circle me-1"></i> Click to add more products or remove existing ones
+                                                    </div>
+                                                }
+                                            </div>
+
+                                            @if (projectDTO.Services != null && projectDTO.Services.Any())
+                                            {
+                                                @for (int i = 0; i < projectDTO.Services.Count; i++)
+                                                {
+                                                    var service = projectDTO.Services[i];
+                                                    var index = i;
+                                                    <div class="card mb-3 border-0 shadow-sm mt-3">
+                                                        <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
+                                                            <h6 class="mb-0">@service.ServiceName</h6>
+                                                            <button class="btn btn-sm btn-outline-danger"
+                                                                    @onclick="@(async (e) => {await RemoveService(service);})"
+                                                            @onclick:stopPropagation
+                                                            @onclick:preventDefault>
+                                                                Remove
+                                                            </button>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row g-3">
+
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label">Service Name</label>
+                                                                    <InputText @bind-Value="@service.ServiceName" class="form-control" />
+                                                                </div>
+
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label">Billing Type</label>
+                                                                    <InputSelect class="form-select" @bind-Value="service.BillingType">
+                                                                        <option value="">Select Type</option>
+                                                                        <option value="@BillingType.Monthly">Monthly</option>
+                                                                        <option value="@BillingType.Quarterly">Quarterly</option>
+                                                                        <option value="@BillingType.HalfYearly">HalfYearly</option>
+                                                                        <option value="@BillingType.Yearly">Yearly</option>
+                                                                        <option value="@BillingType.OneTime">OneTime</option>
+                                                                    </InputSelect>
+                                                                </div>
+
+                                                                <div class="col-md-4">
+                                                                    <label class="form-label">Cost Price</label>
+                                                                    <InputNumber @bind-Value="service.Price" class="form-control" />
+                                                                </div>
+
+                                                                <div class="col-md-4">
+                                                                    <label class="form-label">Final Price</label>
+                                                                    <InputNumber @bind-Value="service.FinalPrice" class="form-control" />
+                                                                </div>
+                                                                @if (service.IsAdsBudget)
+                                                                {
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Ads Budget</label>
+                                                                        <InputNumber @bind-Value="service.AdsBudget" class="form-control" />
+                                                                    </div>
+                                                                }
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label">Start Date</label>
+                                                                    <InputDate @bind-Value="service.StartDate" class="form-control" />
+                                                                </div>
+
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label">End Date</label>
+                                                                    <InputDate @bind-Value="service.EndDate" class="form-control" />
+                                                                </div>
+
+
+                                                                @if (service.IsPost)
+                                                                {
+
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Total Posts</label>
+                                                                        <InputNumber @bind-Value="service.TotalPost" class="form-control" />
+                                                                    </div>
+                                                                }
+                                                                @if (service.IsReels)
+                                                                {
+
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Total Reels</label>
+                                                                        <InputNumber @bind-Value="service.TotalReels" class="form-control" />
+                                                                    </div>
+                                                                }
+                                                                @if (service.IsBacklink)
+                                                                {
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Total Backlink</label>
+                                                                        <InputNumber @bind-Value="service.Backlink" class="form-control" />
+                                                                    </div>
+                                                                }
+                                                                @if (service.IsClasified)
+                                                                {
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Total Clasified</label>
+                                                                        <InputNumber @bind-Value="service.Clasified" class="form-control" />
+                                                                    </div>
+                                                                }
+                                                                @if (service.IsSocialSharing)
+                                                                {
+                                                                    <div class="col-md-4">
+                                                                        <label class="form-label">Total Social Share</label>
+                                                                        <InputNumber @bind-Value="service.SocialSharing" class="form-control" />
+                                                                    </div>
+                                                                }
+
+
+                                                                <div class="col-md-4">
+                                                                    <label class="form-label">Dead Line</label>
+                                                                    <InputDate @bind-Value="service.DeadLine" class="form-control" />
+                                                                </div>
+
+                                                                <div class="col-md-12">
+                                                                    <label class="form-label">Note</label>
+                                                                    <InputText @bind-Value="service.ExtraField1" class="form-control" />
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="d-flex gap-2">
+                                                            <button type="button"
+                                                                    @onclick="@(() => AddSeoService(index))"
+                                                                    class="btn btn-primary btn-sm shadow-sm d-flex align-items-center">
+                                                                <i class="fas fa-plus-circle me-2"></i> Add SEO Service
+                                                            </button>
+                                                            <button type="button"
+                                                                    @onclick="@(() => AddOthersService(index))"
+                                                                    class="btn btn-outline-secondary btn-sm shadow-sm d-flex align-items-center">
+                                                                <i class="fas fa-plus me-2"></i> Add Other Service
+                                                            </button>
+                                                            <button type="button"
+                                                                    @onclick="@(() => AddWebDevelopment(index))"
+                                                                    class="btn btn-outline-secondary btn-sm shadow-sm d-flex align-items-center">
+                                                                <i class="fas fa-plus me-2"></i> Add Web Development Service
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    // add seo service
+                                                    @if (service.SeoServiceDetails != null && service.SeoServiceDetails.Any())
+                                                    {
+                                                        <div class="card mb-4 border-0 shadow-sm">
+                                                            <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-0">
+                                                                    <i class="fas fa-search me-2"></i>
+                                                                    @($"{service.ServiceName}: ")
+                                                                    <span class="text-info">SEO Services</span>
+                                                                    @service.SeoServiceDetails.Count
+                                                                </h6>
+
+
+                                                                <span class="badge bg-primary">@service.SeoServiceDetails.Count service(s)</span>
+                                                            </div>
+                                                            <div class="card-body p-0">
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-bordered table-striped table-sm mb-0">
+                                                                        <thead class="bg-light-subtle">
+                                                                            <tr>
+                                                                                <th style="width: 5%">#</th>
+                                                                                <th style="width: 25%">Key Word</th>
+                                                                                <th style="width: 10%">Rank</th>
+                                                                                <th style="width: 25%">Others</th>
+                                                                                <th style="width: 25%">Note</th>
+                                                                                <th style="width: 8%">Action</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @for (int k = 0; k < service.SeoServiceDetails.Count; k++)
+                                                                            {
+                                                                                var seoDetail = service.SeoServiceDetails[k];
+                                                                                var displaySeoNumber = k + 1;
+
+                                                                                <tr>
+                                                                                    <td>@displaySeoNumber</td>
+                                                                                    <td>
+                                                                                        <InputText @bind-Value="seoDetail.KeyWord" class="form-control form-control-sm" />
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <InputNumber @bind-Value="seoDetail.Rank" class="form-control form-control-sm" />
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <InputText @bind-Value="seoDetail.ExtraField1" class="form-control form-control-sm" />
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <InputText @bind-Value="seoDetail.Note" class="form-control form-control-sm" />
+                                                                                    </td>
+                                                                                    <td class="text-center">
+                                                                                        <button class="btn btn-sm btn-outline-danger"
+                                                                                                @onclick="@(async (e) => {await RemoveSeoService(index, seoDetail);})"
+                                                                                        @onclick:stopPropagation
+                                                                                        @onclick:preventDefault>
+                                                                                            <i class="fas fa-trash-alt"></i>
+                                                                                        </button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    // add others service
+                                                    @if (service.OthersServices != null && service.OthersServices.Any())
+                                                    {
+                                                        <div class="card mb-4 border-0 shadow-sm">
+                                                            <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-0">
+                                                                    <i class="fas fa-search me-2"></i>
+                                                                    @($"{service.ServiceName}: ")
+                                                                    <span class="text-info">Other Services</span>
+                                                                    @service.OthersServices.Count
+                                                                </h6>
+
+                                                                <h6 class="mb-0"><i class="fas fa-tasks me-2"></i>Other Services</h6>
+                                                                <span class="badge bg-primary">@service.OthersServices.Count service(s)</span>
+                                                            </div>
+                                                            <div class="card-body p-0">
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-bordered table-striped table-sm mb-0">
+                                                                        <thead class="table-info sticky-header">
+                                                                            <tr>
+                                                                                <th style="width: 5%">#</th>
+                                                                                <th style="width: 25%">Label Name</th>
+                                                                                <th style="width: 10%">Post</th>
+                                                                                <th style="width: 25%">Others</th>
+                                                                                <th style="width: 25%">Note</th>
+                                                                                <th style="width: 8%">Action</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @for (int l = 0; l < service.OthersServices.Count; l++)
+                                                                            {
+                                                                                var othersService = service.OthersServices[l];
+                                                                                var displayOthersNumber = l + 1;
+
+                                                                                <tr>
+                                                                                    <td>@displayOthersNumber</td>
+                                                                                    <td>
+                                                                                        <InputText @bind-Value="othersService.LableName" class="form-control form-control-sm" />
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <InputNumber @bind-Value="othersService.Post" class="form-control form-control-sm" />
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <InputText @bind-Value="othersService.ExtraField1" class="form-control form-control-sm" />
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <InputText @bind-Value="othersService.Note" class="form-control form-control-sm" />
+                                                                                    </td>
+                                                                                    <td class="text-center">
+                                                                                        <button class="btn btn-sm btn-outline-danger"
+                                                                                                @onclick="@(async () => await RemoveOthersService(index, othersService))"
+                                                                                        @onclick:stopPropagation
+                                                                                        @onclick:preventDefault>
+                                                                                            <i class="fas fa-trash-alt"></i>
+                                                                                        </button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    // add web development form field
+                                                    @if (service.WebDevelopment != null && service.WebDevelopment.Any())
+                                                    {
+                                                        @for (int l = 0; l < service.WebDevelopment.Count; l++)
+                                                        {
+                                                            var web = service.WebDevelopment[l];
+                                                            var displayWebServiceNumber = l + 1;
+
+                                                            <div class="card my-4 p-4 border shadow-sm">
+                                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                                    <h6 class="mb-0">
+                                                                        <i class="fas fa-search me-2"></i>
+                                                                        @($"{service.ServiceName}: ")
+                                                                        <span class="text-info">Web Development Service</span>
+                                                                        @displayWebServiceNumber
+
+                                                                    </h6>
+
+                                                                    <button class="btn btn-sm btn-outline-danger"
+                                                                            @onclick="@(async () => await RemoveWebDevelopment(index, web))"
+                                                                    @onclick:stopPropagation
+                                                                    @onclick:preventDefault>
+                                                                        <i class="fas fa-trash-alt"></i> Remove
+                                                                    </button>
+                                                                </div>
+
+                                                                <div class="row g-3">
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Domain Name</label>
+                                                                        <InputText @bind-Value="web.DomainName" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web.DomainName   )))" />
+                                                                        <ValidationMessage For="@(() => web.DomainName)" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Hosting Date</label>
+                                                                        <InputDate @bind-Value="web.HostingDate" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web. HostingDate  )))" />
+                                                                        <ValidationMessage For="@(() => web.HostingDate   )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Renewal Date</label>
+                                                                        <InputDate @bind-Value="web.HostingRenewalDate" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web.  HostingRenewalDate )))" />
+                                                                        <ValidationMessage For="@(() => web. HostingRenewalDate  )" class="text-danger small" />
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Hosting Limit</label>
+                                                                        <InputSelect @bind-Value="web.HostingLimit" class="form-select" @onblur="@(() => MarkAsTouched(web, nameof(web.  HostingLimit )))">
+                                                                            @foreach (var limit in hostingLimits)
+                                                                            {
+                                                                                <option value="@limit">@limit</option>
+                                                                            }
+                                                                        </InputSelect>
+                                                                        <ValidationMessage For="@(() => web.HostingLimit)" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Renewal Amount</label>
+                                                                        <InputNumber @bind-Value="web.HostingRenewalAmount" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web.  HostingRenewalAmount )))" />
+                                                                        <ValidationMessage For="@(() => web.  HostingRenewalAmount )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Server FTP Assign</label>
+                                                                        <InputText @bind-Value="web.ServerFtpAssign" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web. ServerFtpAssign  )))" />
+                                                                        <ValidationMessage For="@(() => web. ServerFtpAssign  )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Server IP</label>
+                                                                        <InputText @bind-Value="web.ServerIp" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web.ServerIp   )))" />
+                                                                        <ValidationMessage For="@(() => web. ServerIp  )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Server User ID</label>
+                                                                        <InputText @bind-Value="web.ServerUserId" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web.ServerUserId   )))" />
+                                                                        <ValidationMessage For="@(() => web. ServerUserId  )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Server Password</label>
+                                                                        <InputText @bind-Value="web.ServerPassword" class="form-control" type="password" @onblur="@(() => MarkAsTouched(web, nameof(web.ServerPassword   )))" />
+                                                                        <ValidationMessage For="@(() => web. ServerPassword  )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Design Tools</label>
+                                                                        <InputText @bind-Value="web.DesignTools" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web. DesignTools  )))" />
+                                                                        <ValidationMessage For="@(() => web.DesignTools  )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Mockup Link</label>
+                                                                        <InputText @bind-Value="web.MackupLink" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web.MackupLink   )))" />
+                                                                        <ValidationMessage For="@(() => web.MackupLink   )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Languages</label>
+                                                                        <InputText @bind-Value="web.Languages" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web. Languages  )))" />
+                                                                        <ValidationMessage For="@(() => web.Languages   )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label class="form-label">Deadline</label>
+                                                                        <InputDate @bind-Value="web.Deadline" class="form-control" @onblur="@(() => MarkAsTouched(web, nameof(web. Deadline  )))" />
+                                                                        <ValidationMessage For="@(() => web.Deadline   )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-12">
+                                                                        <label class="form-label">Remarks</label>
+                                                                        <InputTextArea @bind-Value="web.Remarks" class="form-control" rows="2" @onblur="@(() => MarkAsTouched(web, nameof(web. Remarks  )))" />
+                                                                        <ValidationMessage For="@(() => web.  Remarks )" class="text-danger small" />
+                                                                    </div>
+
+                                                                    <div class="col-12">
+                                                                        <label class="form-label">Note</label>
+                                                                        <InputTextArea @bind-Value="web.Note" class="form-control" rows="2" @onblur="@(() => MarkAsTouched(web, nameof(web. Note  )))" />
+                                                                        <ValidationMessage For="@(() => web. Note  )" class="text-danger small" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+
+
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-3 mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save Project
+                                </button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+@if (showClientModal)
+{
+    <DialogClientList OnClientSelected="HandleClientSelected"
+                      selectedClientId="selectedClientId"
+                      showModalChanged="@((value) => showClientModal = value)"
+                      showModal="@showClientModal" />
+}
+@if (showServiceModal)
+{
+
+    <DialogProductsList OnProductSelected="HandleServiceSelected"
+                        callerSelectedProducts="@productVsService"
+                        showModalChanged="@((value) => showServiceModal = value)"
+                        showModal="@showServiceModal" />
+}
+@if (showUserModal)
+{
+    <DialogUserList onSelectUser="HandleUserSelected"
+                    assignedUsers="assignUser"
+                    showModalChanged="@((value) => showUserModal = value)"
+                    showModal="@showUserModal" />
+}
+
+<style>
+    .custom-close {
+        filter: invert(25%) sepia(93%) saturate(7487%) hue-rotate(359deg) brightness(100%) contrast(106%);
+        width: 1rem;
+        height: 1rem;
+        background-size: 1rem 1rem;
+        opacity: 1;
+    }
+
+        .custom-close:hover {
+            filter: invert(14%) sepia(96%) saturate(6389%) hue-rotate(359deg) brightness(98%) contrast(110%);
+            transform: scale(1.2);
+        }
+
+</style>
+
+@code {
+    [Parameter]
+    public ProjectsDTO project { get; set; }
+
+    [Parameter]
+    public bool iSNewFormData { get; set; }
+
+    [Parameter]
+    public bool ExtraServiceModal { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnProjectAdded { get; set; }
+
+    private List<string> hostingLimits = Enumerable.Range(1, 10)
+        .Select(y => $"{y} Year{(y > 1 ? "s" : "")}")
+        .ToList();
+
+    private ProjectsDTO projectDTO { get; set; } = new();
+    private List<ProjectsDTO> projectlist { get; set; } = new();
+    private ClientsDTO clientsDTO { get; set; }
+    private List<UserDTO> userDTO { get; set; } = new();
+    private List<ProductsDTO> productsDTO { get; set; } = new();
+    private List<ServicesDTO> servicesDTO { get; set; } = new();
+    private List<SeoServiceDetailsDTO> SeoServiceDetails { get; set; } = new();
+    private List<OthersServiceDTO> OthersServices { get; set; } = new();
+
+    private List<AssignedUsersDTO> assignUser { get; set; }
+    private int selectedClientId { get; set; }
+    private List<ServicesDTO> productVsService { get; set; }
+    private List<int> assignUserDeleteList = new List<int>();
+    private List<int> serviceDeleteList = new List<int>();
+    private List<int> seoDeleteList = new List<int>();
+    private List<int> webDelete = new List<int>();
+    private List<int> othersServiceDeleteList = new List<int>();
+
+    private List<AssignedUsersDTO> assignedUsersDTOs { get; set; } = new();
+
+    // UI Flags
+    private bool showClientModal { get; set; } = false;
+    private bool showUserModal { get; set; } = false;
+    private bool showServiceModal { get; set; } = false;
+    private bool showSuccessMessage { get; set; } = false;
+    private bool showFormError { get; set; } = false;
+
+    // Error Messages
+    private string formErrorMessage;
+
+    // Form Handling
+    private EditContext editContext;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (project != null)
+        {
+            projectDTO = DeepClone(project);
+        }
+        else
+        {
+            // var assignedUsers= await GetCurrentLoggedUsersWithPreAssignedAsync();
+
+            projectDTO = new ProjectsDTO
+                {
+                    Services = new List<ServicesDTO>(),
+                    AssignedUsers = new List<AssignedUsersDTO>(),
+                };
+        }
+        // DataSerializer.Serializer(projectDTO.AssignedUsers, "DialogAddProject:OnParametersSetAsync");
+        showSuccessMessage = false;
+        formErrorMessage = string.Empty;
+        showFormError = false;
+        editContext = new EditContext(projectDTO);
+        // await GetPreAssignUser();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private ProjectsDTO DeepClone(ProjectsDTO source)
+    {
+        var json = JsonSerializer.Serialize(source);
+        return JsonSerializer.Deserialize<ProjectsDTO>(json);
+    }
+    private void MarkAsTouched(object model, string fieldName)
+    {
+        var fieldIdentifier = new FieldIdentifier(model, fieldName);
+        editContext?.NotifyFieldChanged(fieldIdentifier);
+    }
+
+    private void getClients()
+    {
+        selectedClientId = (int)projectDTO.ClientId!;
+
+        showClientModal = true;
+    }
+
+
+
+    // private void getServices() => showServiceModal = true;
+    private void getServices()
+    {
+
+        productVsService = projectDTO.Services;
+        showServiceModal = true;
+    }
+
+    private void getUsers()
+    {
+        assignUser = projectDTO.AssignedUsers;
+        showUserModal = true;
+
+    }
+
+
+    private void HandleUserSelected(List<UserDTO> model)
+    {
+
+        if (model == null) return;
+
+        userDTO = model;
+        assignedUsersDTOs = model.Select(user => new AssignedUsersDTO
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                Role = user.Role.ToString()
+            }).ToList();
+
+        // Initialize if null
+        projectDTO.AssignedUsers ??= new List<AssignedUsersDTO>();
+
+        // Compare and add only new users (by UserId)
+        foreach (var assignedUser in assignedUsersDTOs)
+        {
+            bool alreadyExists = projectDTO.AssignedUsers
+                .Any(existing => existing.UserId == assignedUser.UserId);
+
+            if (!alreadyExists)
+            {
+                projectDTO.AssignedUsers.Add(assignedUser);
+            }
+        }
+
+        // Remove duplicates
+        projectDTO.AssignedUsers = projectDTO.AssignedUsers
+            .GroupBy(u => u.UserId)
+            .Select(g => g.First())
+            .ToList();
+
+        StateHasChanged();
+    }
+
+
+    private void HandleClientSelected(ClientsDTO client)
+    {
+        clientsDTO = client;
+        projectDTO.ClientId = client.ClientId;
+        projectDTO.Client = client;
+        showClientModal = false;
+        StateHasChanged();
+    }
+
+
+
+
+    private void HandleServiceSelected(List<ProductsDTO> model)
+    {
+        productsDTO = model ?? new List<ProductsDTO>();
+        servicesDTO ??= new List<ServicesDTO>();
+        projectDTO.Services ??= new List<ServicesDTO>();
+
+        // DataSerializer.Serializer(model, "DialogAddProject:HandleServiceSelected");
+
+        foreach (var product in model)
+        {
+            // Check if a service with the same ProductsId already exists
+            bool alreadyExists = projectDTO.Services.Any(s => s.ProductsId == product.ProductsId);
+
+            if (!alreadyExists)
+            {
+                var service = new ServicesDTO
+                    {
+                        ServiceId = 0,
+                        ProjectId = (int)projectDTO.ProjectId!,
+                        ProductsId = (int)product.ProductsId!,
+                        ServiceName = product.ProductsName,
+                        BillingType = BillingType.Monthly,
+                        Price = product.ProductsCostingPrice,
+                        FinalPrice = product.ProductsSellingPrice,
+                        StartDate = DateTime.Today,
+                        EndDate = DateTime.Today.AddMonths(1),
+                        TotalPost = 0,
+                        TotalReels = 0,
+                        AdsBudget = 0,
+                        IsBacklink = product.IsBacklink,
+                        IsClasified = product.IsClasified,
+                        IsSocialSharing = product.IsSocialSharing,
+                        IsPost = product.IsPost,
+                        IsReels = product.IsReels,
+                        IsAdsBudget = product.IsAdsBudget,
+                        DeadLine = DateTime.Today.AddMonths(1)
+                    };
+
+                projectDTO.Services.Add(service);
+            }
+            // Else ignore (already added)
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task RemoveService(int index)
+    {
+        if (projectDTO.Services == null || index < 0 || index >= projectDTO.Services.Count)
+            return;
+
+        projectDTO.Services.RemoveAt(index);
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+    private async Task RemoveUser(AssignedUsersDTO user)
+    {
+        if (user == null) return;
+
+        // Add to delete list if this is an existing user (has an ID)
+        if (user.AssignedUsersId.HasValue && user.AssignedUsersId != 0)
+        {
+            assignUserDeleteList ??= new List<int>(); // Ensure list exists
+            if (!assignUserDeleteList.Contains(user.AssignedUsersId.Value))
+            {
+                assignUserDeleteList.Add(user.AssignedUsersId.Value);
+            }
+        }
+
+        // Remove from the current list
+        if (projectDTO.AssignedUsers != null)
+        {
+            projectDTO.AssignedUsers.Remove(user);
+        }
+
+        string json = JsonSerializer.Serialize(projectDTO.AssignedUsers, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+        Console.WriteLine("Removed User:" + json);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void AddSeoService(int serviceIndex)
+    {
+        if (projectDTO?.Services == null ||
+            serviceIndex < 0 ||
+            serviceIndex >= projectDTO.Services.Count)
+            return;
+
+        var service = projectDTO.Services[serviceIndex];
+        service.SeoServiceDetails ??= new List<SeoServiceDetailsDTO>();
+        var newSeo = new SeoServiceDetailsDTO
+            {
+                SeoServiceDetailsId = 0,
+                ServiceId = (int)service.ServiceId!,
+            };
+
+        service.SeoServiceDetails.Add(newSeo);
+
+        StateHasChanged();
+    }
+
+
+    private void AddOthersService(int serviceIndex)
+    {
+        if (projectDTO?.Services == null || serviceIndex < 0 || serviceIndex >= projectDTO.Services.Count)
+            return;
+
+        var service = projectDTO.Services[serviceIndex];
+
+        service.OthersServices ??= new List<OthersServiceDTO>();
+
+        service.OthersServices.Add(new OthersServiceDTO
+            {
+                OthersId = 0,
+                ServiceId = (int)service.ServiceId!,
+            });
+
+        StateHasChanged();
+    }
+
+    private void AddWebDevelopment(int serviceIndex)
+    {
+        if (projectDTO?.Services == null || serviceIndex < 0 || serviceIndex >= projectDTO.Services.Count)
+            return;
+
+        var service = projectDTO.Services[serviceIndex];
+
+        service.WebDevelopment ??= new List<WebDevelopmentDTO>();
+
+        service.WebDevelopment.Add(new WebDevelopmentDTO
+            {
+                WebDevelopmentId = 0,
+                ServiceId = (int)service.ServiceId!,
+            });
+
+
+        StateHasChanged();
+
+    }
+
+
+    private async Task RemoveService(ServicesDTO service)
+    {
+        if (projectDTO.Services == null) return;
+        if (!serviceDeleteList.Contains(service.ServiceId.Value))
+        {
+            serviceDeleteList.Add(service.ServiceId.Value);
+        }
+        projectDTO.Services.Remove(service); // directly mutate
+        projectDTO.ProjectCost = projectDTO.Services.Sum(s => s.FinalPrice);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RemoveSeoService(int serviceIndex, SeoServiceDetailsDTO detail)
+    {
+        if (projectDTO.Services == null ||
+            serviceIndex < 0 ||
+            serviceIndex >= projectDTO.Services.Count ||
+            detail == null)
+            return;
+        seoDeleteList.Add(detail.SeoServiceDetailsId.Value);
+
+        var service = projectDTO.Services[serviceIndex];
+        service.SeoServiceDetails?.Remove(detail); // mutate the actual list
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RemoveOthersService(int serviceIndex, OthersServiceDTO others)
+    {
+        if (projectDTO.Services == null ||
+            serviceIndex < 0 ||
+            serviceIndex >= projectDTO.Services.Count ||
+            others == null)
+            return;
+
+        othersServiceDeleteList.Add(others.OthersId.Value);
+        var service = projectDTO.Services[serviceIndex];
+        service.OthersServices?.Remove(others); // directly mutate the list
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RemoveWebDevelopment(int serviceIndex, WebDevelopmentDTO web)
+    {
+        if (projectDTO.Services == null ||
+            serviceIndex < 0 ||
+            serviceIndex >= projectDTO.Services.Count ||
+            web == null)
+            return;
+        webDelete.Add(web.WebDevelopmentId.Value);
+
+        var service = projectDTO.Services[serviceIndex];
+        service.WebDevelopment?.Remove(web); // mutate the actual list
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+    private async Task CloseModal()
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", new object[] { "Are you sure you want to close the form?" });
+
+        if (!confirmed)
+            return; // User cancelled
+
+        ExtraServiceModal = false;
+
+        if (OnProjectAdded.HasDelegate)
+        {
+            await OnProjectAdded.InvokeAsync(false);
+        }
+
+        StateHasChanged();
+    }
+
+
+    private async Task Submit()
+    {
+        showFormError = false;
+        showSuccessMessage = false;
+        formErrorMessage = null;
+        editContext?.MarkAsUnmodified();
+        var validationErrors = new List<string>();
+        projectDTO.ProjectType = ProjectType.EXTRA_SERVICE;
+
+        // Validation checks
+        if (projectDTO.AssignedUsers == null || !projectDTO.AssignedUsers.Any())
+        {
+            validationErrors.Add("At least one team member must be assigned");
+        }
+
+        if (projectDTO.Services == null || !projectDTO.Services.Any())
+        {
+            validationErrors.Add("At least one service product must be selected");
+        }
+
+        if (validationErrors.Any())
+        {
+            formErrorMessage = string.Join("<br>", validationErrors);
+            showFormError = true;
+            return;
+        }
+
+        if (editContext?.Validate() == true)
+        {
+            try
+            {
+
+                projectDTO.ProjectCost = projectDTO.Services?.Sum(s => s.FinalPrice) ?? 0;
+                projectDTO.Client = null;
+
+                if (iSNewFormData)
+                {
+                    await api.AddProjectAsync(projectDTO);
+                }
+                else
+                {
+                    foreach (var service in projectDTO.Services!)
+                    {
+
+                        if (service.ProjectId != 0)
+                        {
+                            service.ProjectId = (int)projectDTO.ProjectId!;
+                        }
+                        if (service.SeoServiceDetails != null)
+                        {
+                            foreach (var seo in service.SeoServiceDetails)
+                            {
+                                if (seo.SeoServiceDetailsId == null || seo.SeoServiceDetailsId != 0)
+                                {
+                                    seo.ServiceId = (int)service.ServiceId!;
+                                }
+                            }
+                        }
+                        if (service.OthersServices != null)
+                        {
+                            foreach (var oth in service.OthersServices)
+                            {
+                                if (oth.OthersId == null || oth.OthersId != 0)
+                                {
+                                    oth.ServiceId = (int)service.ServiceId!;
+                                }
+                            }
+                        }
+                        if (service.WebDevelopment != null)
+                        {
+                            foreach (var oth in service.WebDevelopment)
+                            {
+                                if (oth.WebDevelopmentId == null || oth.WebDevelopmentId != 0)
+                                {
+                                    oth.ServiceId = (int)service.ServiceId!;
+                                }
+                            }
+                        }
+                    }
+                    foreach (var ass_user in projectDTO.AssignedUsers)
+                    {
+                        if (ass_user.AssignedUsersId == null)
+                        {
+                            ass_user.AssignedUsersId = 0;
+                            ass_user.ProjectId = projectDTO.ProjectId;
+
+                        }
+                    }
+                    await DeleteAssignedUsersAsync();
+
+                    await DeleteservicesAsync();
+
+                    await DeleteSeoAsync();
+
+                    await DeleteOthServicessAsync();
+
+                    await DeleteWebServicessAsync();
+
+                    await api.SaveOrUpdateProjects(projectDTO);
+                }
+                showSuccessMessage = true;
+                StateHasChanged();
+
+                if (OnProjectAdded.HasDelegate)
+                {
+                    await OnProjectAdded.InvokeAsync(true);
+                }
+
+                // await CloseModal();
+                ExtraServiceModal = false;
+
+                if (OnProjectAdded.HasDelegate)
+                {
+                    await OnProjectAdded.InvokeAsync(false);
+                }
+
+                StateHasChanged();
+                ResetForm();
+            }
+            catch (Exception ex)
+            {
+                formErrorMessage = $"Error: {ex.Message}";
+                showFormError = true;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        else
+        {
+            formErrorMessage = "Please correct the validation errors before submitting.";
+            showFormError = true;
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteAssignedUsersAsync()
+    {
+        try
+        {
+            if (assignUserDeleteList?.Count > 0 && assignedUsers != null)
+            {
+                foreach (var userId in assignUserDeleteList)
+                {
+                    await assignedUsers.DeleteAssignedUserAsync(userId);
+                }
+                assignUserDeleteList.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting assigned users: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
+    }
+
+    private async Task DeleteservicesAsync()
+    {
+        try
+        {
+            if (serviceDeleteList?.Count > 0 && projectDTO.Services != null)
+            {
+                foreach (var serviceId in serviceDeleteList)
+                {
+                    await productVsServices.DeleteServicesAsync(serviceId);
+                }
+                assignUserDeleteList.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting services: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
+    }
+
+    private async Task DeleteSeoAsync()
+    {
+        try
+        {
+            if (seoDeleteList?.Count > 0 && projectDTO.Services != null)
+            {
+                foreach (var seoId in seoDeleteList)
+                {
+                    await seoServicess.DeleteSeoDetailsAsync(seoId);
+                }
+                seoDeleteList.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting seo: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
+    }
+    private async Task DeleteOthServicessAsync()
+    {
+        try
+        {
+            if (othersServiceDeleteList?.Count > 0 && projectDTO.Services != null)
+            {
+                foreach (var othId in othersServiceDeleteList)
+                {
+                    await othersServices.DeleteOtherServiceAsync(othId);
+                }
+                othersServiceDeleteList.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting others ervices: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
+    }
+
+    private async Task DeleteWebServicessAsync()
+    {
+        try
+        {
+            if (webDelete?.Count > 0 && projectDTO.Services != null)
+            {
+                foreach (var webId in webDelete)
+                {
+                    await webDevelopmentService.DeleteWebServiceAsync(webId);
+                }
+                webDelete.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting others ervices: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
+    }
+    private void ResetForm()
+    {
+
+        projectDTO = new ProjectsDTO();
+
+        clientsDTO = null;
+
+        userDTO = new List<UserDTO>();
+
+        productsDTO = new List<ProductsDTO>();
+
+        servicesDTO = new List<ServicesDTO>();
+
+        editContext = new EditContext(projectDTO);
+
+        StateHasChanged();
+    }
+
+
+}

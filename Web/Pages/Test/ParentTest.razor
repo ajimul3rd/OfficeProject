@@ -1,0 +1,67 @@
+﻿@page "/parent"
+@inject AppState appState
+@implements IDisposable
+
+<h3>Parent Component</h3>
+
+<CascadingValue Value="appState">
+    <button @onclick="ShowDialog" class="btn btn-primary">Open Dialog</button>
+
+    @if (showDialog)
+    {
+        <DialogComponent OnClose="CloseDialog"
+        OnTaskCompleted="HandleTaskCompletion" />
+    }
+</CascadingValue>
+
+<p>@taskResultMessage</p>
+
+<!-- ✅ Reflect live AppState -->
+<p><strong>Username:</strong> @appState.UserName</p>
+<p><strong>Password:</strong> @appState.Password</p>
+
+@code {
+    private bool showDialog = false;
+    private string taskResultMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // appState.OnChange += HandleAppStateChanged;
+        appState.OnChange += ()=> { };
+    }
+
+    private void HandleAppStateChanged()
+    {
+        // Refresh UI when AppState changes
+        StateHasChanged();
+    }
+
+    private void ShowDialog()
+    {
+        showDialog = true;
+        taskResultMessage = string.Empty;
+    }
+
+    private void CloseDialog()
+    {
+        showDialog = false;
+    }
+
+    private void HandleTaskCompletion(DialogComponent.TaskResult result)
+    {
+        if (result.Success)
+        {
+            // taskResultMessage = $"Task completed with data: {result.Data}";
+        }
+        else
+        {
+            // taskResultMessage = "Task failed or was cancelled.";
+        }
+    }
+
+    public void Dispose()
+    {
+        // Clean up subscription to avoid memory leaks
+        appState.OnChange -= HandleAppStateChanged;
+    }
+}

@@ -1,0 +1,705 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using OfficeProject.Models.DTO
+@using System.Text.Json
+@inject ApiService api
+@inject IDataSerializer? DataSerializer
+@inject IService? projectService
+
+@if (IsVisible)
+{
+
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
+            <div class="modal-content" style="height: 85vh;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Work Task</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="Close">X</button>
+                </div>
+
+                <div class="modal-body" style="overflow-y: auto; max-height: calc(85vh - 100px); padding: 1rem;">
+                    <EditForm EditContext="editContext" OnSubmit="@HandleValidSubmit">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Service ID:</label>
+                                    <InputNumber @bind-Value="@WorkRecord.ServiceId" class="form-control" readonly />
+                                    <ValidationMessage For="@(() =>WorkRecord.ServiceId)" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Work Date:</label>
+                                    <InputDate @bind-Value="@WorkRecord.WorkDate" class="form-control" readonly />
+                                    <ValidationMessage For="@(() =>WorkRecord.WorkDate)" />
+                                </div>
+                            </div>
+                            @if (flags.IsPost)
+                            {
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label>Post:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.SharedPost" class="form-control" readonly="@(!flags.IsPost)" />
+                                        <ValidationMessage For="@(() =>WorkRecord.SharedPost)" />
+                                    </div>
+                                </div>
+                            }
+                            @if (flags.IsReels)
+                            {
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label>Reels:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.CreatedReels" class="form-control" readonly="@(!flags.IsReels)" />
+                                        <ValidationMessage For="@(() =>WorkRecord.CreatedReels)" />
+                                    </div>
+                                </div>
+                            }
+                            @if (flags.IsAdsBudget)
+                            {
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label>Used Ads Budget:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.UsedAdsBudget" class="form-control" readonly="@(!flags.IsAdsBudget)" />
+                                        <ValidationMessage For="@(() =>WorkRecord.UsedAdsBudget)" />
+                                    </div>
+                                </div>
+                            }
+                           
+                            @if (flags.IsBacklink)
+                            {
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Used Backlink:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.Backlink" class="form-control" />
+                                        <ValidationMessage For="@(() => WorkRecord.Backlink)" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Backlink URL:</label>
+                                        <InputText @bind-Value="@WorkRecord.BacklinkURL" class="form-control" />
+                                        @* <ValidationMessage For="@(() => WorkRecord.BacklinkURL)" /> *@
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                            @if (flags.IsClasified)
+                            {
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Used Clasified:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.Clasified" class="form-control" readonly="@(!flags.IsClasified)" />
+                                        <ValidationMessage For="@(() => WorkRecord.Clasified)" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Clasified URL:</label>
+                                        <InputText @bind-Value="@WorkRecord.ClasifiedURL" class="form-control" readonly="@(!flags.IsClasified)" />
+                                        @* <ValidationMessage For="@(() => WorkRecord.ClasifiedURL)" /> *@
+                                    </div>
+                                </div>
+                            </div>
+                            }
+
+                            @if(flags.IsSocialSharing){
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Used Social Sharing:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.SocialSharing" class="form-control"  />
+                                        <ValidationMessage For="@(() => WorkRecord.SocialSharing)" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Social Sharing URL:</label>
+                                        <InputText @bind-Value="@WorkRecord.SocialSharingURL" class="form-control"  />
+                                        @* <ValidationMessage For="@(() => WorkRecord.SocialSharingURL)" /> *@
+                                    </div>
+                                </div>
+                            </div>
+                            }
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Select Work Task:</label>
+                                    <UserTaskMasterList @bind-SelectedTask="WorkRecord.Task" showHeader="false" />
+                                    <ValidationMessage For="@(() => WorkRecord.Task)" class="text-danger small" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+
+
+                                <div class="form-group">
+                                    <label>Status:</label>
+                                    <InputSelect @bind-Value="@WorkRecord.Status" class="form-control">
+                                        <option value="">-- Select Status --</option>
+                                        <option>Completed</option>
+                                        <option>In-Progress</option>
+                                        <option>Pending</option>
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() =>WorkRecord.Status)" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+
+                                <div class="form-group">
+                                    <label>Remarks:</label>
+                                    <InputTextArea @bind-Value="@WorkRecord.Remarks" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SEO Section -->
+                        @if (seoFlag)
+                        {
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input"
+                                @onchange="(e) => HandleSeoToggle((bool?)e.Value)"
+                                checked="@IncludeSeoDetails"
+                                disabled="@IncludeSeoDetails" />
+                                <label class="form-check-label">Include Seo Services</label>
+                            </div>
+                            @if (IncludeSeoDetails)
+                            {
+
+
+                                <div class="card mt-3 mb-3">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">Seo Services Details</h6>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="AddSeoTask">
+                                            <i class="fas fa-plus"></i> Add Task
+                                        </button>
+                                    </div>
+                                    @if (WorkRecord.SeoTaskDetailsDto != null && WorkRecord.SeoTaskDetailsDto.Any())
+                                    {
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover mb-0">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th style="width: 40%">Key Word</th>
+                                                            <th style="width: 30%">Current Rank</th>
+                                                            <th style="width: 25%">Note</th>
+                                                            <th style="width: 5%">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @for (int i = 0; i < WorkRecord.SeoTaskDetailsDto.Count; i++)
+                                                        {
+                                                            var seo = WorkRecord.SeoTaskDetailsDto[i];
+                                                            <tr @key="i">
+
+                                                                <td>
+                                                                    <InputSelect class="form-select form-select-sm"
+                                                                    @bind-Value="seo.KeyWord"
+                                                                    @onblur="@(() => MarkAsTouched(seo, nameof(seo.KeyWord)))">
+                                                                        <option value="">Select Type</option>
+                                                                        @foreach (var item in seoServiceDetailsList)
+                                                                        {
+                                                                            <option value="@item.KeyWord">@item.KeyWord</option>
+                                                                        }
+                                                                    </InputSelect>
+                                                                    <ValidationMessage For="@(() => seo.KeyWord)" class="small text-danger" />
+                                                                </td>
+
+                                                                <td>
+                                                                    <InputNumber @bind-Value="seo.CurrentRank" class="form-control form-control-sm" />
+                                                                    <ValidationMessage For="@(() =>seo.CurrentRank)" />
+                                                                </td>
+                                                                <td>
+                                                                    <InputText @bind-Value="seo.Note" class="form-control form-control-sm" />
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <button type="button"
+                                                                    class="btn btn-sm btn-outline-danger"
+                                                                    @onclick="() => RemoveSeoTask(seo)"
+                                                                    title="Delete Task">
+                                                                        <i class="fas fa-trash-alt"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                            }
+                        }
+
+                        <!-- Others Services -->
+                        @if (othersFlag)
+                        {
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input"
+                                @onchange="(e) => HandleOthersToggle((bool?)e.Value)"
+                                checked="@IncludeOthersServices"
+                                disabled="@IncludeOthersServices" />
+                                <label class="form-check-label">Include Others Services</label>
+                            </div>
+                            @if (IncludeOthersServices)
+                            {
+
+
+                                <div class="card mt-3 mb-3">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">Others Services Details</h6>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="AddOthersTask">
+                                            <i class="fas fa-plus"></i> Add Task
+                                        </button>
+                                    </div>
+                                    @if (WorkRecord.OthersTaskDetailsDto != null && WorkRecord.OthersTaskDetailsDto.Any())
+                                    {
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover mb-0">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th style="width: 40%">Lable Name</th>
+                                                            <th style="width: 30%">Shared Post</th>
+                                                            <th style="width: 25%">Note</th>
+                                                            <th style="width: 5%">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @for (int i = 0; i < WorkRecord.OthersTaskDetailsDto.Count; i++)
+                                                        {
+                                                            var others = WorkRecord.OthersTaskDetailsDto[i];
+                                                            <tr @key="i">
+                                                                <td>
+                                                                    <InputSelect class="form-select form-select-sm"
+                                                                    @bind-Value="others.LableName"
+                                                                    @onblur="@(() => MarkAsTouched(others, nameof(others.LableName)))">
+                                                                        <option value="">Select Type</option>
+                                                                        @foreach (var item in othersServicesList)
+                                                                        {
+                                                                            <option value="@item.LableName">@item.LableName</option>
+                                                                        }
+                                                                    </InputSelect>
+                                                                    <ValidationMessage For="@(() => others.LableName)" class="small text-danger" />
+                                                                </td>
+
+                                                                <td>
+                                                                    <InputNumber @bind-Value="others.SharedPost" class="form-control form-control-sm" />
+                                                                    <ValidationMessage For="@(() => others.SharedPost)" class="small text-danger" />
+                                                                </td>
+                                                                <td>
+                                                                    <InputText @bind-Value="others.Note" class="form-control form-control-sm" />
+                                                                </td>
+
+                                                                <td class="text-center">
+                                                                    <button type="button"
+                                                                    class="btn btn-sm btn-outline-danger"
+                                                                    @onclick="() => RemoveOthersTask(others)"
+                                                                    title="Delete Task">
+                                                                        <i class="fas fa-trash-alt"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                            }
+                        }
+
+                        <!-- Web Development -->
+                        @if(webFlag){
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input"
+                                @onchange="(e) => HandleWebDevToggle((bool?)e.Value)"
+                                checked="@IncludeWebDeveServices"
+                                disabled="@IncludeWebDeveServices" />
+                                <label class="form-check-label">Include Web Development Details</label>
+                            </div>
+                            @if (IncludeWebDeveServices)
+                            {
+
+
+                                <div class="card mt-3 mb-3">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">Web Development Details</h6>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="AddWebTask">
+                                            <i class="fas fa-plus"></i> Add Task
+                                        </button>
+                                    </div>
+                                    @if (WorkRecord.WebDeveTaskDetailsDto != null && WorkRecord.WebDeveTaskDetailsDto.Any())
+                                    {
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover mb-0">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th style="width: 40%">Task Description</th>
+                                                            <th style="width: 30%">Remarks</th>
+                                                            <th style="width: 25%">Note</th>
+                                                            <th style="width: 5%">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @for (int i = 0; i < WorkRecord.WebDeveTaskDetailsDto.Count; i++)
+                                                        {
+                                                            var web = WorkRecord.WebDeveTaskDetailsDto[i];
+                                                            <tr @key="i">
+                                                                <td>
+                                                                    <InputText @bind-Value="web.Task" class="form-control form-control-sm" />
+                                                                    <ValidationMessage For="@(() => web.Task)" class="small text-danger" />
+                                                                </td>
+                                                                <td>
+                                                                    <InputText @bind-Value="web.Remarks" class="form-control form-control-sm" />
+                                                                    <ValidationMessage For="@(() => web.Remarks)" class="small text-danger" />
+                                                                </td>
+                                                                <td>
+                                                                    <InputText @bind-Value="web.Note" class="form-control form-control-sm" />
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <button type="button"
+                                                                    class="btn btn-sm btn-outline-danger"
+                                                                    @onclick="() => RemoveWebTask(web)"
+                                                                    title="Delete Task">
+                                                                        <i class="fas fa-trash-alt"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                            }
+                        }
+
+                        <div class="form-group mt-3">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="button" class="btn btn-danger ms-2" @onclick="Close">Cancel</button>
+                        </div>
+                    </EditForm>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; } = false;
+
+    [Parameter]
+    public ServicesDTO service { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> isAddWorkFormSubmit { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private bool IncludeSeoDetails { get; set; } = false;
+
+    private bool seoFlag { get; set; } = false;
+
+    private bool IncludeOthersServices { get; set; } = false;
+
+    private bool othersFlag { get; set; } = false;
+
+    private bool IncludeWebDeveServices { get; set; } = false;
+
+    private bool webFlag { get; set; } = false;
+
+    public WorkTaskDetailsDto WorkRecord { get; set; }
+
+    @inject IDataSerializer? DataSerializer;
+
+    private EditContext editContext;
+
+    private List<SeoServiceDetailsDTO>seoServiceDetailsList{ get; set; }
+
+    private List<OthersServiceDTO> othersServicesList { get; set; }
+
+    private List<WebDevelopmentDTO> webDevelopmentList{ get; set; }
+
+    private ServiceFlagsDTO flags { get; set; } = new();
+
+ 
+    protected override async Task OnParametersSetAsync()
+    {
+        // DataSerializer?.Serializer(service, "Service Data:");
+        IncludeSeoDetails = false;
+        IncludeOthersServices = false;
+        IncludeWebDeveServices = false;
+
+        seoFlag = false;
+        othersFlag = false;
+        webFlag = false;
+        WorkRecord = new WorkTaskDetailsDto();
+        if (service != null)
+        {
+            WorkRecord.ServiceId = (int)service.ServiceId!;
+            WorkRecord.ProjectId = (int)service.ProjectId!;
+
+            if (service.SeoServiceDetails != null && service.SeoServiceDetails.Count>0)
+            {
+                //List collect from master to use on the work flow
+                seoServiceDetailsList = new List<SeoServiceDetailsDTO>(service.SeoServiceDetails);
+
+                seoFlag = true;
+                WorkRecord.SeoTaskDetailsDto ??= new List<SeoTaskDetailsDto>();
+
+                // Only add if empty
+                if (WorkRecord.SeoTaskDetailsDto.Count == 0)
+                {
+                    WorkRecord.SeoTaskDetailsDto.Add(new SeoTaskDetailsDto());
+                }
+            }
+            if (service.OthersServices != null && service.OthersServices.Count > 0)
+            {
+                //List collect from master to use on the work flow
+                othersServicesList = new List<OthersServiceDTO>(service.OthersServices);
+                othersFlag = true;
+                WorkRecord.OthersTaskDetailsDto ??= new List<OthersTaskDetailsDto>();
+
+                // Only add if empty
+                if (WorkRecord.OthersTaskDetailsDto.Count == 0)
+                {
+                    WorkRecord.OthersTaskDetailsDto.Add(new OthersTaskDetailsDto());
+                }
+            }
+            if (service.WebDevelopment != null && service.WebDevelopment.Count > 0)
+            {
+                //List collect from master to use on the work flow
+                webDevelopmentList = new List<WebDevelopmentDTO>(service.WebDevelopment);
+                webFlag = true;
+                WorkRecord.WebDeveTaskDetailsDto ??= new List<WebDeveTaskDetailsDto>();
+                // Only add if empty
+                if (WorkRecord.WebDeveTaskDetailsDto.Count == 0)
+                {
+                    WorkRecord.WebDeveTaskDetailsDto.Add(new WebDeveTaskDetailsDto());
+
+                }
+            }
+        }
+        if (WorkRecord == null)
+        {
+            WorkRecord = new WorkTaskDetailsDto();
+        }
+        if (editContext == null)
+        {
+            editContext = new EditContext(WorkRecord);
+        }
+        else
+        {
+            // Notify the form that the data has changed
+            editContext = new EditContext(WorkRecord);
+            StateHasChanged();
+        }
+        try
+        {
+            flags = await projectService?.GetServiceFlagsAsync(service.ServiceId.Value) ?? new ServiceFlagsDTO();
+
+            @* isAdsBudget = await projectService.HasNonZeroAdsBudget(service.ServiceId.Value); *@
+            @* isPost = await projectService.HasNonZeroTotalPost(service.ServiceId.Value); *@
+            @* isReels = await projectService.HasNonZeroTotalReels(service.ServiceId.Value); *@
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading service metrics: {ex.Message}");
+        }
+    }
+
+    private void AddSeoTask() => WorkRecord.SeoTaskDetailsDto.Add(new SeoTaskDetailsDto());
+
+    private void RemoveSeoTask(SeoTaskDetailsDto seo)
+    {
+        WorkRecord.SeoTaskDetailsDto.Remove(seo);
+
+        if (WorkRecord.SeoTaskDetailsDto == null || WorkRecord.SeoTaskDetailsDto.Count == 0)
+        {
+            IncludeSeoDetails = false;
+        }
+    }
+
+
+
+    private void AddOthersTask() => WorkRecord.OthersTaskDetailsDto.Add(new OthersTaskDetailsDto());
+
+    private void RemoveOthersTask(OthersTaskDetailsDto others)
+    {
+        WorkRecord.OthersTaskDetailsDto.Remove(others);
+
+        if (WorkRecord.OthersTaskDetailsDto == null || WorkRecord.OthersTaskDetailsDto.Count == 0)
+        {
+            IncludeOthersServices = false;
+        }
+    }
+
+    private void AddWebTask() => WorkRecord.WebDeveTaskDetailsDto.Add(new WebDeveTaskDetailsDto());
+    private void RemoveWebTask(WebDeveTaskDetailsDto web)
+    {
+        WorkRecord.WebDeveTaskDetailsDto.Remove(web);
+
+        if (WorkRecord.WebDeveTaskDetailsDto == null || WorkRecord.WebDeveTaskDetailsDto.Count == 0)
+        {
+            IncludeWebDeveServices = false;
+        }
+    }
+
+
+    private void HandleSeoToggle(bool? isChecked)
+    {
+        if (isChecked == true)
+        {
+            IncludeSeoDetails = true;
+            // Ensure collection exists
+            WorkRecord.SeoTaskDetailsDto ??= new List<SeoTaskDetailsDto>();
+
+            // Add a new task if empty
+            if (!WorkRecord.SeoTaskDetailsDto.Any())
+            {
+                WorkRecord.SeoTaskDetailsDto.Add(new SeoTaskDetailsDto());
+            }
+        }
+
+    }
+    private void HandleOthersToggle(bool? isChecked)
+    {
+        if (isChecked == true)
+        {
+            IncludeOthersServices = true;
+            // Ensure collection exists
+            WorkRecord.OthersTaskDetailsDto ??= new List<OthersTaskDetailsDto>();
+
+            // Add a new task if empty
+            if (!WorkRecord.OthersTaskDetailsDto.Any())
+            {
+                WorkRecord.OthersTaskDetailsDto.Add(new OthersTaskDetailsDto());
+            }
+        }
+
+    }
+    private void HandleWebDevToggle(bool? isChecked)
+    {
+        if (isChecked == true)
+        {
+            IncludeWebDeveServices = true;
+            // Ensure collection exists
+            WorkRecord.WebDeveTaskDetailsDto ??= new List<WebDeveTaskDetailsDto>();
+
+            // Add a new task if empty
+            if (!WorkRecord.WebDeveTaskDetailsDto.Any())
+            {
+                WorkRecord.WebDeveTaskDetailsDto.Add(new WebDeveTaskDetailsDto());
+            }
+        }
+
+    }
+
+
+    private void MarkAsTouched(object model, string fieldName)
+    {
+        var fieldIdentifier = new FieldIdentifier(model, fieldName);
+        editContext?.NotifyFieldChanged(fieldIdentifier);
+    }
+
+    private void OnDialogCancel()
+    {
+        IsVisible = false;
+    }
+    
+    private async Task HandleValidSubmit()
+    {
+       
+
+        if (!IncludeWebDeveServices)
+        {
+            WorkRecord.WebDeveTaskDetailsDto = new List<WebDeveTaskDetailsDto>();
+        }
+        if (!IncludeSeoDetails)
+        {
+            WorkRecord.SeoTaskDetailsDto = new List<SeoTaskDetailsDto>();
+        }
+        if (!IncludeOthersServices)
+        {
+            WorkRecord.OthersTaskDetailsDto = new List<OthersTaskDetailsDto>();
+        }
+
+        @* DataSerializer?.Serializer(WorkRecord, "Before Submission Validation"); *@
+
+        var isValid = editContext.Validate();
+        // Notify validation state change to update UI
+        editContext.NotifyValidationStateChanged();
+
+        if (!isValid)        {
+            // Log validation errors if needed
+            var validationMessages = editContext.GetValidationMessages();
+            DataSerializer?.Serializer(validationMessages, "Validation Errors");
+            return;
+        }
+
+       
+        try
+        {
+            @* DataSerializer?.Serializer(WorkRecord, "DialogAddWorkTask:HandleValidSubmit"); *@
+            await api.SaveOrUpdateProjectsAsync(WorkRecord);
+            await isAddWorkFormSubmit.InvokeAsync(true);
+
+            // Reset form state
+            ResetForm();
+
+            // Close modal
+            IsVisible = false;
+        }
+        catch (Exception ex)
+        {
+            // Handle API errors
+            DataSerializer?.Serializer(ex, "Submission Error");
+        }
+       
+    }
+
+        private void ResetForm()
+        {
+            WorkRecord = new WorkTaskDetailsDto
+            {
+                // Maintain ServiceId and WorkDate if needed
+                ServiceId = WorkRecord.ServiceId,
+                WorkDate = WorkRecord.WorkDate
+            };
+
+            IncludeSeoDetails = false;
+            IncludeOthersServices = false;
+            IncludeWebDeveServices = false;
+
+            // Reinitialize edit context
+            editContext = new EditContext(WorkRecord);
+        }
+    
+    private void Close()
+    {
+        OnCancel.InvokeAsync();
+        IsVisible = false;
+    }
+
+
+}

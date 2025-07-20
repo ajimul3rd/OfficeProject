@@ -1,0 +1,338 @@
+﻿@page "/users"
+@using AutoMapper
+@using OfficeProject.Authentication
+@using OfficeProject.Models.DTO
+@using OfficeProject.Models.Entities
+@inject IUserService userService
+@rendermode InteractiveServer
+@inject ApiService apiService
+@using OfficeProject.Models.Enums;
+@using System.Text.Json
+@using OfficeProject.Web.Pages.DialogModel
+@inject IDataSerializer? DataSerializer
+
+
+<AuthorizeView>
+    <Authorized>
+
+        <h3>User Management</h3>
+
+
+        @if (isLoading)
+        {
+            <p>Loading users...</p>
+        }
+        else
+        {
+            <button class="btn btn-primary mb-3" @onclick="OpenAddUserDialog">Add New User</button>
+
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-bordered table-sm custom-tight-table mb-0">
+                    <thead class="table-info sticky-header">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Contact</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in users)
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                <td>@user.UserEmail</td>
+                                <td>@user.UserContact</td>
+                                <td>@user.Role</td>
+                                <td>
+                                    <button class="btn btn-sm @(user.IsActive ? "btn-success" : "btn-danger")"
+                                    @onclick="() => ToggleUserStatus(user.UserId, !user.IsActive)">
+                                        @(user.IsActive ? "Active" : "Inactive")
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" @onclick="() => EditUser(user.UserId)">Edit</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        }
+        @if (showForm)
+        {
+            <DialogAddUser RegisterModel="@registerModel" showForm="@showForm" isFormSubmit="@HandleGetUsersAsync" />
+        }
+      
+        @if (showServiceModal)
+        {
+            <div class="activity-dialog-backdrop fade show"></div>
+            <div class="modal fade show d-block activity-dialog-modal" tabindex="-1">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <DialogUserActivityMaster OnSelectedMaster="HandleSelectedMaster"
+                        CallerSelectedData="@data"
+                        showModalChanged="@((value) => showServiceModal = value)"
+                        showModal="@showServiceModal" />
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        <style>
+            .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+            position: relative;
+            }
+
+            .sticky-header th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #e0f3ff; /* Same color as you set */
+            }
+        </style>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+        <p>@message</p>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+ @inject IUserDesignationService userDesignationService; 
+
+    private List<UserDTO> users = new();
+
+    private string message { get; set; }
+
+    private bool isLoading = true;
+
+    // private bool isUpdate = false;
+
+    private bool showForm = false;
+
+    private string errorMessage = string.Empty;
+
+    private RegisterModel? registerModel;
+
+    public List<string> validationErrors = new List<string>();
+
+    private string statusMessage = string.Empty;
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUsers();
+
+    }
+
+    private async Task GetUsers()
+    {
+        try
+        {
+            users = await apiService.GetAllUsersDTOAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading users: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    private async Task HandleGetUsersAsync(bool isFormSubmit)
+    {
+        if (isFormSubmit)
+            users.Clear();
+        await GetUsers();
+        CancelEdit();
+        StateHasChanged();
+
+    }
+
+    private void OpenAddUserDialog()
+    {
+        registerModel= new RegisterModel
+            {
+                UserDesignation = new List<UserDesignation>() // Initialize here
+            };
+        showForm = true;
+    }
+
+    private async Task EditUser(int? userId)
+    {
+        try
+        {
+            // isUpdate = true;
+            var user = await userService.GetUserDTOById((int)userId!);
+            if (user != null)
+            {	
+                registerModel ??= new RegisterModel();
+                registerModel.UserId = user!.UserId;
+                registerModel.UserName = user.UserName;
+                registerModel.UserEmail = user.UserEmail;
+                registerModel.UserContact = user.UserContact;
+                registerModel.UserPassword = "AAAaaa@1234";//temp password for padd validation
+                registerModel.Role = user.Role;
+                registerModel.IsActive = user.IsActive;
+                registerModel.PreeAssignUserRole = user.PreeAssignUserRole;
+                registerModel.CompanyName = user.CompanyName;
+                registerModel.Address = user.Address;
+                registerModel.UserDesignation = user.UserDesignation ?? new List<UserDesignation>();
+                registerModel.JoiningDate = user.JoiningDate;
+                registerModel.UserId = user.UserId;
+                showForm = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading user: {ex.Message}";
+        }
+    }
+  
+
+    private void CancelEdit()
+    {
+        showForm = false;
+        errorMessage = string.Empty;
+        registerModel = new RegisterModel();
+    }
+
+
+    private async Task ToggleUserStatus(int? userId, bool newStatus)
+    {
+        try
+        {
+            var user = await userService.GetUserDTOById((int)userId!);
+            if (user != null)
+            {
+                user.IsActive = newStatus;
+                await userService.UpdateUserAsync(user);
+                users = await userService.GetAllUsersDTOAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error updating user status: {ex.Message}";
+        }
+    }
+
+
+    private List<UserWorkingActivityDto> data { get; set; }
+    private bool showServiceModal { get; set; } = false;
+
+    private List<UserActivityMasterDto> workingActivity { get; set; } = new();
+
+    private void getUserWorkingActivity()
+    {
+        // Ensure registerModel and UserDesignation are initialized
+        registerModel ??= new RegisterModel();
+        registerModel.UserDesignation ??= new List<UserDesignation>();
+
+        data = registerModel.UserDesignation
+            .Where(d => d != null && !string.IsNullOrEmpty(d.Designation))
+            .Select(d => new UserWorkingActivityDto
+                {
+                    WorkingActivityId = 0,
+                    WorkingActivityName = d.Designation
+                })
+            .ToList();
+
+        showServiceModal = true;
+    }
+
+    private void HandleSelectedMaster(List<UserActivityMasterDto> model)
+    {
+        try
+        {
+            // Safely initialize collections
+            workingActivity = model ?? new List<UserActivityMasterDto>();
+            registerModel ??= new RegisterModel();
+            registerModel.UserDesignation ??= new List<UserDesignation>();
+
+            foreach (var activity in workingActivity)
+            {
+
+                if (activity == null || string.IsNullOrWhiteSpace(activity.MasterActivityName))
+                    continue;
+
+
+                bool alreadyExists = registerModel.UserDesignation.Any(s =>
+                    s.Designation?.Equals(activity.MasterActivityName, StringComparison.OrdinalIgnoreCase) == true);
+
+                if (!alreadyExists)
+                {
+                    var newActivity = new UserDesignation
+                        {
+                            DesignationId = 0, // If new
+                            Designation = activity.MasterActivityName
+                        };
+
+                    registerModel.UserDesignation.Add(newActivity);
+                }
+            }
+
+            validationErrors.Clear();
+            statusMessage = "";
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in HandleSelectedMaster: {ex}");
+            errorMessage = "Failed to add activities. Please try again.";
+        }
+    }
+    private List<int> activityDeleteList = new List<int>();
+
+    private async Task RemoveActivity(UserDesignation service)
+    {
+if (registerModel?.UserDesignation == null || service.DesignationId == 0)
+            return;
+        if (!activityDeleteList.Contains(service.DesignationId))
+        {
+            activityDeleteList.Add(service.DesignationId);
+        }
+        registerModel.UserDesignation.Remove(service);
+        await InvokeAsync(StateHasChanged);
+    }
+
+        private async Task DeleteActivityAsync()
+    {
+        try
+        {
+            if (activityDeleteList?.Count > 0 && registerModel!.UserDesignation != null)
+            {
+                foreach (var Id in activityDeleteList)
+                {
+                    await userDesignationService.Delete(Id);
+                }
+                activityDeleteList.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting others ervices: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
+    }
+    
+
+}
+

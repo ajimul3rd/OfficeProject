@@ -1,0 +1,59 @@
+﻿@page "/billing-test"
+@inject IBillingCycleHelper billingCycleHelper
+@using OfficeProject.Models.Enums
+@inject IDataSerializer? DataSerializer
+
+<h4>Billing Period Checker</h4>
+
+<div class="mb-3">
+    <label>Service Start Date:</label>
+    <InputDate @bind-Value="startDate" class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label>Billing Type:</label>
+    <InputSelect @bind-Value="billingType" class="form-control">
+        @foreach (BillingType type in Enum.GetValues(typeof(BillingType)))
+        {
+            <option value="@type">@type</option>
+        }
+    </InputSelect>
+</div>
+
+@if (billingCycleHelper.IsBillingExpired(startDate, billingType, DateTime.Today))
+{
+    <p class="text-danger">Billing date has expired.</p>
+}
+
+
+<button class="btn btn-primary" @onclick="CalculateBillingPeriod">Check Period</button>
+
+@if (showResult)
+{
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label>Period Start</label>
+            <InputDate @bind-Value="periodStart" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label>Period End</label>
+            <InputDate @bind-Value="periodEnd" class="form-control" />
+        </div>
+    </div>
+
+}
+
+@code {
+    private DateTime startDate = DateTime.Today; // default start
+    private BillingType billingType = BillingType.Monthly;
+
+    private DateTime periodStart;
+    private DateTime periodEnd;
+    private bool showResult = false;
+
+    private void CalculateBillingPeriod()
+    {
+        (periodStart, periodEnd) = billingCycleHelper.GetCurrentBillingPeriod(startDate, billingType, DateTime.Today);
+        showResult = true;
+    }
+}

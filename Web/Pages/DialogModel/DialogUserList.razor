@@ -1,0 +1,680 @@
+﻿
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations;
+@using OfficeProject.Models.DTO;
+@using OfficeProject.Models.Entities
+@using OfficeProject.Models.Enums;
+@using System.Linq.Expressions;
+@using System.Globalization;
+@inject ApiService ApiService;
+@inject IJSRuntime JSRuntime;
+@using OfficeProject.Web.Pages.DialogModel;
+@using OfficeProject.Authentication
+@using System.Text.Json
+@inject IDataSerializer? DataSerializer
+@inject IClientService? clientService
+@inject IUserService? userService
+
+
+
+
+
+@if (showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
+            <div class="modal-content" style="height: 85vh;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select User</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="CloseModal">X</button>
+                </div>
+
+                <div class="modal-body" style="overflow-y: auto; max-height: calc(85vh - 100px); padding: 1rem;">
+                    <AuthorizeView Roles="ADMIN,MANAGER">
+                    <div class="d-flex justify-content-end mb-2">
+                        @* <button class="btn btn-sm btn-success" @onclick="() => showAddForm = true">+ Add User</button> *@
+                            <button class="btn btn-sm btn-success" @onclick="ToggleAddCancelForm">
+                                @(showAddForm ? "Cancel" : "+ Add User")
+                            </button>
+                    </div>
+                    </AuthorizeView>
+
+                    @if (showAddForm)
+                    {
+                        <div class="card-body">
+                            <EditForm EditContext="editContext" OnSubmit="Submit">
+                                <DataAnnotationsValidator />
+                                <div class="row g-4">
+                                    <!-- User Info -->
+                                    <div class="col-md-6">
+                                        <div class="card shadow-sm">
+                                            <div class="card-header bg-light-subtle py-2">
+                                                <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>User Information</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <label class="form-label required">User Name</label>
+                                                    <InputText @bind-Value="Model.UserName"
+                                                               @onfocus="() => MarkAsTouched(() => Model.UserName)"
+                                                               class="form-control" />
+                                                    <ValidationMessage For="@(() => Model.UserName)" class="text-danger small" />
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label required">Email</label>
+                                                    <InputText @bind-Value="Model.UserEmail"
+                                                               @onfocus="() => MarkAsTouched(() => Model.UserEmail)"
+                                                               class="form-control" />
+                                                    <ValidationMessage For="@(() => Model.UserEmail)" class="text-danger small" />
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label required">Phone</label>
+                                                    <InputText @bind-Value="Model.UserContact"
+                                                               @onfocus="() => MarkAsTouched(() => Model.UserContact)"
+                                                               class="form-control" />
+                                                    <ValidationMessage For="@(() => Model.UserContact)" class="text-danger small" />
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label>Password:</label>
+                                                    <InputText type="password" class="form-control" @bind-Value="Model.UserPassword" />
+                                                    <ValidationMessage For="@(() => Model.UserPassword)" />
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label required">Role</label>
+                                                    <InputSelect @bind-Value="Model.Role"
+                                                                 @onfocus="() => MarkAsTouched(() => Model.Role)"
+                                                                 class="form-select">
+                                                        <option value="">Select Role</option>
+                                                        @foreach (var role in Enum.GetValues<UserRole>())
+                                                        {
+                                                            <option value="@role">@role</option>
+                                                        }
+                                                    </InputSelect>
+                                                    <ValidationMessage For="@(() => Model.Role)" class="text-danger small" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Company Info -->
+                                    <div class="col-md-6">
+                                        <div class="card shadow-sm">
+                                            <div class="card-header bg-light-subtle py-2">
+                                                <h6 class="mb-0"><i class="fas fa-building me-2"></i>Company Info</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <label class="form-label required">Company Name</label>
+                                                    <InputText @bind-Value="Model.CompanyName"
+                                                               @onfocus="() => MarkAsTouched(() => Model.CompanyName)"
+                                                               class="form-control" />
+                                                    <ValidationMessage For="@(() => Model.CompanyName)" class="text-danger small" />
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label required">Address</label>
+                                                    <InputText @bind-Value="Model.Address"
+                                                               @onfocus="() => MarkAsTouched(() => Model.Address)"
+                                                               class="form-control" />
+                                                    <ValidationMessage For="@(() => Model.Address)" class="text-danger small" />
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <div class="card mb-4 border-0 shadow-sm">
+                                                        <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
+                                                            <h6 class="mb-0"><i class="fas fa-cogs me-2"></i>Select User Working Activity</h6>
+                                                            <span class="badge bg-primary">
+                                                                @(Model.UserDesignation?.Count ?? 0) @(Model.UserDesignation?.Count == 1 ? "activity" : "activitices")
+                                                            </span>
+                                                        </div>
+                                                        @if (validationErrors.Any())
+                                                        {
+                                                            <div class="alert alert-danger">
+                                                                <ul class="mb-0">
+                                                                    @foreach (var error in validationErrors)
+                                                                    {
+                                                                        <li>@error</li>
+                                                                    }
+                                                                </ul>
+                                                            </div>
+                                                        }
+                                                        <ValidationMessage For="@(() => Model.UserDesignation)" />
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold d-block mb-2">
+                                                                <i class="fas fa-box-open me-2"></i>Select Activities
+                                                            </label>
+
+                                                            <div class="input-group">
+                                                                <div class="form-control p-2 @(Model.UserDesignation == null || !Model.UserDesignation.Any() ? "border-danger" : "border-primary")"
+                                                                     style="min-height: 42px; cursor: pointer;"
+                                                                     @onclick="getUserWorkingActivity">
+
+                                                                    @if (Model.UserDesignation == null || !Model.UserDesignation.Any())
+                                                                    {
+                                                                        <div class="text-muted d-flex align-items-center h-100">
+                                                                            <i class="fas fa-search me-2"></i>
+                                                                            <span>Click to browse user working activity</span>
+                                                                        </div>
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                                                                            @if (Model.UserDesignation?.Any() == true)
+                                                                            {
+                                                                                @foreach (var a in Model.UserDesignation)
+                                                                                {
+                                                                                    @if (!string.IsNullOrEmpty(a.Designation))
+                                                                                    {
+                                                                                        <span class="badge bg-primary rounded-pill d-flex align-items-center py-2 px-3">
+                                                                                            @a.Designation
+                                                                                            <button class="btn-close btn-close-white btn-sm ms-2 p-0"
+                                                                                                    @onclick="@(async (e) => await RemoveActivity(a))"
+                                                                                            @onclick:stopPropagation
+                                                                                            @onclick:preventDefault
+                                                                                                    aria-label="Remove"
+                                                                                                    style="font-size: 0.6rem; opacity: 0.8;">
+                                                                                            </button>
+                                                                                        </span>
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <div class="text-muted d-flex align-items-center h-100">
+                                                                                    <i class="fas fa-search me-2"></i>
+                                                                                    <span>Click to browse user working activity</span>
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label required">Joining Date</label>
+                                                    <InputDate @bind-Value="Model.JoiningDate"
+                                                               @onfocus="() => MarkAsTouched(() => Model.JoiningDate)"
+                                                               class="form-control" />
+                                                    <ValidationMessage For="@(() => Model.JoiningDate)" class="text-danger small" />
+                                                </div>
+
+                                                <div class="form-check form-switch mt-3">
+                                                    <InputCheckbox @bind-Value="Model.IsActive"
+                                                                   @onfocus="() => MarkAsTouched(() => Model.IsActive)"
+                                                                   class="form-check-input" id="activeCheck" />
+                                                    <label class="form-check-label" for="activeCheck">Active Status</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Form Actions -->
+                                <div class="col-12 mt-4">
+                                    <div class="d-flex justify-content-end gap-3">
+                                        <button type="button"
+                                                class="btn btn-outline-secondary"
+                                                @onclick="ToggleAddCancelForm">
+                                            <i class="fas fa-times me-2"></i>Cancel
+                                        </button>
+                                        <button type="submit"
+                                                class="btn btn-primary"
+                                                disabled="@isSubmitting">
+                                            @if (isSubmitting)
+                                            {
+                                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                <span>Saving...</span>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-save me-2"></i>
+                                                <span>Save User</span>
+                                            }
+                                        </button>
+                                    </div>
+                                </div>
+                            </EditForm>
+
+
+                            @if (!string.IsNullOrEmpty(statusMessage))
+                            {
+                                <div class="alert @(isError ? "alert-danger" : "alert-success") mt-4">
+                                    <i class="@(isError ? "fas fa-exclamation-circle" : "fas fa-check-circle") me-2"></i>
+                                    @statusMessage
+                                </div>
+                            }
+                        </div>
+                    }
+
+
+                    @if (!showAddForm)
+                    {
+                    <div class="client-management-container">
+                        <!-- Client List View -->
+                        <div class="dashboard-header mb-2">
+                            <div class="d-flex flex-wrap gap-2">
+                                <input type="text" id="searchInput" class="form-control form-control-sm"
+                                       placeholder="Search clients..."
+                                       @bind-value="searchText"
+                                       @bind-value:event="oninput"
+                                       style="max-width: 200px;" />
+
+                                <select id="filterSelect" class="form-select form-select-sm"
+                                        @bind="selectedFilter"
+                                        style="max-width: 150px;">
+                                    <option value="all">All</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+
+                      
+                        @if (FilteredClients != null && FilteredClients.Any())
+                        {
+                            <table class="table table-bordered table-sm table-hover">
+                                <thead class="table-info sticky-header">
+                                    <tr class="small">
+                                        <th>User Name</th>
+                                        <th>Contact No.</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Select</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in FilteredClients)
+                                    {
+                                        <tr class="small">
+                                            <td>@user.UserName</td>
+                                            <td>@user.UserContact</td>
+                                            <td>@user.UserEmail</td>
+                                            <td><button class="btn btn-sm @(user.IsActive ? "btn-success" : "btn-danger")">@(user.IsActive ? "Active" : "Inactive")</button></td>
+                                            <td>
+                                                <input type="checkbox"
+                                                   checked="@IsUserAssigned(user)"
+                                                   disabled="@IsUserAssigned(user)"
+                                                   @onchange="(e) => ToggleOnUserSelection(user, (bool?)e.Value)"
+                                                       class="custom-checkbox @(IsUserAssigned(user) ? "selected" : "")" />
+                                            </td> 
+                                            </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info small mt-3">Client list is empty.</div>
+                        }                        
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>    
+
+
+
+}
+@if (showServiceModal)
+{
+    <div class="activity-dialog-backdrop fade show"></div>
+    <div class="modal fade show d-block activity-dialog-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <DialogUserActivityMaster OnSelectedMaster="HandleSelectedMaster"
+                                          CallerSelectedData="@data"
+                                          showModalChanged="@((value) => showServiceModal = value)"
+                                          showModal="@showServiceModal" />
+            </div>
+        </div>
+    </div>
+}
+<!--Custom Checkbox on table select row-->
+<style>
+    .custom-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: green;
+        cursor: pointer;
+    }
+
+</style>
+
+@code {
+
+    [Parameter]
+    public bool showModal { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> showModalChanged { get; set; }
+
+    [Parameter]
+    public EventCallback <List<UserDTO>> onSelectUser { get; set; }
+
+    [Parameter]
+    public List<AssignedUsersDTO> assignedUsers { get; set; }
+
+    private bool showAddForm = false;
+
+    private RegisterModel Model { get; set; }
+
+    private EditContext? editContext;
+
+    private readonly Dictionary<FieldIdentifier, bool> _touchedFields = new();
+
+    private bool isSubmitting = false;
+
+    private string statusMessage = string.Empty;
+
+    private bool isError = false;
+
+    @inject IDataSerializer? DataSerializer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model ??= new RegisterModel { IsActive = true };
+        editContext = new(Model);
+        await GetUsers();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        showAddForm = false;
+        assignedUsers ??= new List<AssignedUsersDTO>();
+        selectedUsers ??= new List<UserDTO>();
+
+        if (showModal)
+        {
+            await GetUsers();
+        }
+    }
+
+
+    public bool IsSelected { get; set; }
+
+    private bool IsUserAssigned(UserDTO user)
+    {
+       
+        return assignedUsers?.Any(a => a.UserId == user.UserId) ?? false;
+    }
+
+
+
+    private void ToggleOnUserSelection(UserDTO user, bool? isChecked)
+    {
+        if (IsUserAssigned(user)) return; // Prevent editing assigned users
+
+        if (isChecked == true)
+        {
+            if (!selectedUsers.Any(u => u.UserId == user.UserId))
+            {
+                selectedUsers.Add(user);
+            }
+        }
+        else
+        {
+            selectedUsers.RemoveAll(u => u.UserId == user.UserId);
+        }
+    }
+
+
+
+    private void MarkAsTouched<T>(Expression<Func<T>> fieldAccessor)
+    {
+        var fieldIdentifier = FieldIdentifier.Create(fieldAccessor);
+        if (!_touchedFields.ContainsKey(fieldIdentifier))
+        {
+            _touchedFields[fieldIdentifier] = true;
+            editContext?.NotifyValidationStateChanged();
+        }
+    }
+
+    private void ToggleAddForm()
+    {
+        showAddForm = !showAddForm;
+
+    }
+
+    private void ToggleAddCancelForm()
+    {
+        showAddForm = !showAddForm;
+    }
+
+    private List<UserDTO> tableData = new();
+
+    private string searchText = "";
+
+    private string selectedFilter = "all";
+
+
+    private async Task CloseModal()
+    {
+        // Combine assignedUsers and selectedUsers
+        var combinedUsers = assignedUsers?.Select(u => new UserDTO
+            {
+                UserId = u.UserId,
+                UserName = u.UserName
+            }).ToList() ?? new List<UserDTO>();
+
+        foreach (var user in selectedUsers)
+        {
+            if (!combinedUsers.Any(u => u.UserId == user.UserId))
+            {
+                combinedUsers.Add(user);
+            }
+        }
+
+        if (onSelectUser.HasDelegate)
+        {
+            await onSelectUser.InvokeAsync(combinedUsers);
+        }
+
+
+        showModal = false;
+        if (showModalChanged.HasDelegate)
+        {
+            await showModalChanged.InvokeAsync(false);
+        }
+        selectedUsers = null;
+
+    }
+
+
+    private  List<UserDTO> selectedUsers = new(); 
+    
+   
+    private async Task GetUsers()
+    {
+        try
+        {
+            tableData = await userService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
+             
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading clients: {ex.Message}");
+        }
+    }
+
+    private IEnumerable<UserDTO> FilteredClients =>
+        tableData.Where(c =>
+            (string.IsNullOrWhiteSpace(searchText) ||
+             c.UserName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+             c.UserEmail.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            &&
+            (selectedFilter == "all" ||
+             (selectedFilter == "active" && c.IsActive) ||
+             (selectedFilter == "inactive" && !c.IsActive))
+        );
+
+    private async Task Submit()
+    {
+        validationErrors.Clear(); // Clear previous errors
+        editContext?.MarkAsUnmodified();
+        try
+        {
+
+            errorMessage = string.Empty;
+            if (Model.UserDesignation == null || !Model.UserDesignation.Any())
+            {
+                validationErrors.Add("Assigned User Designations");
+                editContext!.NotifyValidationStateChanged();
+                StateHasChanged();
+            }
+
+            if (editContext?.Validate() == true && Model.UserDesignation != null && Model.UserDesignation.Any())
+            {
+            
+                await DeleteActivityAsync();
+
+                var response = await ApiService.RegisterUserAsync(Model!);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    ResetForm();
+                    statusMessage = "Client added successfully!";
+                    showAddForm = !showAddForm;
+                    await GetUsers();
+                    isError = false;
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    statusMessage = $"Error adding client: {errorContent}";
+                    isError = true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Exception when adding client: {ex.Message}";
+            isError = true;
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }    
+
+    private void ResetForm()
+    {
+        Model = new RegisterModel()
+            {
+                IsActive = true
+            };
+
+        editContext = new EditContext(Model);
+    }
+    public List<string> validationErrors = new List<string>();
+    private bool showServiceModal { get; set; } = false;
+    private List<UserWorkingActivityDto> data { get; set; }
+    private List<UserActivityMasterDto> workingActivity { get; set; } = new();
+    private string errorMessage = string.Empty;
+    @inject IUserDesignationService userDesignationService;
+    private void getUserWorkingActivity()
+    {
+        // Ensure registerModel and UserDesignation are initialized
+        Model ??= new RegisterModel();
+        Model.UserDesignation ??= new List<UserDesignation>();
+
+        data = Model.UserDesignation
+            .Where(d => d != null && !string.IsNullOrEmpty(d.Designation))
+            .Select(d => new UserWorkingActivityDto
+                {
+                    WorkingActivityId = 0,
+                    WorkingActivityName = d.Designation
+                })
+            .ToList();
+
+        showServiceModal = true;
+    }
+
+  
+    private void HandleSelectedMaster(List<UserActivityMasterDto> model)
+    {
+        try
+        {
+            // Safely initialize collections
+            workingActivity = model ?? new List<UserActivityMasterDto>();
+            Model ??= new RegisterModel();
+            Model.UserDesignation ??= new List<UserDesignation>();
+
+            foreach (var activity in workingActivity)
+            {
+
+                if (activity == null || string.IsNullOrWhiteSpace(activity.MasterActivityName))
+                    continue;
+
+
+                bool alreadyExists = Model.UserDesignation.Any(s =>
+                    s.Designation?.Equals(activity.MasterActivityName, StringComparison.OrdinalIgnoreCase) == true);
+
+                if (!alreadyExists)
+                {
+                    var newActivity = new UserDesignation
+                        {
+                            DesignationId = 0, // If new
+                            Designation = activity.MasterActivityName
+                        };
+
+                    Model.UserDesignation.Add(newActivity);
+                }
+            }
+
+   
+            validationErrors.Clear();
+            statusMessage = "";
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in HandleSelectedMaster: {ex}");
+            errorMessage = "Failed to add activities. Please try again.";
+        }
+    }
+    private List<int> activityDeleteList = new List<int>();
+
+    private async Task RemoveActivity(UserDesignation service)
+    {
+        if (Model!.UserDesignation == null && service.DesignationId != 0) return;
+        if (!activityDeleteList.Contains(service.DesignationId))
+        {
+            activityDeleteList.Add(service.DesignationId);
+        }
+        Model.UserDesignation!.Remove(service);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteActivityAsync()
+    {
+        try
+        {
+            if (activityDeleteList?.Count > 0 && Model.UserDesignation != null)
+            {
+                foreach (var Id in activityDeleteList)
+                {
+                    await userDesignationService.Delete(Id);
+                }
+                activityDeleteList.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting others ervices: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
+    }
+}

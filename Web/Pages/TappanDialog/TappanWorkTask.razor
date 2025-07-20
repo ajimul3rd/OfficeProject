@@ -1,0 +1,85 @@
+﻿@using OfficeProject.Web.Pages.UserActivity
+@using OfficeProject.Models.DTO
+@inject IDataSerializer? DataSerializer
+@if (IsVisible)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Works Activity Panel</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="CloseDialog">X</button>
+                </div>
+
+                <div class="modal-body" style="height: 75vh;">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <button class="nav-link @(activeTab == "servicelist" ? "active" : "")"
+                                    @onclick="@(() => SwitchTab("servicelist"))" @onclick:stopPropagation="true">
+                                Services
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link @(activeTab == "workrecord" ? "active" : "")"
+                                    @onclick="@(() => SwitchTab("workrecord"))" @onclick:stopPropagation="true">
+                                Works
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mt-3">
+                        <div class="@GetTabPaneClass("servicelist")">
+                            <ServiceListModel projects="@projects"
+                            isAddWorkFormSubmit="@HandleWorkFormSubmit" />
+                        </div>
+                        <div class="@GetTabPaneClass("workrecord")"
+                             >
+                            <UserWorkRecord ProjectId="(int)projects.ProjectId!"
+                                isFormSubmit="@HandleWorkFormSubmit" 
+                            />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter] public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> isAddWorkFormSubmit { get; set; }
+
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter] public ProjectsDTO projects { get; set; }
+
+    private string activeTab = "servicelist";
+
+    private void SwitchTab(string tab) => activeTab = tab;
+
+    private string GetTabPaneClass(string tabName) =>
+        activeTab == tabName ? "tab-pane fade show active" : "tab-pane fade";
+
+    private async Task CloseDialog()
+    {
+        IsVisible = false;
+        await IsVisibleChanged.InvokeAsync(false);
+        // await Signal.InvokeAsync(isSuccess);
+    }
+
+    protected override void OnParametersSet()
+    {
+
+        base.OnParametersSet();
+    }
+
+    private async Task HandleWorkFormSubmit(bool isSuccess)
+    {
+        await isAddWorkFormSubmit.InvokeAsync(isSuccess);
+
+    }
+}

@@ -1,0 +1,192 @@
+﻿@using OfficeProject.Web.Pages.DialogModel
+@using OfficeProject.Web.Pages.UserActivity
+@using OfficeProject.Models.DTO
+@inject ApiService api
+@inject IDataSerializer? DataSerializer
+@if (IsVisible)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content" style="height: 85vh;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sub-Works Activity Panel</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="CloseDialog">X</button>
+                </div>
+
+                <div class="modal-body">
+                    <ul class="nav nav-tabs">
+
+
+                        @if (seoFlag)
+                        {
+                            <li class="nav-item">
+                                <button class="nav-link @(activeTab == "seoTask" ? "active" : "")"
+                                        @onclick="@(() => SwitchTab("seoTask"))">
+                                    Seo Task Details
+                                </button>
+                            </li>
+                        }
+                        @if (othersFlag)
+                        {
+                            <li class="nav-item">
+                                <button class="nav-link @(activeTab == "othersTask" ? "active" : "")"
+                                        @onclick="@(() => SwitchTab("othersTask"))">
+                                    Others Task Details
+                                </button>
+                            </li>
+                        }
+                        @if (webFlag)
+                        {
+                            <li class="nav-item">
+                                <button class="nav-link @(activeTab == "webTask" ? "active" : "")"
+                                        @onclick="@(() => SwitchTab("webTask"))">
+                                    Web Task Details
+                                </button>
+                            </li>
+                        }
+
+
+
+                    </ul>
+
+
+                    <div class="tab-content mt-3">
+
+                        @if (seoFlag)
+                        {
+
+                            <div class="@GetTabPaneClass("seoTask")">
+                                <DialogUpdateSeoTask workTaskId="@workTaskId"
+                                                     SeoTaskDetailsDto="@WorkRecord.SeoTaskDetailsDto"
+                                                     isFormSubmit="@HandleSeoTaskSubmit" />
+                            </div>
+                        }
+                        @if (othersFlag)
+                        {
+                            <div class="@GetTabPaneClass("othersTask")">
+                                <DialogUpdateOthersTask workTaskId="@workTaskId"
+                                                        OthersTaskDetailsDto="@WorkRecord.OthersTaskDetailsDto"
+                                                        isFormSubmit="@HandleOthersTaskSubmit" />
+                            </div>
+                        }
+                        @if (webFlag)
+                        {
+
+                            <div class="@GetTabPaneClass("webTask")">
+                                <DialogUpdateWebDevTask workTaskId="@workTaskId"
+                                                        WebDeveTaskDetailsDto="@WorkRecord.WebDeveTaskDetailsDto"
+                                                        isFormSubmit="@HandleWebTaskSubmit" />
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    @inject IDataSerializer? DataSerializer;
+
+    private bool seoFlag { get; set; } = false;
+
+    private bool othersFlag { get; set; } = false;
+
+    private bool webFlag { get; set; } = false;
+
+    [Parameter] public bool IsVisible { get; set; }
+
+    public EventCallback<bool> isFormSubmit { get; set; }
+
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter] public int workTaskId { get; set; }
+
+    [Parameter] public WorkTaskDetailsDto WorkRecord { get; set; }
+
+    private string activeTab = "othersTask";
+
+    private void SwitchTab(string tab) => activeTab = tab;
+
+    private string GetTabPaneClass(string tabName) =>
+        activeTab == tabName ? "tab-pane fade show active" : "tab-pane fade";
+   
+
+    private async Task CloseDialog()
+    {
+        IsVisible = false;
+        await IsVisibleChanged.InvokeAsync(false);
+    }
+
+    @inject IDataSerializer? DataSerializer;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        // Reset flags
+        seoFlag = false;
+        othersFlag = false;
+        webFlag = false;
+
+        // Only load if we have a valid workTaskId
+        if (workTaskId > 0)
+        {
+            await LoadWorkTask();
+        }
+       
+    }
+
+    private async Task LoadWorkTask()
+    {
+        try
+        {
+                   
+                seoFlag = WorkRecord.SeoTaskDetailsDto?.Count > 0;
+                othersFlag = WorkRecord.OthersTaskDetailsDto?.Count > 0;
+                webFlag = WorkRecord.WebDeveTaskDetailsDto?.Count > 0;
+            
+            if (seoFlag)
+            {
+                activeTab = "seoTask";
+            }
+            else if (othersFlag)
+            {
+                activeTab = "othersTask";
+            }
+            else if (webFlag)
+            {
+                activeTab = "webTask";
+            }
+            else
+            {
+                activeTab = ""; //No tabs
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading work task: {ex.Message}");
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleSeoTaskSubmit(bool isSuccess)
+    {
+        await isFormSubmit.InvokeAsync(isSuccess);
+    }
+    private async Task HandleOthersTaskSubmit(bool isSuccess)
+    {
+        await isFormSubmit.InvokeAsync(isSuccess);
+    }
+    private async Task HandleWebTaskSubmit(bool isSuccess)
+    {
+        await isFormSubmit.InvokeAsync(isSuccess);
+    }
+
+}

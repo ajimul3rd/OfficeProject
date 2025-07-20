@@ -1,0 +1,44 @@
+﻿
+@attribute [Authorize] 
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+
+
+		<div class="page">
+			 <AuthorizeView> 
+			 	<Authorized> 
+	<div class="sidebar" >
+				<NavMenu />
+			</div>
+			
+			</Authorized>
+			</AuthorizeView>
+			<main >
+				<div class="top-row px-4">
+			 <AuthorizeView> 
+			 	<Authorized> 
+					<div>Hello, @context.User.Identity?.Name!</div>
+					<a href="/logout">LogOut</a>
+				 </Authorized> 
+				 <NotAuthorized> 
+					<div>You're not authorized.</div>
+					<a href="/logout">Login</a>
+					
+			 	</NotAuthorized> 
+			 </AuthorizeView> 
+			
+				</div>
+
+				<article class="content">
+					@Body
+				</article>
+			</main>
+		</div>
+		
+		<div id="blazor-error-ui">
+			An unhandled error has occurred.
+			<a href="" class="reload">Reload</a>
+			<a class="dismiss">🗙</a>
+		</div>
+
+		

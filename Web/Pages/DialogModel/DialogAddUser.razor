@@ -1,0 +1,638 @@
+﻿@using OfficeProject.Authentication
+@using OfficeProject.Models.DTO
+@using OfficeProject.Models.Entities
+@inject ApiService apiService
+@using OfficeProject.Models.Enums;
+@inject IDataSerializer? DataSerializer;
+
+@*
+@if (showForm)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
+            <div class="modal-content" style="height: 85vh;">
+                <div class="modal-header py-2">
+                    <h5 class="mb-0">@((registerModel.UserId == 0) ? "Add New User" : "Edit User")</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="CancelEdit">X</button>
+                </div>
+
+                <div class="modal-body" style="overflow-y:auto; max-height: calc(85vh - 100px); padding: 1rem;">
+                    <EditForm EditContext="@editContext" OnValidSubmit="@SaveUser" Context="formContext">
+                        <DataAnnotationsValidator />
+
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="form-label mb-1">Name:</label>
+                                <InputText class="form-control form-control-sm" @bind-Value="@registerModel.UserName" />
+                                <ValidationMessage For="@(() => registerModel.UserName)" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label mb-1">Email:</label>
+                                <InputText class="form-control form-control-sm" @bind-Value="@registerModel.UserEmail" />
+                                <ValidationMessage For="@(() => registerModel.UserEmail)" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label mb-1">Contact:</label>
+                                <InputText class="form-control form-control-sm" @bind-Value="@registerModel.UserContact" />
+                                <ValidationMessage For="@(() => registerModel.UserContact)" />
+                            </div>
+
+                            @if (registerModel.UserId == 0)
+                            {
+                                <div class="col-md-4">
+                                    <label class="form-label mb-1">Password:</label>
+                                    <InputText type="password" class="form-control form-control-sm" @bind-Value="@registerModel.UserPassword" />
+                                    <ValidationMessage For="@(() => registerModel.UserPassword)" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-4">
+                                    <label class="form-label mb-1">Password:</label>
+                                    <InputText type="password" class="form-control form-control-sm" @bind-Value="@registerModel.UserPassword" readonly />
+                                    <ValidationMessage For="@(() => registerModel.UserPassword)" />
+                                </div>
+                            }
+
+                            <div class="col-md-4">
+                                <label class="form-label mb-1">Role:</label>
+                                <InputSelect class="form-control form-control-sm" @bind-Value="registerModel.Role">
+                                    <option value="">Select Role</option>
+                                    <option value="@UserRole.USER">USER</option>
+                                    <option value="@UserRole.ADMIN">ADMIN</option>
+                                    <option value="@UserRole.MANAGER">MANAGER</option>
+                                </InputSelect>
+                                <ValidationMessage For="@(() => registerModel.Role)" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label mb-1">Company Name:</label>
+                                <InputText class="form-control form-control-sm" @bind-Value="@registerModel.CompanyName" />
+                                <ValidationMessage For="@(() => registerModel.CompanyName)" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label mb-1">Address:</label>
+                                <InputTextArea class="form-control form-control-sm" @bind-Value="@registerModel.Address" />
+                                <ValidationMessage For="@(() => registerModel.Address)" />
+                            </div>
+
+                            <div class="col-12">
+                                <div class="card mb-2 border-0 shadow-sm">
+                                    <div class="card-header bg-light-subtle py-1 px-2 d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0 small">
+                                            <i class="fas fa-cogs me-1"></i> Select User Working Activity
+                                        </h6>
+                                        <span class="badge bg-primary">
+                                            @(registerModel.UserDesignation?.Count ?? 0) @(registerModel.UserDesignation?.Count == 1 ? "activity" : "activities")
+                                        </span>
+                                    </div>
+
+                                    @if (validationErrors.Any())
+                                    {
+                                        <div class="alert alert-danger mb-1 mt-2 p-2">
+                                            <ul class="mb-0">
+                                                @foreach (var error in validationErrors)
+                                                {
+                                                    <li class="small">@error</li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
+
+                                    <div class="p-2">
+                                        <label class="form-label fw-semibold d-block mb-1">
+                                            <i class="fas fa-box-open me-1"></i>Select Activities
+                                        </label>
+
+                                        <div class="input-group">
+                                            <div class="form-control p-2 @(registerModel.UserDesignation == null || !registerModel.UserDesignation.Any() ? "border-danger" : "border-primary")"
+                                            style="min-height: 42px; cursor: pointer;"
+                                            @onclick="getUserWorkingActivity">
+
+                                                @if (registerModel.UserDesignation == null || !registerModel.UserDesignation.Any())
+                                                {
+                                                    <div class="text-muted d-flex align-items-center h-100">
+                                                        <i class="fas fa-search me-1"></i>
+                                                        <span class="small">Click to browse user working activity</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="d-flex flex-wrap gap-1 align-items-center">
+                                                        @foreach (var a in registerModel.UserDesignation)
+                                                        {
+                                                            @if (!string.IsNullOrEmpty(a.Designation))
+                                                            {
+                                                                <span class="badge bg-primary rounded-pill d-flex align-items-center py-1 px-2 small">
+                                                                    @a.Designation
+                                                                    <button class="btn-close btn-close-white btn-sm ms-1 p-0"
+                                                                    @onclick="@(async (e) => await RemoveActivity(a))"
+                                                                    @onclick:stopPropagation
+                                                                    @onclick:preventDefault
+                                                                    aria-label="Remove"
+                                                                    style="font-size: 0.55rem;">
+                                                                    </button>
+                                                                </span>
+                                                            }
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label mb-1">Joining Date:</label>
+                                <InputDate class="form-control form-control-sm" @bind-Value="@registerModel.JoiningDate" />
+                                <ValidationMessage For="@(() => registerModel.JoiningDate)" />
+                            </div>
+
+                            <div class="col-md-4 d-flex align-items-center mt-3">
+                                <label class="form-check-label me-2">PreeAssignUserRole:</label>
+                                <InputCheckbox class="form-check-input" @bind-Value="@registerModel.PreeAssignUserRole"/>
+                            </div>
+
+                            <div class="col-md-4 d-flex align-items-center mt-3">
+                                <label class="form-check-label me-2">Active:</label>
+                                <InputCheckbox class="form-check-input" @bind-Value="@registerModel.IsActive" />
+                                <ValidationMessage For="@(() => registerModel.IsActive)" />
+                            </div>
+
+                            <div class="col-md-4 d-flex justify-content-end align-items-end mt-3 gap-2">
+                                <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                <button type="button" class="btn btn-sm btn-secondary" @onclick="CancelEdit">Cancel</button>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p>@message</p>
+}
+
+@if (showServiceModal)
+{
+    <div class="activity-dialog-backdrop fade show"></div>
+    <div class="modal fade show d-block activity-dialog-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <DialogUserActivityMaster OnSelectedMaster="HandleSelectedMaster"
+                CallerSelectedData="@data"
+                showModalChanged="@((value) => showServiceModal = value)"
+                showModal="@showServiceModal" />
+            </div>
+        </div>
+    </div>
+}
+
+
+<style>
+    .table-responsive {
+    max-height: 500px;
+    overflow-y: auto;
+    position: relative;
+    }
+
+    .sticky-header th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #e0f3ff; /* Same color as you set */
+    }
+</style>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+*@
+
+@if (showForm)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" @onclick:stopPropagation>
+            <div class="modal-content rounded-3 shadow">
+                @* <div class="modal-header bg-primary text-white py-2">
+                    <h5 class="mb-0 fw-semibold">
+                        <i class="bi bi-person-plus me-1"></i> @((registerModel.UserId == 0) ? "Add New User" : "Edit User")
+                    </h5>
+                    <button class="btn btn-sm btn-light text-danger fw-bold" @onclick="CancelEdit" aria-label="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div> *@
+                <div class="modal-header bg-primary text-white py-">
+                    <h5 class="mb-0">@((registerModel.UserId == 0) ? "Add New User" : "Edit User")</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="CancelEdit">X</button>
+                </div>
+
+                <div class="modal-body p-3">
+                    <EditForm EditContext="@editContext" OnValidSubmit="@SaveUser" Context="formContext">
+                        <DataAnnotationsValidator />
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Name</label>
+                                <InputText class="form-control form-control-sm" @bind-Value="@registerModel.UserName" />
+                                <ValidationMessage For="@(() => registerModel.UserName)" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Email</label>
+                                <InputText class="form-control form-control-sm" @bind-Value="@registerModel.UserEmail" />
+                                <ValidationMessage For="@(() => registerModel.UserEmail)" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Contact</label>
+                                <InputText class="form-control form-control-sm" @bind-Value="@registerModel.UserContact" />
+                                <ValidationMessage For="@(() => registerModel.UserContact)" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Password</label>
+                                <InputText type="password" class="form-control form-control-sm" @bind-Value="@registerModel.UserPassword" readonly="@(registerModel.UserId != 0)" />
+                                <ValidationMessage For="@(() => registerModel.UserPassword)" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Role</label>
+                                <InputSelect class="form-select form-select-sm" @bind-Value="registerModel.Role">
+                                    <option value="">Select Role</option>
+                                    <option value="@UserRole.USER">USER</option>
+                                    <option value="@UserRole.ADMIN">ADMIN</option>
+                                    <option value="@UserRole.MANAGER">MANAGER</option>
+                                </InputSelect>
+                                <ValidationMessage For="@(() => registerModel.Role)" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Company Name</label>
+                                <InputText class="form-control form-control-sm" @bind-Value="@registerModel.CompanyName" />
+                                <ValidationMessage For="@(() => registerModel.CompanyName)" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Address</label>
+                                <InputTextArea class="form-control form-control-sm" rows="2" @bind-Value="@registerModel.Address" />
+                                <ValidationMessage For="@(() => registerModel.Address)" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Joining Date</label>
+                                <InputDate class="form-control form-control-sm" @bind-Value="@registerModel.JoiningDate" />
+                                <ValidationMessage For="@(() => registerModel.JoiningDate)" />
+                            </div>
+
+                            <div class="col-md-4 d-flex align-items-center gap-2 mt-2">
+                                <InputCheckbox class="form-check-input" @bind-Value="@registerModel.PreeAssignUserRole" />
+                                <label class="form-check-label">Pre-Assign User Role</label>
+                            </div>
+
+                            <div class="col-md-4 d-flex align-items-center gap-2 mt-2">
+                                <InputCheckbox class="form-check-input" @bind-Value="@registerModel.IsActive" />
+                                <label class="form-check-label">Active</label>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                                        <span class="fw-semibold">
+                                            <i class="bi bi-activity me-1"></i> User Working Activity
+                                        </span>
+                                        <span class="badge bg-primary">
+                                            @(registerModel.UserDesignation?.Count ?? 0) @(registerModel.UserDesignation?.Count == 1 ? "Activity" : "Activities")
+                                        </span>
+                                    </div>
+
+                                    <div class="card-body p-2">
+                                        @if (validationErrors.Any())
+                                        {
+                                            <div class="alert alert-danger p-2">
+                                                <ul class="mb-0 small">
+                                                    @foreach (var error in validationErrors)
+                                                    {
+                                                        <li>@error</li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        }
+
+                                        <div class="form-control p-2 mb-2 border @(registerModel.UserDesignation == null || !registerModel.UserDesignation.Any() ? "border-danger" : "border-primary")"
+                                             style="cursor: pointer;"
+                                             @onclick="getUserWorkingActivity">
+
+                                            @if (registerModel.UserDesignation == null || !registerModel.UserDesignation.Any())
+                                            {
+                                                <div class="text-muted small">
+                                                    <i class="bi bi-search me-1"></i> Click to browse user working activity
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="d-flex flex-wrap gap-1">
+                                                    @foreach (var a in registerModel.UserDesignation)
+                                                    {
+                                                        @if (!string.IsNullOrEmpty(a.Designation))
+                                                        {
+                                                            <span class="badge bg-primary rounded-pill d-flex align-items-center">
+                                                                @a.Designation
+                                                                <button class="btn-close btn-close-white btn-sm ms-1 p-0"
+                                                                        @onclick="@(async (e) => await RemoveActivity(a))"
+                                                                @onclick:stopPropagation
+                                                                @onclick:preventDefault
+                                                                        aria-label="Remove"
+                                                                        style="font-size: 0.55rem;">
+                                                                </button>
+                                                            </span>
+                                                        }
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-save me-1"></i> Save
+                                </button>
+                                <button class="btn btn-sm btn-danger" @onclick="CancelEdit"> Cancel</button>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<p>@message</p>
+
+@if (showServiceModal)
+{
+    <div class="activity-dialog-backdrop fade show"></div>
+    <div class="modal fade show d-block activity-dialog-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <DialogUserActivityMaster OnSelectedMaster="HandleSelectedMaster"
+                                          CallerSelectedData="@data"
+                                          showModalChanged="@((value) => showServiceModal = value)"
+                                          showModal="@showServiceModal" />
+            </div>
+        </div>
+    </div>
+}
+
+
+<style>
+    .table-responsive {
+        max-height: 500px;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .sticky-header th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #e0f3ff; /* Same color as you set */
+    }
+</style>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+@code {
+    @inject IUserDesignationService userDesignationService;
+
+    [Parameter]
+    public RegisterModel registerModel { get; set; }
+
+    [Parameter]
+    public bool showForm { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<bool> isFormSubmit { get; set; }
+
+    private EditContext? editContext;
+
+    private string message { get; set; }
+
+    private string errorMessage = string.Empty;
+
+    public List<string> validationErrors = new List<string>();
+
+    private string statusMessage = string.Empty;
+
+
+    protected override void OnParametersSet()
+    {
+        registerModel ??= new RegisterModel();
+        editContext = new EditContext(registerModel);
+    }
+
+
+
+
+    private async Task SaveUser()
+    {
+        validationErrors.Clear(); // Clear previous errors
+        editContext?.MarkAsUnmodified();
+        try
+        {
+            if (registerModel == null) // Add this check
+            {
+                errorMessage = "User data is missing";
+                return;
+            }
+
+            errorMessage = string.Empty;
+            if (registerModel.UserDesignation == null || !registerModel.UserDesignation.Any())
+            {
+                validationErrors.Add("Assigned User Designations");
+                editContext!.NotifyValidationStateChanged();
+                StateHasChanged();
+            }
+
+            if (editContext?.Validate() == true && registerModel.UserDesignation != null && registerModel.UserDesignation.Any())
+            {
+                if (registerModel.UserId == 0)
+                {
+
+                    await DeleteActivityAsync();
+                    var response = await apiService.RegisterUserAsync(registerModel);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        await isFormSubmit.InvokeAsync(true);
+                    }
+                    else
+                    {
+
+                        errorMessage = await response.Content.ReadAsStringAsync();
+                    }
+                }
+                else
+                {
+
+                    var userDto = new UserDTO
+                        {
+                            UserId = registerModel.UserId, // or handle null as needed
+                            UserName = registerModel.UserName,
+                            UserEmail = registerModel.UserEmail,
+                            UserContact = registerModel.UserContact,
+                            Role = registerModel.Role,
+                            PreeAssignUserRole = registerModel.PreeAssignUserRole,
+                            IsActive = registerModel.IsActive,
+                            CompanyName = registerModel.CompanyName,
+                            Address = registerModel.Address,
+                            UserDesignation = registerModel.UserDesignation,
+                            JoiningDate = registerModel.JoiningDate
+                        };
+                    await DeleteActivityAsync();
+                    var response = await apiService.UpdateUserDTOAsync(userDto, (int)userDto.UserId!);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        await isFormSubmit.InvokeAsync(true);
+                    }
+                    else
+                    {
+
+                        errorMessage = await response.Content.ReadAsStringAsync();
+                    }
+
+                    showForm = false;
+
+                }
+
+
+            }
+
+
+            registerModel = new RegisterModel();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving user: {ex.Message}";
+            Console.WriteLine(ex.ToString()); // Better logging
+        }
+    }
+
+
+    private void CancelEdit()
+    {
+        showForm = false;
+        errorMessage = string.Empty;
+        registerModel = new RegisterModel();
+    }
+
+
+
+
+    private List<UserWorkingActivityDto> data { get; set; }
+    private bool showServiceModal { get; set; } = false;
+
+    private List<UserActivityMasterDto> workingActivity { get; set; } = new();
+
+    private void getUserWorkingActivity()
+    {
+        // Ensure registerModel and UserDesignation are initialized
+        registerModel ??= new RegisterModel();
+        registerModel.UserDesignation ??= new List<UserDesignation>();
+
+        data = registerModel.UserDesignation
+            .Where(d => d != null && !string.IsNullOrEmpty(d.Designation))
+            .Select(d => new UserWorkingActivityDto
+                {
+                    WorkingActivityId = 0,
+                    WorkingActivityName = d.Designation
+                })
+            .ToList();
+
+        showServiceModal = true;
+    }
+
+    private void HandleSelectedMaster(List<UserActivityMasterDto> model)
+    {
+        try
+        {
+            // Safely initialize collections
+            workingActivity = model ?? new List<UserActivityMasterDto>();
+            registerModel ??= new RegisterModel();
+            registerModel.UserDesignation ??= new List<UserDesignation>();
+
+            foreach (var activity in workingActivity)
+            {
+
+                if (activity == null || string.IsNullOrWhiteSpace(activity.MasterActivityName))
+                    continue;
+
+
+                bool alreadyExists = registerModel.UserDesignation.Any(s =>
+                    s.Designation?.Equals(activity.MasterActivityName, StringComparison.OrdinalIgnoreCase) == true);
+
+                if (!alreadyExists)
+                {
+                    var newActivity = new UserDesignation
+                        {
+                            DesignationId = 0, // If new
+                            Designation = activity.MasterActivityName
+                        };
+
+                    registerModel.UserDesignation.Add(newActivity);
+                }
+            }
+
+            validationErrors.Clear();
+            statusMessage = "";
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in HandleSelectedMaster: {ex}");
+            errorMessage = "Failed to add activities. Please try again.";
+        }
+    }
+    private List<int> activityDeleteList = new List<int>();
+
+    private async Task RemoveActivity(UserDesignation service)
+    {
+        if (registerModel!.UserDesignation == null && service.DesignationId != 0) return;
+        if (!activityDeleteList.Contains(service.DesignationId))
+        {
+            activityDeleteList.Add(service.DesignationId);
+        }
+        registerModel.UserDesignation!.Remove(service);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteActivityAsync()
+    {
+        try
+        {
+            if (activityDeleteList?.Count > 0 && registerModel!.UserDesignation != null)
+            {
+                foreach (var Id in activityDeleteList)
+                {
+                    await userDesignationService.Delete(Id);
+                }
+                activityDeleteList.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting others ervices: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
+    }
+
+
+}
+

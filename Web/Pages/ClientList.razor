@@ -1,0 +1,311 @@
+﻿@page "/add-client"﻿
+@inject IClientService ClientService
+@inject ApiService ApiService;
+@using OfficeProject.Models.DTO
+@using OfficeProject.Web.Pages.DialogModel
+@inject IDataSerializer? DataSerializer
+@inject IClientService clientService
+
+<AuthorizeView>
+    <Authorized>
+
+
+<h3 class="mb-4">Client Management</h3>
+
+<DialogAddClient Model="@Model" isFormSubmit="HandleGetProjectsAsync" showForm="@showDialog" />
+
+@if (tableData?.Count > 0)
+{
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <!-- Search Input -->
+        <input type="text" id="searchInput" class="form-control search-box"
+        placeholder="Search clients..."
+        @bind-value="searchText" @bind-value:event="oninput"
+        style="max-width: 250px;" />
+
+        <!-- Filter Dropdown -->
+        <select id="filterSelect" class="form-select filter-select"
+        @bind="selectedFilter" style="max-width: 200px;">
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+        </select>
+
+        <!-- Add Client Button -->
+        <button class="btn btn-primary ms-auto" @onclick="OpenAddClientDialog">
+            <i class="fas fa-plus"></i> Add Client
+        </button>
+    </div>
+
+
+    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+        <table class="table table-bordered table-sm custom-tight-table mb-0">
+            <thead class="table-info sticky-header">
+                <tr>
+                    <th>Client Name</th>
+                    <th>Company Name</th>
+                    <th>Contact No.</th>
+                    <th>Email</th>
+                    <th>Client Source</th>
+                    <th>Issued By</th>
+                    <th>Status</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var client in FilteredClients)
+                {
+                    <tr>
+                        <td>@client.ClientName</td>
+                        <td>@client.CompanyName</td>
+                        <td>@client.ClientContact1</td>
+                        <td>@client.ClientEmail1</td>
+                        <td>@client.ClientSource</td>
+                        <td>@client.IssuedBy</td>
+                        <td>
+                            <button class="btn btn-sm px-2 py-1 @(client.IsActive ? "btn-success" : "btn-danger")"
+                            style="font-size: 0.75rem;"
+                            @onclick="() => ToggleClientStatus(client, !client.IsActive)">
+                                @(client.IsActive ? "Active" : "Inactive")
+                            </button>
+                        </td>
+                        <td>@client.ClientAddress</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" @onclick="() => EditClient(client)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+}
+else
+{
+    <div class="alert alert-info">No clients available.</div>
+    <button class="btn btn-primary" @onclick="OpenAddClientDialog">
+        <i class="fas fa-plus"></i> Add First Client
+    </button>
+}
+<style>
+    .sticky-header th {
+    position: sticky;
+    top: 0;
+    background-color: #e0f3ff; /* or any header color */
+    z-index: 2;
+    
+    }
+</style>
+
+<DialogAddClient Model="@Model" isFormSubmit="HandleGetProjectsAsync" showForm="@showDialog" />
+
+</Authorized>
+<NotAuthorized>
+    @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+</NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private string statusMessage = string.Empty;
+
+    private string errorMessage = string.Empty;
+
+    private ClientsDTO? Model { get; set; }
+
+    private List<ClientsDTO> tableData = new();
+
+    private string searchText = "";
+
+    private string selectedFilter = "all";
+
+    private bool showDialog = false;
+
+    private bool isLoading = true;
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Model=  new ClientsDTO(); // Initialize model first
+        await GetClientList();
+
+    }
+
+
+    private async Task ReloadProjects(bool isSuccess)
+    {
+        if (isSuccess)
+        {
+            await GetClientList();
+
+        }
+
+    }
+    private async Task HandleGetProjectsAsync(bool isFormSubmit)
+    {
+        if (isFormSubmit) 
+
+            await GetClientList();
+        CloseFormDialog();
+
+    }
+    private void OpenAddClientDialog()
+    {
+        Model = new ClientsDTO { IsActive = true, IssueDate = DateTime.Now, ClientCreatedAt = DateTime.Now };
+        showDialog = true;
+    }
+    private void CloseFormDialog()
+    {
+        showDialog = false;
+        Model = null;
+      
+    }
+    private void EditClient(ClientsDTO client)
+    {
+        Model = new ClientsDTO
+            {
+                ClientId = client.ClientId,
+                ClientName = client.ClientName,
+                CompanyName = client.CompanyName,
+                ClientContact1 = client.ClientContact1,
+                ClientEmail1 = client.ClientEmail1,
+                ClientSource = client.ClientSource,
+                ClientAddress = client.ClientAddress,
+                IssueDate = client.IssueDate,
+                IssuedBy = client.IssuedBy,
+                IsActive = client.IsActive,
+                ClientCreatedAt = client.ClientCreatedAt
+            };
+        showDialog = true;
+    }
+    private async Task GetClientList()
+    {
+        try
+        {
+            tableData = await clientService.GetClientListAsync() ?? new List<ClientsDTO>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading clients: {ex.Message}");
+        }
+    }
+
+    private async Task ToggleClientStatus(ClientsDTO client, bool newStatus)
+    {
+        client.IsActive = newStatus;
+        try
+        {
+          var response = await ApiService.AddClientAsync(client!);
+
+                if (response.IsSuccessStatusCode)
+            {
+                await GetClientList();
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    statusMessage = $"Error adding client: {errorContent}";
+                }
+            
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Exception when adding client: {ex.Message}";
+        }
+        finally
+        {
+
+            StateHasChanged();
+        }
+    }
+
+
+   
+
+   
+  
+
+    private IEnumerable<ClientsDTO> FilteredClients =>
+        tableData.Where(c =>
+            (string.IsNullOrWhiteSpace(searchText) ||
+             c.ClientName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+             c.CompanyName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            &&
+            (selectedFilter == "all" ||
+             (selectedFilter == "active" && c.IsActive) ||
+             (selectedFilter == "inactive" && !c.IsActive))
+        );
+
+}
+<style>
+/* Styling for controls */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+
+.search-box {
+    flex: 1 1 250px;
+    max-width: 300px;
+    padding: 0.5rem;
+}
+
+.filter-select {
+    flex: 1 1 150px;
+    max-width: 200px;
+    padding: 0.5rem;
+}
+
+/* Modal adjustments */
+.modal-content {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+/* Card uniform look */
+.card {
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #f1f1f1;
+    font-weight: 500;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.required::after {
+    content: "*";
+    color: red;
+    margin-left: 4px;
+}
+</style>

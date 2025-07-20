@@ -1,0 +1,505 @@
+﻿@using OfficeProject.Models.DTO
+@using OfficeProject.Models.Enums
+@using OfficeProject.Web.Pages.DialogModel
+@using OfficeProject.Web.Pages.TappanDialog
+@page "/userproject"
+@inject ApiService api
+@inject IDataSerializer? DataSerializer
+
+<AuthorizeView>
+    <Authorized>      
+
+        <h3 class="mb-4 fw-bold text-primary">My Projects</h3>
+
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <div class="flex-grow-1" style="max-width: 400px;">
+                <input class="form-control form-control-lg"
+                type="text"
+                @bind="searchText"
+                @bind:event="oninput"
+                placeholder="🔍 Search by PID, Project Name or Client Name..." />
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-success d-flex align-items-center gap-1 px-3 py-2" @onclick="AddProject">
+                    <i class="bi bi-plus-circle-fill"></i> <span>Add Project</span>
+                </button>
+                <button class="btn btn-primary d-flex align-items-center gap-1 px-3 py-2" @onclick="AddExtraServices">
+                    <i class="bi bi-plus-circle-fill"></i> <span>Add Extra Service</span>
+                </button>
+            </div>
+        </div>
+
+        <br />
+
+
+        @if (isLoading)
+        {
+            <div class="text-center mt-3">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+        else if (loadFailed)
+        {
+            <div class="alert alert-danger">
+                Failed to load projects. Please try again.
+            </div>
+        }
+        else if (projects == null || !projects.Any())
+        {
+            <div class="alert alert-info">
+                You don't have any assigned projects.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-info">
+                        <tr>
+                            <th class="text-center">PID</th>
+                            <th>Project Name</th>
+                            <th>Client</th>
+                            <th class="text-center">Start Date</th>
+                            <th class="text-center">GMB</th>
+                            <th class="text-center">Fb</th>
+                            <th class="text-center">Ig</th>
+                            <th class="text-center">View Team Works</th>
+                            <AuthorizeView Roles="ADMIN,MANAGER">
+                                <Authorized Context="adminContext">
+                                    <th class="text-center">Work Status</th>
+                                </Authorized>
+                            </AuthorizeView>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var project in filteredProjects)
+                        {
+                            <AuthorizeView Roles="ADMIN,MANAGER">
+                                <Authorized Context="adminContext">
+
+                                    <tr @onclick="() => OpenDialog(project)" style="cursor: pointer;" class="hover-row">
+                                        <td class="text-center">@project.ProjectId</td>
+                                        <td>
+                                            @project.ProjectName
+                                            @if (project.ProjectType == ProjectType.SERVICE)
+                                            {
+                                                <span class="text-muted ms-1">(Service)</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="ms-1 fw-bold text-primary">(Extra Service)</span>
+                                            }
+                                        </td>
+
+                                        <td>@(project.Client?.ClientName ?? "N/A")</td>
+                                        <td class="text-center">@project.ProjectStartDate.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
+                                        <td class="text-center">@project.GmbRakning</td>
+                                        <td class="text-center">@project.FbFollowers</td>
+                                        <td class="text-center">@project.IgFollowers</td>
+                                        @*                                         <td class="text-center">
+                                            <button class="btn btn-sm btn-primary d-flex justify-content-center align-items-center"
+                                                    @onclick="() => ViewTeamWork((int)project.ProjectId!)"
+                                            @onclick:stopPropagation
+                                                    title="View Team Work">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td> *@
+
+                                        <td class="text-center">
+                                            <button class="btn btn-sm btn-primary btn-icon-center"
+                                            @onclick="() => ViewTeamWork((int)project.ProjectId!)"
+                                            @onclick:stopPropagation
+                                            title="View Team Work">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+
+
+                                        <td class="text-center">
+                                            @if (project.IsUserWorkDone)
+                                            {
+                                                <span class="badge-complete">Complete</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge-running">Running</span>
+                                            }
+                                        </td>
+
+
+
+                                    </tr>
+
+                                </Authorized>
+                            </AuthorizeView>
+
+                            if (!@project.IsUserWorkDone)
+                            {
+                                <AuthorizeView Roles="USER">
+                                    <Authorized Context="userContext">
+
+                                        <tr @onclick="() => OpenDialog(project)" style="cursor: pointer;" class="hover-row">
+                                            <td class="text-center">@project.ProjectId</td>
+                                            <td>
+                                                @project.ProjectName
+                                                @if (project.ProjectType == ProjectType.SERVICE)
+                                                {
+                                                    <span class="text-muted ms-1">(Service)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="ms-1 fw-bold text-primary">(Extra Service)</span>
+                                                }
+                                            </td>
+                                            <td>@(project.Client?.ClientName ?? "N/A")</td>
+                                            <td class="text-center">@project.ProjectStartDate.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
+                                            <td class="text-center">@project.GmbRakning</td>
+                                            <td class="text-center">@project.FbFollowers</td>
+                                            <td class="text-center">@project.IgFollowers</td>
+                                            <td class="text-center">
+                                                <button class="btn btn-sm btn-primary"
+                                                @onclick="() => ViewTeamWork((int)project.ProjectId!)" @onclick:stopPropagation
+                                                title="View Team Work">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+
+
+                                        </tr>
+
+                                    </Authorized>
+                                </AuthorizeView>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+
+
+        }
+        @if (ShowDialog)
+        {
+        <TappanWorkTask isAddWorkFormSubmit="@HandleWorkFormSubmit"
+        IsVisible="@ShowDialog"
+        projects="@data"
+        IsVisibleChanged="@((bool val) => ShowDialog = val)" />
+         }
+        @if (ShowTeamWork)
+        {
+        <DialogViewTeamWorks ShowTeamWork="@ShowTeamWork"
+        ProjectId="@ProjectId"
+        IsDialogClose="@((bool val) => ShowTeamWork = val)" />
+
+        }
+        @if (showProjectModal)
+        {
+
+            <DialogAddProject project="data"
+                              OnProjectAdded="ReloadProjects"
+                              iSNewFormData="iSNewFormData"
+                              showModal="@showProjectModal" />
+        }
+
+        @if (ExtraServiceModal)
+        {
+            <DialogAddExtreServices project="data"
+                                    OnProjectAdded="ReloadProjects"
+                                    iSNewFormData="iSNewFormData"
+                                    ExtraServiceModal="@ExtraServiceModal" />
+
+        }
+
+@*         <DialogAddProject project="data"
+        OnProjectAdded="ReloadProjects"
+        iSNewFormData="iSNewFormData"
+        showModal="@showProjectModal" />       
+
+        <DialogAddExtreServices project="data" 
+        OnProjectAdded="ReloadProjects"
+        iSNewFormData="iSNewFormData"
+        ExtraServiceModal="@ExtraServiceModal" /> *@
+
+
+        <style>
+            .hover-row:hover {
+            background-color: #f5f5f5;
+            }
+
+            .badge-complete {
+            background-color: #28a745; /* green */
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            }
+
+            .badge-running {
+            background-color: #ffc107; /* yellow */
+            color: black;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            }
+
+            .text-center {
+            text-align: center;
+            vertical-align: middle;
+            }
+
+            .btn-icon-center {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.375rem; /* adjust as needed for spacing */
+            }
+
+
+        </style>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+    private int ProjectId { get; set; }
+
+    private bool ShowDialog = false;
+
+    private bool ShowTeamWork = false;
+
+    private string message { get; set; } = "";
+
+    private List<ProjectsDTO> projects;
+
+    private ProjectsDTO data { get; set; }
+
+    private ProjectsDTO UserSelectedData { get; set; }
+
+    private bool isLoading = true;
+
+    private bool loadFailed = false;
+
+    private CancellationTokenSource cts = new();
+
+    private List<AssignedUsersDTO> PreeAssignedUsers { get; set; }
+
+    // private List<AssignedUsersDTO> ExtraServicesPreeAssignedUsers { get; set; }
+
+
+    private bool showProjectModal { get; set; } = false;  
+
+    private bool ExtraServiceModal { get; set; } = false;
+
+    private bool iSNewFormData { get; set; } = false;
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+
+   
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            await GetProjectPerUserAsync();
+
+            await GetCurrentLoggedUsersWithPreAssignedAsync();
+
+        }
+        catch (Exception ex)
+        {
+            loadFailed = true;
+            Console.WriteLine($"Error loading projects: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private Task CloseDialog()
+    {
+        Console.WriteLine("Dialog closed without submit");
+        return Task.CompletedTask;
+    }
+    private void OpenDialog(ProjectsDTO project)
+    {
+
+        data ??= new ProjectsDTO();
+        data = project;
+        UserSelectedData = project;
+        ShowDialog = true;
+        ProjectId = (int)project.ProjectId!;
+    }
+    private async Task GetCurrentLoggedUsersWithPreAssignedAsync()
+    {
+        var currentUser = await api.GetCurrentLoggedUserAsync();
+        var preAssignUsers = await api.GetPreeAssignUsersAsync();
+
+        var combined = new List<UserDTO>();
+
+        if (preAssignUsers != null && preAssignUsers.Any())
+        {
+            combined.AddRange(preAssignUsers);
+        }
+        // PreeAssignedUsers = combined.Select(u => new AssignedUsersDTO
+        //     {
+        //         UserId = u.UserId,
+        //         UserName = u.UserName,
+        //         Role = u.Role.ToString(),
+        //     }).ToList();
+
+
+        if (currentUser != null)
+        {
+            combined.Add(currentUser);
+        }
+
+        // Remove duplicates based on UserId
+        var distinctUsers = combined
+            .GroupBy(u => u.UserId)
+            .Select(g => g.First())
+            .ToList();
+
+        var AssignedUsersDTO = new List<AssignedUsersDTO>();
+
+        // Map to AssignedUsersDTO
+        PreeAssignedUsers = distinctUsers.Select(u => new AssignedUsersDTO
+            {
+                UserId = u.UserId,
+                UserName = u.UserName,
+                Role = u.Role.ToString(),
+            }).ToList();
+
+
+    }
+
+
+    protected async Task GetProjectPerUserAsync()
+    {
+        try
+        {
+            data ??= new ProjectsDTO();
+            projects ??= new List<ProjectsDTO>();
+
+            projects = await api.GetProjectPerUserAsync();
+            // DataSerializer?.Serializer(projects, "UserActivity:GetProjectPerUserAsync");
+
+            // Optional: Check if first project has no services, then clear the whole list
+            if (projects.Count > 0 && (projects[0].Services == null || projects[0].Services!.Count == 0))
+            {
+                projects = new List<ProjectsDTO>();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            loadFailed = true;
+            Console.WriteLine($"Error loading projects: {ex.Message}");
+        }
+
+    }
+
+    private async Task HandleWorkFormSubmit(bool isSuccess)
+    {
+        try
+        {
+            if (isSuccess)
+            {
+                data = new ProjectsDTO();
+                projects = new List<ProjectsDTO>();
+                // DataSerializer?.Serializer(data, "Before :: UserActivity:HandleWorkFormSubmit");
+                projects = await api.GetProjectPerUserAsync();
+
+                UserSelectedData = projects.FirstOrDefault(p =>
+                    p.ProjectId == UserSelectedData?.ProjectId);
+                if (UserSelectedData != null)
+                {
+                    data = UserSelectedData;
+                    // DataSerializer?.Serializer(data, "After :: UserActivity:HandleWorkFormSubmit");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in HandleWorkFormSubmit: {ex.Message}");
+            message = "Failed to update project data";
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void AddProject()
+    {
+        data = new ProjectsDTO(); 
+        data.AssignedUsers = PreeAssignedUsers;
+        data.AssignedUsers = data.AssignedUsers
+            .Concat(PreeAssignedUsers ?? new List<AssignedUsersDTO>())
+            .GroupBy(u => u.UserId)
+            .Select(g => g.First())
+            .ToList();
+
+        showProjectModal = true;
+        iSNewFormData = true;
+        StateHasChanged();
+    }
+
+
+    private void AddExtraServices()
+    {
+        data = new ProjectsDTO();
+        data.AssignedUsers = new List<AssignedUsersDTO>();
+        data.AssignedUsers = data.AssignedUsers
+            .Concat(PreeAssignedUsers ?? new List<AssignedUsersDTO>())
+            .GroupBy(u => u.UserId)
+            .Select(g => g.First())
+            .ToList();
+
+        ExtraServiceModal = true;
+        iSNewFormData = true;
+        StateHasChanged();
+    }
+
+
+
+    private async Task ReloadProjects(bool isSuccess)
+    {
+        Console.WriteLine(isSuccess);
+        if (isSuccess)
+        {
+            await GetProjectPerUserAsync();//Reload the Project Per User
+            StateHasChanged();   // Force UI update
+        }
+        else
+        {
+            showProjectModal = false;
+            ExtraServiceModal = false;
+        }
+    }
+
+
+    private string searchText = "";
+
+    private IEnumerable<ProjectsDTO> filteredProjects => string.IsNullOrWhiteSpace(searchText)
+        ? projects
+        : projects.Where(p =>
+            (p.ProjectId.ToString()!.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(p.ProjectName) && p.ProjectName.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(p.Client?.ClientName) && p.Client.ClientName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+        );
+
+    private void ViewTeamWork(int ProjectId)
+    {
+        ShowTeamWork = true;
+        this.ProjectId = ProjectId;
+    }
+
+
+}

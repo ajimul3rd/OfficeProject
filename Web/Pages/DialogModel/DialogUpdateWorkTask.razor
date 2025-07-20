@@ -1,0 +1,259 @@
+﻿@using OfficeProject.Models.DTO
+@inject ApiService api
+@inject IDataSerializer? DataSerializer
+@inject IService? projectService
+
+@if (IsVisible)
+{
+
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
+            <div class="modal-content" style="height: 90vh;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Work Task</h5>
+                    <button class="btn btn-sm btn-danger" @onclick="CloseDialog">X</button>
+                </div>
+
+                <div class="modal-body">
+                    <EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Service ID:</label>
+                                    <InputNumber @bind-Value="@WorkRecord.ServiceId" class="form-control" readonly />
+                                    <ValidationMessage For="@(() => WorkRecord.ServiceId)" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Work Date:</label>
+                                    <InputDate @bind-Value="@WorkRecord.WorkDate" class="form-control" readonly />
+                                    <ValidationMessage For="@(() => WorkRecord.WorkDate)" />
+                                </div>
+                            </div>
+                        
+                            @if (flags.IsPost)
+                            {
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label>Post:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.SharedPost" class="form-control" readonly="@(!flags.IsPost)" />
+                                        <ValidationMessage For="@(() =>WorkRecord.SharedPost)" />
+                                    </div>
+                                </div>
+                            }
+                            @if (flags.IsReels)
+                            {
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label>Reels:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.CreatedReels" class="form-control" readonly="@(!flags.IsReels)" />
+                                        <ValidationMessage For="@(() =>WorkRecord.CreatedReels)" />
+                                    </div>
+                                </div>
+                            }
+                            @if (flags.IsAdsBudget)
+                            {
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label>Used Ads Budget:</label>
+                                        <InputNumber @bind-Value="@WorkRecord.UsedAdsBudget" class="form-control" readonly="@(!flags.IsAdsBudget)" />
+                                        <ValidationMessage For="@(() =>WorkRecord.UsedAdsBudget)" />
+                                    </div>
+                                </div>
+                            }
+
+                            @if (flags.IsBacklink)
+                            {
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Used Backlink:</label>
+                                            <InputNumber @bind-Value="@WorkRecord.Backlink" class="form-control" />
+                                            <ValidationMessage For="@(() => WorkRecord.Backlink)" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Backlink URL:</label>
+                                            <InputText @bind-Value="@WorkRecord.BacklinkURL" class="form-control" />
+                                            <ValidationMessage For="@(() => WorkRecord.BacklinkURL)" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (flags.IsClasified)
+                            {
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Used Clasified:</label>
+                                            <InputNumber @bind-Value="@WorkRecord.Clasified" class="form-control" />
+                                            <ValidationMessage For="@(() => WorkRecord.Clasified)" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Clasified URL:</label>
+                                            <InputText @bind-Value="@WorkRecord.ClasifiedURL" class="form-control"  />
+                                            <ValidationMessage For="@(() => WorkRecord.ClasifiedURL)" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (flags.IsSocialSharing)
+                            {
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Used Social Sharing:</label>
+                                            <InputNumber @bind-Value="@WorkRecord.SocialSharing" class="form-control" />
+                                            <ValidationMessage For="@(() => WorkRecord.SocialSharing)" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Social Sharing URL:</label>
+                                            <InputText @bind-Value="@WorkRecord.SocialSharingURL" class="form-control" />
+                                            <ValidationMessage For="@(() => WorkRecord.SocialSharingURL)" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @* <div class="col-md-6"> *@
+                            @*     <div class="form-group"> *@
+                            @*         <label>User Task:</label> *@
+                            @*         <InputText @bind-Value="@WorkRecord.Task" class="form-control" /> *@
+                            @*         <ValidationMessage For="@(() => WorkRecord.Task)" /> *@
+                            @*     </div> *@
+                            @* </div> *@
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Select Work Task:</label>
+                                    <UserTaskMasterList @bind-SelectedTask="WorkRecord.Task" showHeader="false" />
+                                    <ValidationMessage For="@(() => WorkRecord.Task)" class="text-danger small" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Status:</label>
+                                    <InputSelect @bind-Value="@WorkRecord.Status" class="form-control">
+                                        <option value="">-- Select Status --</option>
+                                        <option>Completed</option>
+                                        <option>In-Progress</option>
+                                        <option>Pending</option>
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => WorkRecord.Status)" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Remarks:</label>
+                                    <InputTextArea @bind-Value="@WorkRecord.Remarks" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="button" class="btn btn-danger ms-2" @onclick="CloseDialog">Cancel</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<bool> IsFormSubmit { get; set; }
+
+    [Parameter]
+    public WorkTaskDetailsDto Data { get; set; }
+
+
+    public WorkTaskDetailsDto WorkRecord { get; set; } = new();
+
+    @inject IDataSerializer? DataSerializer;
+
+    private EditContext editContext;
+
+    private ServiceFlagsDTO flags { get; set; } = new();
+
+    // protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Data != null)
+        {
+            WorkRecord = new WorkTaskDetailsDto
+                {   WorkTaskId=Data.WorkTaskId,
+                    ServiceId = Data.ServiceId,
+                    WorkDate = Data.WorkDate,
+                    SharedPost = Data.SharedPost,
+                    CreatedReels = Data.CreatedReels,
+                    UsedAdsBudget = Data.UsedAdsBudget,
+                    Backlink=Data.Backlink,
+                    BacklinkURL=Data.BacklinkURL,
+                    Clasified=Data.Clasified,
+                    ClasifiedURL=Data.ClasifiedURL,
+                    SocialSharing=Data.SocialSharing,
+                    SocialSharingURL=Data.SocialSharingURL,
+                    Task = Data.Task,
+                    Status = Data.Status,
+                    Remarks = Data.Remarks
+
+                };
+            flags = await projectService?.GetServiceFlagsAsync(Data.ServiceId) ?? new ServiceFlagsDTO();
+
+        }
+        else
+        {
+            WorkRecord = new WorkTaskDetailsDto();
+        }
+
+        editContext = new EditContext(WorkRecord);
+       
+    }
+
+    private async Task CloseDialog()
+    {
+        IsVisible = false;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            // DataSerializer?.Serializer(WorkRecord, "DialogUpdateWorkTask:HandleValidSubmit");
+            await api.SaveOrUpdateProjectsAsync(WorkRecord);
+            await IsFormSubmit.InvokeAsync(true);
+        }
+        catch (Exception ex)
+        {
+            // Handle API errors
+            DataSerializer?.Serializer(ex, "Submission Error");
+        }
+       
+
+
+
+        if (IsFormSubmit.HasDelegate)
+        {
+            await IsFormSubmit.InvokeAsync(true);
+        }
+        IsVisible = false;
+    }
+}
