@@ -1,0 +1,87 @@
+﻿@page "/breakpoints"
+
+@using OfficeProject.Models.Enums
+@inject DateService DateService
+
+<h3>Breakpoint Dates Generator</h3>
+
+<div>
+    <label>Start Date:</label>
+    <InputDate @bind-Value="startDate" class="form-control" />
+
+    <label>Billing Type:</label>
+    <select @bind="billingType" class="form-control">
+        @foreach (var type in Enum.GetValues<BillingType>())
+        {
+            <option value="@type">@type</option>
+        }
+    </select>
+
+    <label>Total Units:</label>
+    <InputNumber @bind-Value="totalUnits" class="form-control" />
+
+    <button class="btn btn-primary mt-2" @onclick="GenerateBreakpoints">Generate Breakpoints</button>
+    <button class="btn btn-primary mt-2" @onclick="GetTotalDaysExcludingSundays">Get Total Date</button>
+</div>
+
+@if (breakpoints != null && breakpoints.Any())
+{
+    <h4 class="mt-3">Generated Breakpoints:</h4>
+    <ul>
+        @foreach (var date in breakpoints)
+        {
+            <li>@date.ToString("yyyy-MM-dd (dddd)")</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<DateTime> breakpoints = new();
+    private DateTime startDate = DateTime.Today;
+    private BillingType billingType = BillingType.Monthly;
+    private int totalUnits = 10;
+
+    private void GenerateBreakpoints()
+    {
+        breakpoints = DateService.GetBreakPointDates(startDate, billingType, totalUnits);
+        var interval = DateService.GetCurrentInterval(breakpoints);
+
+        if (interval != null)
+        {
+            Console.WriteLine($"✅ Current date is between: {interval.Value.Start:yyyy-MM-dd} and {interval.Value.End:yyyy-MM-dd}");
+        }
+        else
+        {
+            Console.WriteLine("⚠️ Current date is not within any breakpoints.");
+        }
+    }
+
+    private void GetTotalDaysExcludingSundays()
+    {
+        var TotalDay = DateService.GetTotalDaysExcludingSundays(startDate,30);
+
+        if (TotalDay != 0)
+        {
+            var unit = 10f;
+            var averageUnit = unit / TotalDay;
+            var completeUnit = (float)5 / 17;
+            if (averageUnit <= completeUnit)
+            {
+
+                Console.WriteLine($"Good Performance: {completeUnit}");
+            }
+            else
+            {
+                Console.WriteLine($"Your so Lagy: {completeUnit}");
+            }
+            Console.WriteLine($"Total date: {TotalDay}");
+            Console.WriteLine($"Avarage Unit: {averageUnit}");
+        }
+        else
+        {
+            Console.WriteLine("⚠️ Total date is not calculate");
+        }
+    }
+      
+
+}

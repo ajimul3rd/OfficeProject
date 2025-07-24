@@ -2,7 +2,7 @@
 
 namespace OfficeProject.Servicess
 {
-    public class DataSerializer: IDataSerializer
+    public class DataSerializer : IDataSerializer
     {
         public void Serializer<T>(T dataSource, string componentName)
         {

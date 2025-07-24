@@ -473,7 +473,16 @@ namespace OfficeProject.Servicess
                                     WorkDate = wr.WorkDate,
                                     Task = wr.Task,
                                     Remarks = wr.Remarks,
-                                    Work_UserId = wr.Work_UserId
+                                    Work_UserId = wr.Work_UserId,
+
+                                    SharedPost=wr.SharedPost,
+                                    CreatedReels=wr.CreatedReels,
+                                    UsedAdsBudget=wr.UsedAdsBudget,
+                                    Clasified=wr.Clasified,
+                                    Backlink=wr.Backlink,
+                                    SocialSharing=wr.SocialSharing
+
+
 
                                 }).ToList()
 

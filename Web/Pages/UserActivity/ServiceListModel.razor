@@ -6,15 +6,72 @@
 @inject IDataSerializer? DataSerializer
 
 
+<style>
+    .low-progress {
+        background-color: #f8d7da; /* light red */
+        color: #721c24;
+    }
+
+    .medium-progress {
+        background-color: #fff3cd; /* light yellow */
+        color: #856404;
+    }
+
+    .high-progress {
+        background-color: #d4edda; /* light green */
+        color: #155724;
+    }
+
+
+    .card-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .table thead th {
+        white-space: nowrap;
+    }
+
+    .form-control-sm {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.5rem;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .fw-bold {
+        font-weight: 600;
+    }
+
+    .summary-card {
+        border: 1.5px solid rgba(0, 123, 255, 0.4); /* soft blue border */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* soft shadow */
+        border-radius: 8px;
+    }
+
+    .summary-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+</style>
+
 <div class="row align-items-start m-0 p-1 border border-primary shadow rounded">
     <!-- Left Column: 30% width (Overview + Search) -->
     <div class="col-md-3 col-12 mt-2">
         <h4 class="text-primary fw-semibold mb-2">📋 Services Overview</h4>
         <input class="form-control form-control-sm"
-        type="text"
-        @bind="searchText"
-        @bind:event="oninput"
-        placeholder="🔍 Search..." />
+               type="text"
+               @bind="searchText"
+               @bind:event="oninput"
+               placeholder="🔍 Search..." />
     </div>
     <div class="col-md-9 col-12">
         <div class="card bg-light">
@@ -78,50 +135,32 @@
                 <tr>
                     <th>SID</th>
                     <th>Service Name</th>
-                    <th>Shared Post</th>
-                    <th>Created Reels</th>
-                    <th>Clasified</th>
-                    <th>Socil Sharing</th>
-                    <th>Created Reels</th>
+                    <th>Post</th>
+                    <th>Reels</th>
+                    <th>Backlink</th>
+                    <th>Classified</th>
+                    <th>Social Sharing</th>
                     <th>Billing Type</th>
-                    <th>Uses Ads Budget</th>
-                    <th>Service Dead line</th>
+                    <th>Used Ads Budget</th>
+                    <th>Deadline</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var service in FilteredServices)
                 {
-                    <tr  style="cursor: pointer;" class="hover-row">
+                    <tr style="cursor: pointer;" class="hover-row">
                         <td>@service.ServiceId</td>
                         <td>@service.ServiceName</td>
-                        <td class="@GetProgressClass((int)service.CompletePost!, service.TotalPost)">
-                            @service.CompletePost of (@service.TotalPost)
-                        </td>
-                        <td class="@GetProgressClass((int)service.CompleteReels!, service.TotalReels)">
-                            @service.CompleteReels of (@service.TotalReels)
-                        </td>
-                        <td class="@GetProgressClass((int)service.CompleteBacklink!,service.Backlink)">
-                            @service.CompleteBacklink of (@service.Backlink)
-                        </td>
-                        <td class="@GetProgressClass((int)service.CompleteClasified!,service.Clasified)">
-                            @service.CompleteClasified of (@service.Clasified)
-                        </td>
-                        <td class="@GetProgressClass((int)service.CompleteSocialSharing!,service.SocialSharing)">
-                            @service.CompleteSocialSharing of (@service.SocialSharing)
-                        </td>
+                        <td class="@GetProgressClass((int)service.CompletePost!, service.TotalPost)">@service.CompletePost of (@service.TotalPost)</td>
+                        <td class="@GetProgressClass((int)service.CompleteReels!, service.TotalReels)">@service.CompleteReels of (@service.TotalReels)</td>
+                        <td class="@GetProgressClass((int)service.CompleteBacklink!,service.Backlink)">@service.CompleteBacklink of (@service.Backlink)</td>
+                        <td class="@GetProgressClass((int)service.CompleteClasified!,service.Clasified)"> @service.CompleteClasified of (@service.Clasified)</td>
+                        <td class="@GetProgressClass((int)service.CompleteSocialSharing!,service.SocialSharing)">@service.CompleteSocialSharing of (@service.SocialSharing)</td>
                         <td>@service.BillingType</td>
-                        <td class="@GetProgressClass(service.CompleteUsedAdsBudget ?? 0, service.AdsBudget)">
-                            @((service.CompleteUsedAdsBudget ?? 0).ToString("c", new System.Globalization.CultureInfo("en-IN")))
-                            of (@service.AdsBudget.ToString("c", new System.Globalization.CultureInfo("en-IN")))
-                        </td>
+                        <td class="@GetProgressClass(service.CompleteUsedAdsBudget ?? 0, service.AdsBudget)">@((service.CompleteUsedAdsBudget ?? 0).ToString("c", new System.Globalization.CultureInfo("en-IN")))of (@service.AdsBudget.ToString("c", new System.Globalization.CultureInfo("en-IN"))) </td>
                         <td>@service.DeadLine.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary"
-                            @onclick="() => AddWorkRecord(service)">
-                                <i class="fas fa-plus"></i> Add Work
-                            </button>
-                        </td>
+                        <td><button class="btn btn-sm btn-primary" @onclick="() => AddWorkRecord(service)"><i class="fas fa-plus"></i> Add Work </button></td>
                     </tr>
                 }
 
@@ -134,68 +173,14 @@ else
     <p>No services found.</p>
 }
 
-<DialogAddWorkTask IsVisible="@IsVisible"
-service="@Service"
-isAddWorkFormSubmit="@HandleWorkFormSubmit"
-OnCancel="@OnDialogCancel"/>
+@if (IsVisible)
+{
+    <DialogAddWorkTask IsVisible="@IsVisible"
+                       service="@Service"
+                       isAddWorkFormSubmit="@HandleWorkFormSubmit"
+                       OnCancel="@OnDialogCancel" />
+}
 
-<style>
-    .low-progress {
-    background-color: #f8d7da; /* light red */
-    color: #721c24;
-    }
-
-    .medium-progress {
-    background-color: #fff3cd; /* light yellow */
-    color: #856404;
-    }
-
-    .high-progress {
-    background-color: #d4edda; /* light green */
-    color: #155724;
-    }
-
-
-    .card-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    }
-
-    .table th, .table td {
-    vertical-align: middle;
-    }
-
-    .table thead th {
-    white-space: nowrap;
-    }
-
-    .form-control-sm {
-    font-size: 0.85rem;
-    padding: 0.4rem 0.5rem;
-    }
-
-    .card-title {
-    font-size: 1rem;
-    font-weight: 600;
-    }
-
-    .fw-bold {
-    font-weight: 600;
-    }
-
-    .summary-card {
-    border: 1.5px solid rgba(0, 123, 255, 0.4); /* soft blue border */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* soft shadow */
-    border-radius: 8px;
-    }
-
-    .summary-label {
-    font-weight: 600;
-    font-size: 0.95rem;
-    }
-
-
-</style>
 
 
 @code {
@@ -210,93 +195,90 @@ OnCancel="@OnDialogCancel"/>
     [Parameter]
     public EventCallback<bool> isAddWorkFormSubmit { get; set; }
 
-    [Parameter] 
+    [Parameter]
     public ProjectsDTO projects { get; set; }
 
     @code {
         private string ClientName => projects?.Client?.ClientName ?? "N/A";
         private string ContactPersonName => projects?.Client?.ClientContact1 ?? "N/A";
+
+        public int ServiceId { get; set; }
+
+        protected override void OnInitialized()
+        {
+            Services ??= new List<ServicesDTO>();
+        }
+
+        private string searchText = "";
+
+        private IEnumerable<ServicesDTO> FilteredServices => string.IsNullOrWhiteSpace(searchText)
+        ? Services
+        : Services.Where(s =>
+    s.ServiceId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+    (!string.IsNullOrEmpty(s.ServiceName) && s.ServiceName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+        );
+
+        protected override void OnParametersSet()
+        {
+            if (projects.Services != null)
+            {
+                Services = projects.Services;
+            }
+            @* DataSerializer.Serializer(Services, "ServiceListModel:OnParametersSet"); *@
+            base.OnParametersSet();
+        }
+
+        private async Task HandleWorkFormSubmit(bool isSuccess)
+        {
+            IsVisible = false;
+            await isAddWorkFormSubmit.InvokeAsync(isSuccess);
+        }
+
+        private void AddWorkRecord(ServicesDTO service)
+        {
+            Service ??= new ServicesDTO();
+            Service = service;
+            IsVisible = true;
+        }
+
+        private void OnDialogSubmit(WorkTaskDetailsDto record)
+        {
+            // save or process record
+            IsVisible = false;
+        }
+
+        private void OnDialogCancel()
+        {
+            IsVisible = false;
+        }
+        private string GetProgressClass(decimal current, decimal total)
+        {
+            if (total == 0)
+                return string.Empty;
+
+            var percentage = (current / total) * 100;
+
+            if (percentage < 50)
+                return "low-progress";
+            else if (percentage < 80)
+                return "medium-progress";
+            else
+                return "high-progress";
+        }
+        // Summary Properties
+        private int TotalPosts => Services.Sum(s => s.TotalPost);
+        private int TotalReels => Services.Sum(s => s.TotalReels);
+        private decimal TotalAdsBudget => Services.Sum(s => s.AdsBudget);
+        private int TotalBacklink => Services.Sum(s => s.Backlink);
+        private int TotalClasified => Services.Sum(s => s.Clasified);
+        private int TotalSocialSharing => Services.Sum(s => s.SocialSharing);
+
+        private int CompletedPosts => Services.Sum(s => s.CompletePost ?? 0);
+        private int CompletedReels => Services.Sum(s => s.CompleteReels ?? 0);
+        private decimal CompleteUsedAdsBudget => Services.Sum(s => s.CompleteUsedAdsBudget ?? 0);
+        private int CompletedBacklink => Services.Sum(s => s.CompleteBacklink ?? 0);
+        private int CompletedClasified => Services.Sum(s => s.CompleteClasified ?? 0);
+        private int CompletedSocialSharing => Services.Sum(s => s.CompleteSocialSharing ?? 0);
+
     }
-
-
-    public int ServiceId { get; set; }
-
-
-
-    protected override void OnInitialized()
-    {
-    Services ??= new List<ServicesDTO>();
-    }
-    private string searchText = "";
-
-    private IEnumerable<ServicesDTO> FilteredServices => string.IsNullOrWhiteSpace(searchText)
-    ? Services
-    : Services.Where(s =>
-        s.ServiceId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-        (!string.IsNullOrEmpty(s.ServiceName) && s.ServiceName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-    );
-
-    protected override void OnParametersSet()
-    {
-    if (projects.Services != null)
-    {
-        Services = projects.Services;
-    }
-    @* DataSerializer.Serializer(Services, "ServiceListModel:OnParametersSet"); *@
-    base.OnParametersSet();
-    }
-
-    private async Task HandleWorkFormSubmit(bool isSuccess)
-    {
-
-    IsVisible = false;
-    await isAddWorkFormSubmit.InvokeAsync(isSuccess);
-    }
-
-    private void AddWorkRecord(ServicesDTO service)
-    {
-        Service ??= new ServicesDTO();
-        Service = service;
-        IsVisible = true;
-    }
-
-    private void OnDialogSubmit(WorkTaskDetailsDto record)
-    {
-        // save or process record
-        IsVisible = false;
-    }
-
-    private void OnDialogCancel()
-    {
-        IsVisible = false;
-    }
-    private string GetProgressClass(decimal current, decimal total)
-    {
-        if (total == 0)
-            return string.Empty;
-
-        var percentage = (current / total) * 100;
-
-        if (percentage < 50)
-            return "low-progress";
-        else if (percentage < 80)
-            return "medium-progress";
-        else
-            return "high-progress";
-    }
-    // Summary Properties
-    private int TotalPosts => Services.Sum(s => s.TotalPost);
-    private int TotalReels => Services.Sum(s => s.TotalReels);
-    private decimal TotalAdsBudget => Services.Sum(s => s.AdsBudget);
-    private int TotalBacklink => Services.Sum(s => s.Backlink);
-    private int TotalClasified => Services.Sum(s => s.Clasified);
-    private int TotalSocialSharing => Services.Sum(s => s.SocialSharing);
-
-    private int CompletedPosts => Services.Sum(s => s.CompletePost ?? 0);
-    private int CompletedReels => Services.Sum(s => s.CompleteReels ?? 0);
-    private decimal CompleteUsedAdsBudget => Services.Sum(s => s.CompleteUsedAdsBudget ?? 0);
-    private int CompletedBacklink => Services.Sum(s => s.CompleteBacklink?? 0);
-    private int CompletedClasified => Services.Sum(s => s.CompleteClasified ?? 0);
-    private int CompletedSocialSharing => Services.Sum(s => s.CompleteSocialSharing ?? 0);
-
 }

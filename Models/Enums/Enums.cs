@@ -124,4 +124,14 @@
         TWITTER,
         LINKEDIN
     }
+
+    public enum WorkMetricType
+    {
+        SharedPost,
+        CreatedReels,
+        Backlink,
+        Clasified,
+        SocialSharing
+    }
+
 }

@@ -142,6 +142,7 @@ builder.Services.AddScoped<ApiService>();
 builder.Services.AddScoped<IDataSerializer, DataSerializer>();
 builder.Services.AddScoped<IService, Service>();
 builder.Services.AddSingleton<AppState>();
+builder.Services.AddScoped<DateService>();
 builder.Services.AddScoped<IUserTaskMasterService, UserTaskMasterService>();
 
 
