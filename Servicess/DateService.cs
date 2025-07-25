@@ -109,18 +109,6 @@ namespace OfficeProject.Servicess
             }
             return null; // not found
         }
-        //public (DateTime Start, DateTime End)? GetPriviousInterval(List<DateTime> breakpoints)
-        //{
-        //    DateTime currentDate = DateTime.Today;
-
-        //    for (int i = 0; i < breakpoints.Count - 1; i++)
-        //    {
-        //        if (currentDate >= breakpoints[i] && currentDate <= breakpoints[i + 1])
-        //        {
-        //            return (breakpoints[i], breakpoints[i + 1]);
-        //        }
-        //    }
-        //    return null; // not found
-        //}
+       
     }
 } 

@@ -24,93 +24,93 @@
 
 
     .low-progress-bg {
-    background-color: #9F1E1E !important; /* Light red */
-    color: #FFFFFF !important;
+        background-color: #9F1E1E !important; /* Light red */
+        color: #FFFFFF !important;
     }
 
     .medium-progress-bg {
-    background-color: #F6BE13 !important; /* Light yellow */
-    color: #000000 !important;
+        background-color: #F6BE13 !important; /* Light yellow */
+        color: #000000 !important;
     }
 
     .high-progress-bg {
-    background-color: #d4edda !important; /* light green */
-    color: #155724 !important;
+        background-color: #d4edda !important; /* light green */
+        color: #155724 !important;
     }
 
 
     .sticky-header th {
-    position: sticky;
-    top: 0;
-    background-color: #e9f4ff; /* or your header background */
-    z-index: 10;
+        position: sticky;
+        top: 0;
+        background-color: #e9f4ff; /* or your header background */
+        z-index: 10;
     }
 
     .truncate-text {
-    display: inline-block;
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .modal {
-    z-index: 1050;
+        z-index: 1050;
     }
 
     /* Activity dialog should appear above main form */
     .activity-dialog-modal {
-    z-index: 1060 !important;
+        z-index: 1060 !important;
     }
 
     /* Backdrop for activity dialog */
     .activity-dialog-backdrop {
-    z-index: 1055 !important;
-    background-color: rgba(0,0,0,0.5);
+        z-index: 1055 !important;
+        background-color: rgba(0,0,0,0.5);
     }
 
     body.modal-open {
-    overflow: hidden;
+        overflow: hidden;
     }
 
     .sticky-header th {
-    position: sticky;
-    top: 0;
-    background-color: #e9f4ff;
-    z-index: 10;
+        position: sticky;
+        top: 0;
+        background-color: #e9f4ff;
+        z-index: 10;
     }
 
     .truncate-text {
-    display: inline-block;
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .large-checkbox {
-    transform: scale(1.4);
-    transform-origin: left center;
-    margin-right: 0.5rem;
+        transform: scale(1.4);
+        transform-origin: left center;
+        margin-right: 0.5rem;
     }
 
     .checkbox-label {
-    display: flex;
-    align-items: center;
-    font-weight: 500;
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    cursor: pointer;
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
     }
 
     /*    .fixed-top {
-    z-index: 2000;
-    }
+            z-index: 2000;
+            }
 
-    .scale-wrapper {
-    transform: scale(0.85);
-    transform-origin: top left;
-    } */
+            .scale-wrapper {
+            transform: scale(0.85);
+            transform-origin: top left;
+            } */
 </style>
 
 
@@ -141,6 +141,7 @@
                     <table class="table table-bordered">
                         <thead class="table-info sticky-header">
                             <tr>
+                                @* <th>Service Date</th> *@
                                 <th>PID-SID</th>
                                 <th>Project Name</th>
                                 <th>Post</th>
@@ -163,6 +164,7 @@
                                     foreach (var service in project.Services)
                                     {
                                         <tr>
+                                            @* <td>@service.StartDate</td> *@
                                             <td>@project.ProjectId - (@service.ServiceId)</td>
                                             <td>@project.ProjectName - (@service.ServiceName)</td>
                                             <td class="@DayWorktProgressOnPostColor(service, WorkMetricType.SharedPost, (int)service.TotalPost, service.StartDate)">@service.CompletePost of (@service.TotalPost)</td>
@@ -174,14 +176,14 @@
                                             <td>@service.BillingType</td>
                                             <td class="text-center">
                                                 <button class="btn btn-sm btn-primary"
-                                                @onclick="() => ViewTeamWork((int)project.ProjectId!)" @onclick:stopPropagation
-                                                title="View Team Work">
+                                                        @onclick="() => ViewTeamWork((int)project.ProjectId!)" @onclick:stopPropagation
+                                                        title="View Team Work">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
                                             </td>
                                             <td>
                                                 <button class="btn btn-sm btn-primary"
-                                                @onclick="() => AddWorkRecord(service)">
+                                                        @onclick="() => AddWorkRecord(service)">
                                                     <i class="fas fa-plus"></i> Add Work
                                                 </button>
                                             </td>
@@ -210,17 +212,17 @@
         @if (IsVisible)
         {
             <DialogAddWorkTask IsVisible="@IsVisible"
-            service="@Service"
-            isAddWorkFormSubmit="@HandleWorkFormSubmit"
-            OnCancel="@OnDialogCancel" />
+                               service="@Service"
+                               isAddWorkFormSubmit="@HandleWorkFormSubmit"
+                               OnCancel="@OnDialogCancel" />
         }
 
 
         @if (ShowTeamWork)
         {
             <DialogViewTeamWorks ShowTeamWork="@ShowTeamWork"
-            ProjectId="@ProjectId"
-            IsDialogClose="@((bool val) => ShowTeamWork = val)" />
+                                 ProjectId="@ProjectId"
+                                 IsDialogClose="@((bool val) => ShowTeamWork = val)" />
 
         }
 
@@ -311,7 +313,6 @@
 
         var interval = DateService.GetCurrentInterval(breakpoints);
 
-        var RedFlag = false;
 
         var intervalDay = DateService.GetIntervalDaysExcludingSundays(startDate);
 
@@ -321,77 +322,157 @@
 
         var completeUnit = (float)service.CompletePost / intervalDay;
 
-        // if (service.ServiceId == 1032)
-        // {
-        //     Console.WriteLine($"intervalDay: {intervalDay}");
 
-        //     Console.WriteLine($"TotalDay: {TotalDay}");
 
-        //     Console.WriteLine($"averageUnit: {averageUnit}");
-
-        //     Console.WriteLine($"completeUnit: {completeUnit}");
-        // }
-
-        if (averageUnit <= completeUnit)
+        if (IsFirstSlaveInterval(breakpoints))
         {
+            int intervalLength = (interval.Value.End.Date - interval.Value.Start.Date).Days + 1;
+            int todayPosition = (DateTime.Today - interval.Value.Start.Date).Days + 1;
+            bool hasWorkInInterval = service.WorkTaskDetails.Any(w =>
+                w.WorkDate.Date >= interval.Value.Start.Date &&
+                w.WorkDate.Date <= interval.Value.End.Date &&
+                MetricMatch(w, metricType)
+            );
 
-            RedFlag = false;
-          
-                // Console.WriteLine($"Task complete:" + RedFlag);
 
-                if (interval != null && service.WorkTaskDetails != null)
-
+            if (!hasWorkInInterval)
+            {
+                if (todayPosition == 1)
                 {
-                    int intervalLength = (interval.Value.End.Date - interval.Value.Start.Date).Days + 1;
-                    int todayPosition = (DateTime.Today - interval.Value.Start.Date).Days + 1;
-                    bool hasWorkInInterval = service.WorkTaskDetails.Any(w =>
-                        w.WorkDate.Date >= interval.Value.Start.Date &&
-                        w.WorkDate.Date <= interval.Value.End.Date &&
-                        MetricMatch(w, metricType)
-                    );
-                    //         DataSerializer.Serializer(breakpoints, "breakpoints");
-                    // Console.WriteLine($"interval: {interval}");
-                    // Console.WriteLine($"intervalLength: {intervalLength}");
-                    // Console.WriteLine($"todayPosition: {todayPosition}");
-                    // Console.WriteLine($"hasWorkInInterval: {hasWorkInInterval}");
-
-
-                    if (!hasWorkInInterval)
-                    {
-                        if (todayPosition == intervalLength)
-                            return "low-progress-bg";
-                        else if (todayPosition >= 1 && todayPosition <= intervalLength-1)
-                            return "medium-progress-bg";
-                        
-                    }
                     return "";
-
+                }
+                else if (intervalLength > 1 && todayPosition == intervalLength)
+                {
+                    return "low-progress-bg";
 
 
                 }
-            
+                else
+                {
+                    return "medium-progress-bg";
+                }
+
+            }
+
+            else if (completeUnit < averageUnit)
+            {
+                return "low-progress-bg";
+            }
+            else
+                return "";
+
 
         }
         else
         {
 
-            RedFlag = true;
-            // if (service.ServiceId == 1032)
-            // {
-            //     Console.WriteLine($"Task not complete:" + RedFlag);
-            // }
-            return "low-progress-bg";
+            if (interval != null && service.WorkTaskDetails != null)
+
+            {
+                int intervalLength = (interval.Value.End.Date - interval.Value.Start.Date).Days;
+                int todayPosition = (DateTime.Today - interval.Value.Start.Date).Days;
+                bool hasWorkInInterval = service.WorkTaskDetails.Any(w =>
+                    w.WorkDate.Date >= interval.Value.Start.Date.AddDays(1) &&
+                    w.WorkDate.Date <= interval.Value.End.Date &&
+                    MetricMatch(w, metricType)
+                );
+
+                if (!hasWorkInInterval)
+                {
+                    if (todayPosition == 1)
+                    {
+                        return "";
+                    }
+                    else if (intervalLength > 1 && todayPosition == intervalLength)
+                    {
+
+                        return "low-progress-bg";
+
+
+                    }
+                    else
+                    {
+                        return "medium-progress-bg";
+                    }
+
+                }
+
+                else if (completeUnit < averageUnit)
+                {
+
+                    return "low-progress-bg";
+                }
+                else
+                    return "";
+
+
+            }
         }
 
         return "";
     }
+
+
+
+
+    // public string FieldAction(bool hasWorkInInterval, int todayPosition, int intervalLength)
+    // {
+    //     if (!hasWorkInInterval)
+    //     {
+    //         Console.WriteLine($"No work in interval.");
+
+    //         if (todayPosition == 1)
+    //         {
+    //             First day: no action (default)
+    //             Console.WriteLine($"todayPosition == 1 (default, no action)");
+    //             return "";
+    //         }
+    //         else if (intervalLength > 1 && todayPosition == intervalLength)
+    //         {
+    //             Last day: low progress
+    //             Console.WriteLine($"intervalLength > 1 && todayPosition == intervalLength (last day)");
+    //             return "low-progress-bg";
+    //         }
+    //         else
+    //         {
+    //             Any middle day: medium progress
+    //             Console.WriteLine($"Middle day (todayPosition: {todayPosition}, intervalLength: {intervalLength})");
+    //             return "medium-progress-bg";
+    //         }
+    //     }
+
+    //     Default when hasWorkInInterval is true: no action
+    //     Console.WriteLine($"Has work in interval (default, no action)");
+    //     return "";
+    // }
+
+
+    public bool IsFirstSlaveInterval(List<DateTime> breakpoints)
+    {
+        DateTime currentDate = DateTime.Today;
+
+        if (breakpoints.Count >= 2)
+        {
+            DateTime start = breakpoints[0].Date;
+            DateTime end = breakpoints[1].Date;
+            if (currentDate >= start && currentDate <= end)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+
     private string DayWorktProgressOnReelsColor(ServicesDTO service, WorkMetricType metricType, int totalUnits, DateTime startDate)
     {
         var breakpoints = DateService.GetBreakPointDates(startDate, (BillingType)service.BillingType!, totalUnits);
 
         var interval = DateService.GetCurrentInterval(breakpoints);
 
-        var RedFlag = false;
+        // var RedFlag = false;
 
         var intervalDay = DateService.GetIntervalDaysExcludingSundays(startDate);
 
@@ -401,121 +482,10 @@
 
         var completeUnit = (float)service.CompleteReels / intervalDay;
 
-        // if (service.ServiceId == 1032)
-        // {
-        //     Console.WriteLine($"intervalDay: {intervalDay}");
 
-        //     Console.WriteLine($"TotalDay: {TotalDay}");
-
-        //     Console.WriteLine($"averageUnit: {averageUnit}");
-
-        //     Console.WriteLine($"completeUnit: {completeUnit}");
-        // }
-
-        if (averageUnit <= completeUnit)
+        if (IsFirstSlaveInterval(breakpoints))
         {
 
-            RedFlag = false;
-          
-                Console.WriteLine($"Task complete:" + RedFlag);
-
-                if (interval != null && service.WorkTaskDetails != null)
-
-                {
-                    int intervalLength = (interval.Value.End.Date - interval.Value.Start.Date).Days + 1;
-                    int todayPosition = (DateTime.Today - interval.Value.Start.Date).Days + 1;
-                    bool hasWorkInInterval = service.WorkTaskDetails.Any(w =>
-                        w.WorkDate.Date >= interval.Value.Start.Date &&
-                        w.WorkDate.Date <= interval.Value.End.Date &&
-                        MetricMatch(w, metricType)
-                    );
-                    //         DataSerializer.Serializer(breakpoints, "breakpoints");
-                    // Console.WriteLine($"interval: {interval}");
-                    // Console.WriteLine($"intervalLength: {intervalLength}");
-                    // Console.WriteLine($"todayPosition: {todayPosition}");
-                    // Console.WriteLine($"hasWorkInInterval: {hasWorkInInterval}");
-
-
-                    if (!hasWorkInInterval)
-                    {
-                        if (todayPosition == intervalLength)
-                            return "low-progress-bg";
-                        else if (todayPosition >= 1 && todayPosition <= intervalLength-1)
-                            return "medium-progress-bg";
-                        
-                    }
-                    return "";
-
-
-
-                }
-            
-
-        }
-        else
-        {
-
-            RedFlag = true;
-            // if (service.ServiceId == 1032)
-            // {
-            //     Console.WriteLine($"Task not complete:" + RedFlag);
-            // }
-            return "low-progress-bg";
-        }
-
-        return "";
-    }
-
-    private string DayWorktProgressColor(ServicesDTO service, WorkMetricType metricType, int totalUnits, DateTime startDate)
-    {
-        var breakpoints = DateService.GetBreakPointDates(startDate, (BillingType)service.BillingType!, totalUnits);
-
-        var interval = DateService.GetCurrentInterval(breakpoints);
-
-        var RedFlag = false;
-
-        var intervalDay = DateService.GetIntervalDaysExcludingSundays(startDate);
-
-        var TotalDay = DateService.GetTotalDaysExcludingSundays(startDate, 30);
-
-        var averageUnit = (float)totalUnits / TotalDay;
-
-        var completeUnit = (float)service.CompletePost / intervalDay;
-        if (service.ServiceId == 1032)
-        {
-            // Console.WriteLine($"intervalDay: {intervalDay}");
-            // Console.WriteLine($"TotalDay: {TotalDay}");
-            // Console.WriteLine($"averageUnit: {averageUnit}");
-            // Console.WriteLine($"completeUnit: {completeUnit}");
-        }
-
-        if (averageUnit <= completeUnit)
-        {
-            RedFlag = false;
-        }
-        else
-        {
-            RedFlag = true;
-        }
-
-        if (RedFlag)
-        {
-            if (service.ServiceId == 1032)
-            {
-                // Console.WriteLine($"RedFlag:" + RedFlag);
-            }
-            bool hasWorkInInterval = service.WorkTaskDetails.Any(w =>
-                MetricMatch(w, metricType)
-            );
-
-
-        }
-        if ((interval != null && service.WorkTaskDetails != null && RedFlag == false))
-        {
-            if (service.ServiceId == 1032)
-            {
-                // Console.WriteLine($"!RedFlag:" + RedFlag);
-            }
             int intervalLength = (interval.Value.End.Date - interval.Value.Start.Date).Days + 1;
             int todayPosition = (DateTime.Today - interval.Value.Start.Date).Days + 1;
             bool hasWorkInInterval = service.WorkTaskDetails.Any(w =>
@@ -523,41 +493,89 @@
                 w.WorkDate.Date <= interval.Value.End.Date &&
                 MetricMatch(w, metricType)
             );
-            if (service.ServiceId == 1032)
+
+
+            if (!hasWorkInInterval)
             {
-                // DataSerializer.Serializer(breakpoints, "breakpoints");
-                // Console.WriteLine($"interval: {interval}");
-                // Console.WriteLine($"intervalLength: {intervalLength}");
-                // Console.WriteLine($"todayPosition: {todayPosition}");
-                // Console.WriteLine($"hasWorkInInterval: {hasWorkInInterval}");
+
+                if (todayPosition == 1)
+                {
+
+                    return "";
+                }
+                else if (intervalLength > 1 && todayPosition == intervalLength)
+                {
+
+                    return "low-progress-bg";
+
+
+                }
+                else
+                {
+
+                    return "medium-progress-bg";
+                }
+
             }
 
-            if (todayPosition == intervalLength)
+            else if (completeUnit < averageUnit)
             {
-                if (hasWorkInInterval)
+
+                return "low-progress-bg";
+            }
+            else
+                return "";
+
+
+        }
+
+        else
+        {
+
+
+            if (interval != null && service.WorkTaskDetails != null)
+
+            {
+                int intervalLength = (interval.Value.End.Date - interval.Value.Start.Date).Days;
+                int todayPosition = (DateTime.Today - interval.Value.Start.Date).Days;
+                bool hasWorkInInterval = service.WorkTaskDetails.Any(w =>
+                    w.WorkDate.Date >= interval.Value.Start.Date.AddDays(1) &&
+                    w.WorkDate.Date <= interval.Value.End.Date &&
+                    MetricMatch(w, metricType)
+                );
+
+
+                if (!hasWorkInInterval)
+                {
+
+                    if (todayPosition == 1)
+                    {
+                        return "";
+                    }
+                    else if (intervalLength > 1 && todayPosition == intervalLength)
+                    {
+                        return "low-progress-bg";
+                    }
+                    else
+                    {
+
+                        return "medium-progress-bg";
+                    }
+
+                }
+
+                else if (completeUnit < averageUnit)
+                {
+
                     return "low-progress-bg";
+                }
                 else
                     return "";
-            }
 
 
-            if (intervalLength == 1)
-            {
-                return hasWorkInInterval ? "medium-progress-bg" : "low-progress-bg";
             }
-            else if (intervalLength == 2)
-            {
-                if (todayPosition == 1)
-                    return hasWorkInInterval ? "medium-progress-bg" : "";
-            }
-            else if (intervalLength == 3)
-            {
-                if (todayPosition == 2)
-                    return hasWorkInInterval ? "" : "medium-progress-bg";
-            }
-
-            return hasWorkInInterval ? "medium-progress-bg" : "low-progress-bg";
         }
+
 
         return "";
     }
