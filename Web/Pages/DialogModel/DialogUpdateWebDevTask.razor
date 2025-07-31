@@ -117,6 +117,7 @@
         {
             isLoading = false;
             StateHasChanged();
+            await Task.Yield();
         }
     }
 

@@ -516,7 +516,7 @@
         }
         try
         {
-            flags = await projectService?.GetServiceFlagsAsync(service.ServiceId.Value) ?? new ServiceFlagsDTO();
+            flags = await projectService?.GetServiceFlagsAsync(service!.ServiceId!.Value)! ?? new ServiceFlagsDTO();
 
             @* isAdsBudget = await projectService.HasNonZeroAdsBudget(service.ServiceId.Value); *@
             @* isPost = await projectService.HasNonZeroTotalPost(service.ServiceId.Value); *@

@@ -173,6 +173,7 @@
         finally
         {
             StateHasChanged();
+            await Task.Yield();
         }
     }
 

@@ -1089,7 +1089,7 @@
     private async Task RemoveService(ServicesDTO service)
     {
         if (projectDTO.Services == null) return;
-        if (!serviceDeleteList.Contains(service.ServiceId.Value))
+        if (!serviceDeleteList.Contains(service!.ServiceId!.Value))
         {
             serviceDeleteList.Add(service.ServiceId.Value);
         }
@@ -1105,7 +1105,7 @@
             serviceIndex >= projectDTO.Services.Count ||
             detail == null)
             return;
-        seoDeleteList.Add(detail.SeoServiceDetailsId.Value);
+        seoDeleteList.Add(detail.SeoServiceDetailsId!.Value);
 
         var service = projectDTO.Services[serviceIndex];
         service.SeoServiceDetails?.Remove(detail); // mutate the actual list
@@ -1121,7 +1121,7 @@
             others == null)
             return;
 
-        othersServiceDeleteList.Add(others.OthersId.Value);
+        othersServiceDeleteList.Add(others.OthersId!.Value);
         var service = projectDTO.Services[serviceIndex];
         service.OthersServices?.Remove(others); // directly mutate the list
 
@@ -1135,7 +1135,7 @@
             serviceIndex >= projectDTO.Services.Count ||
             web == null)
             return;
-        webDelete.Add(web.WebDevelopmentId.Value);
+        webDelete.Add(web.WebDevelopmentId!.Value);
 
         var service = projectDTO.Services[serviceIndex];
         service.WebDevelopment?.Remove(web); // mutate the actual list

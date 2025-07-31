@@ -1,0 +1,310 @@
+﻿@inject ApiService api
+@using OfficeProject.Models.DTO
+@using System.ComponentModel.DataAnnotations
+@using OfficeProject.Web.Pages.DialogModel
+@using System.Text.Json
+@using OfficeProject.Models.Enums
+@if (ShowModal)
+{
+    <style>
+       
+        .select-row{
+            cursor: pointer;
+        }
+        tr:hover{
+            background-color: #c9cbca !important;
+            color: black;
+        }
+
+        .medium-progress {
+            background-color: #fff3cd; /* light yellow */
+            color: #856404;
+        }
+
+        .high-progress {
+            background-color: #d4edda; /* light green */
+            color: #155724;
+        }
+
+
+        .low-progress-bg {
+            background-color: #9F1E1E !important; /* Light red */
+            color: #FFFFFF !important;
+        }
+
+        .medium-progress-bg {
+            background-color: #F6BE13 !important; /* Light yellow */
+            color: #000000 !important;
+        }
+
+        .high-progress-bg {
+            background-color: #d4edda !important; /* light green */
+            color: #155724 !important;
+        }
+
+
+        .sticky-header th {
+            position: sticky;
+            top: 0;
+            background-color: #e9f4ff; /* or your header background */
+            z-index: 10;
+        }
+
+        .truncate-text {
+            display: inline-block;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal {
+            z-index: 1050;
+        }
+
+        /* Activity dialog should appear above main form */
+        .activity-dialog-modal {
+            z-index: 1060 !important;
+        }
+
+       
+        .activity-dialog-backdrop {
+            z-index: 1055 !important;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        .sticky-header th {
+            position: sticky;
+            top: 0;
+            background-color: #e9f4ff;
+            z-index: 10;
+        }
+
+        .truncate-text {
+            display: inline-block;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .large-checkbox {
+            transform: scale(1.4);
+            transform-origin: left center;
+            margin-right: 0.5rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+
+    </style>
+
+
+    <AuthorizeView Context="outerAuthContext">
+        <Authorized>
+            <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+                <div class="modal-dialog modal-xl modal-dialog-centered" @onclick:stopPropagation>
+                    <div class="modal-content" style="height: 85vh;">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Backlink List works</h5>
+                            <button class="btn btn-sm btn-danger" @onclick="CloseModal">X</button>
+                        </div>
+                        <div class="modal-body" style="overflow-y: auto; max-height: calc(85vh - 100px); padding: 1rem;">
+                            <!-- Table Section -->
+                            
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <div class="flex-grow-1" style="max-width: 400px;">
+                                    <input class="form-control form-control-lg"
+                                           type="text"
+                                           @bind="searchText"
+                                           @bind:event="oninput"
+                                           placeholder="🔍 Search by PID, Project Name or Client Name..." />
+                                </div>
+
+                            </div>
+                           
+
+                            <br />
+
+                            <div class="card-body">
+
+                                @if (isLoading)
+                                {
+                                    <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                }
+                                @if (projects == null || !projects.Any())
+                                {
+                                    <div class="alert alert-info">No Services found</div>
+                                }
+                                else
+                                {
+                                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                                        <h6 class="mb-4 fw-bold text-primary">Select Service</h6>
+                                        <table class="table table-bordered">
+                                            <thead class="table-info sticky-header">
+                                                <tr>
+                                                    <th class="align-top">PID-SID</th>
+                                                    <th class="align-top">Project Name</th>
+                                                    <th class="align-top">Backlink</th>
+                                                    <th class="align-top">Classified</th>
+                                                    <th class="align-top">Social Sharing</th>
+                                                    <th class="align-top">Used Ads Budget</th>
+                                                </tr>
+
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var project in filteredProjects)
+                                                {
+                                                    if (project.Services != null && project.Services.Any())
+                                                    {
+                                                        foreach (var service in project.Services)
+                                                        {
+                                                            <tr @onclick="() => GetServiceId(service)" class="select-row">
+                                                                <td>@project.ProjectId - (@service.ServiceId)</td>
+                                                                <td>@project.ProjectName - (@service.ServiceName)</td>
+                                                                <td>@service.CompleteBacklink of (@service.Backlink)</td>
+                                                                <td> @service.CompleteClasified of (@service.Clasified)</td>
+                                                                <td>@service.CompleteSocialSharing of (@service.SocialSharing)</td>
+                                                                <td>@((service.CompleteUsedAdsBudget ?? 0).ToString("c", new System.Globalization.CultureInfo("en-IN")))of (@service.AdsBudget.ToString("c", new System.Globalization.CultureInfo("en-IN"))) </td>
+                                                            </tr>
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td colspan="13" class="text-center text-muted">
+                                                                No services found for project: @data.ProjectName
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </Authorized>
+
+        <NotAuthorized>
+            @{
+                Navigation.NavigateTo("/login", replace: true);
+            }
+        </NotAuthorized>
+
+
+
+    </AuthorizeView>
+}
+@code {
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+    [Inject] private ApiService ApiService { get; set; } = null!;
+    [Inject] private HttpClient Http { get; set; } = null!;
+    [Inject] private IDataSerializer? DataSerializer { get; set; }
+    [Inject] private DateService? DateService { get; set; }
+    [Inject] private IService? GetServices { get; set; }
+
+    [Parameter] public EventCallback<bool> ModelAction { get; set; }
+
+    [Parameter] public bool ShowModal { get; set; } = false;
+
+    [Parameter] public EventCallback<int> ModelData { get; set; }
+
+    // private ServicesDTO Service = new();
+
+    // private List<ServicesDTO> Services = new();
+
+    private ProjectsDTO data { get; set; } = new();
+
+    private List<ProjectsDTO> projects = new();
+
+    private bool loadFailed = false;
+
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        await GetProjectPerUserAsync();
+        isLoading = false;
+    }
+
+
+    protected async Task GetProjectPerUserAsync()
+    {
+        try
+        {
+            data = new ProjectsDTO();
+            projects = await api.GetProjectPerUserAsync();
+
+            // Optional: Check if the first project has no services
+            if (projects.Count > 0 && (projects[0].Services == null || projects[0].Services!.Count == 0))
+            {
+                projects.Clear(); // Or assign new List<ProjectsDTO>() again if preferred
+            }
+
+            // Optional: serialize if needed
+            // DataSerializer.Serializer(projects, "ToDayWorkList:GetProjectPerUserAsync");
+        }
+        catch (Exception ex)
+        {
+            loadFailed = true;
+            Console.WriteLine($"Error loading projects: {ex.Message}");
+        }
+    }
+
+    private async Task CloseModal()
+    {
+        ShowModal = false;
+
+        await ModelAction.InvokeAsync(false);
+
+    }
+
+
+    private async Task GetServiceId(ServicesDTO service)
+    {
+        if (ModelData.HasDelegate)
+        {
+            await ModelData.InvokeAsync((int)service.ServiceId!);
+            await CloseModal();
+        }
+        StateHasChanged();
+    }
+
+
+
+
+    private string searchText = "";
+
+    private IEnumerable<ProjectsDTO> filteredProjects => string.IsNullOrWhiteSpace(searchText)
+        ? projects
+        : projects.Where(p =>
+            (p.ProjectId.ToString()!.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(p.ProjectName) && p.ProjectName.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(p.Client?.ClientName) && p.Client.ClientName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+        );
+
+}

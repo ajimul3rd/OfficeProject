@@ -1,0 +1,343 @@
+﻿@using OfficeProject.Models.DTO
+@using OfficeProject.Models.Enums
+@using OfficeProject.Web.Pages.DialogModel
+@using OfficeProject.Web.Pages.TappanDialog
+@page "/backlink"
+@inject ApiService api
+@inject IDataSerializer? Json
+@inject IUserService userService
+@inject IProjectsService ProjectsService
+@inject IJSRuntime JSRuntime
+@inject IWorkTaskDetailsService WorkTaskDetailsService
+
+<AuthorizeView>
+    <Authorized>
+        <style>
+            .hover-row:hover {
+                background-color: #f5f5f5;
+            }
+
+            .badge-complete {
+                background-color: #28a745; /* green */
+                color: white;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+            }
+
+            .badge-running {
+                background-color: #ffc107; /* yellow */
+                color: black;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+            }
+
+            .text-center {
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            .btn-icon-center {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0.375rem; /* adjust as needed for spacing */
+            }
+
+        </style>
+        <h3 class="mb-4 fw-bold text-primary">Backlink Works</h3>
+
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <div class="flex-grow-1" style="max-width: 400px;">
+                <input class="form-control form-control-lg"
+                       type="text"
+                       @bind="searchText"
+                       @bind:event="oninput"
+                       placeholder="🔍 Search by PID, Project Name or Client Name..." />
+            </div>
+
+        </div>
+
+        <br />
+        <button type="button" @onclick="()=>OpenDialog()">Get Url</button>
+        <button type="button" @onclick="()=>OpenServiceDialog()">Choose Services For Backlikn</button>
+        <span>@ServiceId</span>
+
+        <div class="mb-3">
+            <strong class="text-secondary">Projects for Backlink:</strong>
+            <ul class="list-inline mt-2">
+                @foreach (var project in projectNames)
+                {
+                    <li class="list-inline-item badge bg-info text-dark p-2 me-2">@project</li>
+                }
+            </ul>
+        </div>
+
+
+        @*  @if (isLoading)
+        {
+            <div class="text-center mt-3">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+        else if (loadFailed)
+        {
+            <div class="alert alert-danger">
+                Failed to load projects. Please try again.
+            </div>
+        }
+        else if (projects == null || !projects.Any())
+        {
+            <div class="alert alert-info">
+                You don't have any assigned projects.
+            </div>
+        }
+        else
+        { *@
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-info">
+                    <tr>
+                        <th class="text-center">Sites URL</th>
+                        <th class="text-center">Published URL</th>
+                        <th class="text-center">Completed Time</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var link in Backlinks)
+                    {
+                        <tr>
+                            <td>
+                                @link.SiteUrl
+                                <button class="btn btn-sm text-primary bg-transparent border-0 p-0 ms-2"
+                                        title="Copy to clipboard"
+                                        @onclick="() => CopyToClipboard(link.SiteUrl)">
+                                    <i class="fas fa-copy fa-lg"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <InputText @bind-Value="link.PublishedUrl"
+                                           class="form-control"
+                                           @oninput="e => OnPublishedUrlInput(e, link)" />
+
+                                @if (link.PublishedUrlError)
+                                {
+                                    <span class="text-danger small d-block">
+                                        Please provide a valid published URL.
+                                    </span>
+                                }
+                            </td>
+
+                            <td class="text-center align-middle">
+                                @if (link.WorkDuration.HasValue)
+                                {
+                                    <span class="badge bg-success">
+                                        @FormatTimeTaken(link.WorkDuration)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not completed</span>
+                                }
+                            </td>
+                            <td class="text-center align-middle"><button type="button" @onclick="() => SaveAction(link)">Save</button></td>
+                        </tr>
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+        @* } *@
+        @if (ShowModel)
+        {
+            <DialogBacklinkList ShowModal="@ShowModel" ModelAction="@ModelAction" ModelData="@HandleSelectedBacklinks" CallerSelectedData="@Backlinks" />
+        }
+
+        @if (ShowServiceModel)
+        {
+            <DialogServiceList ShowModal="@ShowServiceModel" ModelAction="@ModelServiceAction" ModelData="@HandleServiceId" />
+        }
+
+
+    </Authorized>
+    <NotAuthorized>
+        @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+
+    private bool ShowModel = false;
+    private bool ShowServiceModel = false;
+
+    private List<BacklinkDTO> Backlinks = new();
+
+    private List<string> projectNames = new();
+    private int ServiceId { get; set; } = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Backlinks = new List<BacklinkActivity.BacklinkDTO>()
+        {
+            new BacklinkActivity.BacklinkDTO()
+            {
+                SiteUrl = "http://apeopledirectory.com/",
+                PublishedUrl = ""
+            },
+            new BacklinkActivity.BacklinkDTO()
+            {
+                SiteUrl = "http://exampledirectory.org/",
+                PublishedUrl = ""
+            }
+
+        };
+        await Task.CompletedTask;
+    }
+
+
+    private string searchText = "";
+
+    private async Task CopyToClipboard(string? text)
+    {
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+
+            var link = Backlinks.FirstOrDefault(b => b.SiteUrl == text);
+            if (link != null)
+            {
+                link.CopiedTime = DateTime.Now;
+                Console.WriteLine($"Copied {link.SiteUrl} at {link.CopiedTime}");
+            }
+        }
+    }
+
+
+
+    private string FormatTimeTaken(TimeSpan? duration)
+    {
+        if (!duration.HasValue) return string.Empty;
+
+        if (duration.Value.TotalMinutes < 1)
+        {
+            return $"{Math.Round(duration.Value.TotalSeconds, 0)} secs";
+        }
+        else if (duration.Value.TotalHours < 1)
+        {
+            return $"{Math.Round(duration.Value.TotalMinutes, 1)} mins";
+        }
+        else
+        {
+            return $"{Math.Round(duration.Value.TotalHours, 1)} hours";
+        }
+    }
+
+    private void CheckForCompletion(BacklinkDTO link)
+    {
+
+        if (!string.IsNullOrWhiteSpace(link.PublishedUrl) && !link.CompletedTime.HasValue)
+        {
+            if (!link.CopiedTime.HasValue)
+            {
+                link.CopiedTime = DateTime.Now;
+                Console.WriteLine("CopiedTime set: " + link.CopiedTime);
+            }
+
+            link.CompletedTime = DateTime.Now;
+            Console.WriteLine("CompletedTime just set: " + link.CompletedTime);
+        }
+        else
+        {
+            Console.WriteLine("Skipped setting CompletedTime. Either PublishedUrl is null or already set.");
+            Console.WriteLine("PublishedUrl: " + link.PublishedUrl);
+            Console.WriteLine("CompletedTime (pre-check): " + link.CompletedTime);
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnPublishedUrlInput(ChangeEventArgs e, BacklinkDTO data)
+    {
+        data.PublishedUrl = e.Value?.ToString()!;
+        if (string.IsNullOrWhiteSpace(data.PublishedUrl))
+        {
+            data.PublishedUrlError = true;
+        }
+        else
+        {
+            data.PublishedUrlError = false;
+        }
+        CheckForCompletion(data);
+    }
+
+
+    private void SaveAction(BacklinkDTO data)
+    {
+
+        if (string.IsNullOrWhiteSpace(data.PublishedUrl))
+        {
+            // Set error flag on the field
+            data.PublishedUrlError = true;
+            StateHasChanged();
+            return;
+        }
+        Backlinks.Remove(data);
+
+    }
+    private void OpenDialog()
+    {
+        ShowModel = true;
+    }
+
+    private void ModelAction()
+    {
+        ShowModel = false;
+    }
+    private void OpenServiceDialog()
+    {
+        ShowServiceModel = true;
+    }
+
+    private void ModelServiceAction()
+    {
+        ShowServiceModel = false;
+    }
+
+    private Task HandleSelectedBacklinks(List<BacklinkDTO> selected)
+    {
+        Backlinks = selected;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+    private Task HandleServiceId(int id)
+    {
+        ServiceId = id;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+
+    public class BacklinkDTO
+    {
+        public string SiteUrl { get; set; } = string.Empty;
+        public string PublishedUrl { get; set; } = string.Empty;
+        public bool PublishedUrlError { get; set; } = false;
+        public bool IsActive { get; set; } = false;
+        public DateTime? CopiedTime { get; set; }
+        public DateTime? CompletedTime { get; set; } // New property
+        public TimeSpan? WorkDuration => CompletedTime.HasValue && CopiedTime.HasValue
+            ? CompletedTime.Value - CopiedTime.Value
+            : null;
+    }
+
+
+}

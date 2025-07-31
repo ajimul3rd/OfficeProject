@@ -27,7 +27,9 @@ h1:focus {
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }
-
+.error-message {
+    color: red;
+}
 .invalid {
     outline: 1px solid #e50000;
 }

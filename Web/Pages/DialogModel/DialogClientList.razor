@@ -254,7 +254,7 @@
                                                 </td>
                                                 <td>
                                                     <input type="checkbox"
-                                                    @onchange="(e) => SelectClient(client, (bool)e.Value)"
+                                                    @onchange="(e) => SelectClient(client, (bool)e.Value!)"
                                                     checked="@(selectedClientId == client.ClientId)"
                                                            class="custom-checkbox @(selectedClientId == client.ClientId ? "selected" : "")" />
 

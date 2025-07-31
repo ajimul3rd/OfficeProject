@@ -585,7 +585,7 @@
     private async Task RemoveActivity(UserWorkingActivityDto service)
     {
         if (product.UserWorkingActivity == null) return;
-        if (!activityDeleteList.Contains(service.WorkingActivityId.Value))
+        if (!activityDeleteList.Contains(service.WorkingActivityId!.Value))
         {
             activityDeleteList.Add(service.WorkingActivityId.Value);
         }

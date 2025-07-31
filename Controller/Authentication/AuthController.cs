@@ -133,7 +133,7 @@ namespace OfficeProject.Controller.Authentication
                     UserId = user.UserId,
                     UserName = user.UserName,
                     UserEmail = user.UserEmail,
-                    Role = (Models.Enums.UserRole)user.Role
+                    Role = (Models.Enums.UserRole)user.Role!
                 }
             });
         }

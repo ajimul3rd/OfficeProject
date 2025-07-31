@@ -134,8 +134,8 @@ namespace OfficeProject.Servicess
                         IsActive = c.IsActive,
                         IssueDate = c.IssueDate,
                         IssuedBy = c.IssuedBy,
-                        ClientCreatedAt = (DateTime)c.ClientCreatedAt,
-                        Projects = c.Projects.Select(p => new ProjectsDTO
+                        ClientCreatedAt = (DateTime)c.ClientCreatedAt!,
+                        Projects = c.Projects!.Select(p => new ProjectsDTO
                         {
                             ProjectId = p.ProjectId,
                             ClientId = p.ClientId,
@@ -190,7 +190,7 @@ namespace OfficeProject.Servicess
                         IsActive = c.IsActive,
                         IssueDate = c.IssueDate,
                         IssuedBy = c.IssuedBy,
-                        ClientCreatedAt = (DateTime)c.ClientCreatedAt,
+                        ClientCreatedAt = (DateTime)c.ClientCreatedAt!,
                     }).ToList();
 
                     return clientDtos;

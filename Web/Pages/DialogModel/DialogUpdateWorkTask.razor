@@ -216,7 +216,7 @@
                     Remarks = Data.Remarks
 
                 };
-            flags = await projectService?.GetServiceFlagsAsync(Data.ServiceId) ?? new ServiceFlagsDTO();
+            flags = await projectService?.GetServiceFlagsAsync(Data.ServiceId)! ?? new ServiceFlagsDTO();
 
         }
         else
@@ -231,7 +231,9 @@
     private async Task CloseDialog()
     {
         IsVisible = false;
+        await Task.Yield(); // Just to make it truly async, optional
     }
+
 
     private async Task HandleValidSubmit()
     {

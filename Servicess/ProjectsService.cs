@@ -781,8 +781,8 @@ namespace OfficeProject.Servicess
                 {
                     var newProject = new Projects
                     {
-                        UserId = (int)projectDto.UserId,
-                        ClientId = (int)projectDto.ClientId,
+                        UserId = (int)projectDto.UserId!,
+                        ClientId = (int)projectDto.ClientId!,
                         ProjectName = projectDto.ProjectName,
                         BillingType = projectDto.BillingType,
                         ProjectType = projectDto.ProjectType,
@@ -803,8 +803,8 @@ namespace OfficeProject.Servicess
                 }
                 else
                 {
-                    existingProject.UserId = (int)projectDto.UserId;
-                    existingProject.ClientId = (int)projectDto.ClientId;
+                    existingProject.UserId = (int)projectDto.UserId!;
+                    existingProject.ClientId = (int)projectDto.ClientId!;
                     existingProject.ProjectName = projectDto.ProjectName;
                     existingProject.BillingType = projectDto.BillingType;
                     existingProject.ProjectType = projectDto.ProjectType;
@@ -836,14 +836,14 @@ namespace OfficeProject.Servicess
                             context.AssignedUsers.Add(new AssignedUsers
                             {
                                 ProjectId = projectId,
-                                UserId = (int)userDto.UserId,
+                                UserId = (int)userDto.UserId!,
                                 UserName = userDto.UserName,
                                 Role = userDto.Role
                             });
                         }
                         else
                         {
-                            existingUser.UserId = (int)userDto.UserId;
+                            existingUser.UserId = (int)userDto.UserId!;
                             existingUser.UserName = userDto.UserName;
                             existingUser.Role = userDto.Role;
 

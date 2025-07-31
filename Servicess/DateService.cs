@@ -75,10 +75,9 @@ namespace OfficeProject.Servicess
             return workingDays;
         }
 
-        public int GetIntervalDaysExcludingSundays(DateTime startDate)
+        public int GetWorkingDaysBetween(DateTime startDate, DateTime currentDate)
         {
             int workingDays = 0;
-            DateTime currentDate = DateTime.Today;
 
             int totalDays = (currentDate - startDate).Days + 1; // inclusive of today
 
@@ -109,6 +108,21 @@ namespace OfficeProject.Servicess
             }
             return null; // not found
         }
-       
+        public int? GetCurrentIntervalNumber(List<DateTime> breakpoints)
+        {
+            DateTime currentDate = DateTime.Today;
+
+            for (int i = 0; i < breakpoints.Count - 1; i++)
+            {
+                if (currentDate >= breakpoints[i] && currentDate <= breakpoints[i + 1])
+                {
+                    return i + 1; // interval number starts from 1
+                }
+            }
+
+            return null; // Not in any interval
+        }
+
+
     }
 } 
