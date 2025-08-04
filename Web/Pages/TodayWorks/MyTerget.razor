@@ -1,11 +1,10 @@
-﻿@page "/to-day-work"
+﻿@page "/to-day-work-tester"
 @inject ApiService api
 @using OfficeProject.Models.DTO
 @using System.ComponentModel.DataAnnotations
 @using OfficeProject.Web.Pages.DialogModel
 @using System.Text.Json
 @using OfficeProject.Models.Enums
-
 
 <style>
     .low-progress {
@@ -110,34 +109,19 @@
     }
 
     /*    .fixed-top {
-                z-index: 2000;
-                }
+            z-index: 2000;
+            }
 
-                .scale-wrapper {
-                transform: scale(0.85);
-                transform-origin: top left;
-                } */
+            .scale-wrapper {
+            transform: scale(0.85);
+            transform-origin: top left;
+            } */
 </style>
+
 
 <AuthorizeView Context="outerAuthContext">
     <Authorized>
 
-
-        <!-- Table Section -->
-
-        <h3 class="mb-4 fw-bold text-primary">Today Works</h3>
-        <div class="d-flex flex-wrap align-items-center gap-2">
-            <div class="flex-grow-1" style="max-width: 400px;">
-                <input class="form-control form-control-lg"
-                type="text"
-                @bind="searchText"
-                @bind:event="oninput"
-                placeholder="🔍 Search by PID, Project Name or Client Name..." />
-            </div>
-
-        </div>
-
-        <br />
 
         <div class="card-body">
 
@@ -214,7 +198,7 @@
                                                 service.RequiredSocialSharing = socilSharingRequired.RequiredUnit;
                                             }
                                             @* <td>@service.StartDate</td> *@
-                                            <td>@project.ProjectId - @service.ServiceId</td>
+                                            <td>@project.ProjectId - (@service.ServiceId)</td>
                                             <td>@project.ProjectName - (@service.ServiceName)</td>
 
                                             <td class="@postProgress.ColorClass" style="padding: 8px; line-height: 1.4;">
@@ -296,23 +280,6 @@
             }
         </div>
 
-        @if (IsVisible)
-        {
-            <DialogAddWorkTask IsVisible="@IsVisible"
-            service="@Service"
-            isAddWorkFormSubmit="@HandleWorkFormSubmit"
-            OnCancel="@OnDialogCancel" />
-        }
-
-
-        @if (ShowTeamWork)
-        {
-            <DialogViewTeamWorks ShowTeamWork="@ShowTeamWork"
-            ProjectId="@ProjectId"
-            IsDialogClose="@((bool val) => ShowTeamWork = val)" />
-
-        }
-
     </Authorized>
 
     <NotAuthorized>
@@ -357,6 +324,11 @@
     private bool ShowTeamWork = false;
 
     private int ProjectId { get; set; }
+    private int GetPost { get; set; }
+    private int GetReels { get; set; }
+    private int GetBacklink { get; set; }
+    private int GetClassified { get; set; }
+    private int GetSocialSharing { get; set; }
 
 
 
@@ -390,11 +362,12 @@
             Console.WriteLine($"Error loading projects: {ex.Message}");
         }
     }
+
     private (string ColorClass, int DaysLeft, int RequiredUnit) GetWorkProgressColor(
-      ServicesDTO service,
-      int totalUnits,
-      DateTime startDate,
-      int completedUnits)
+       ServicesDTO service,
+       int totalUnits,
+       DateTime startDate,
+       int completedUnits)
     {
         if (totalUnits == 0 || service.WorkTaskDetails == null)
             return ("", 0, 0);
@@ -534,102 +507,6 @@
 
     }
 
-    // private string GetWorkProgressColor(
-    // ServicesDTO service,
-    // WorkMetricType metricType,
-    // int totalUnits,
-    // DateTime startDate,
-    // int completedUnits)
-    // {
-    //     if (totalUnits == 0 || service.WorkTaskDetails == null)
-    //         return "";
-
-    //     var breakpoints = DateService!.GetBreakPointDates(startDate, (BillingType)service.BillingType!, totalUnits);
-    //     var interval = DateService.GetCurrentInterval(breakpoints);
-    //     var currentInterval = DateService.GetCurrentIntervalNumber(breakpoints);
-
-    //     if (interval == null || currentInterval == null)
-    //         return "";
-
-    //     int totalWorkingDays = DateService.GetTotalDaysExcludingSundays(startDate, 30);
-    //     int daysWorkedSoFar = DateService.GetWorkingDaysBetween(startDate, DateTime.Today);
-    //     if (daysWorkedSoFar == 0 || totalWorkingDays == 0) return "";
-
-    //     DateTime intervalStart = interval.Value.Start.Date;
-    //     DateTime intervalEnd = interval.Value.End.Date;
-
-
-    //     Console.WriteLine("interval:" + interval);
-    //     For first interval
-    //     if (IsFirstSlaveInterval(breakpoints))
-    //     {
-    //         int intervalLength = (intervalEnd - intervalStart).Days + 1;
-    //         int todayPosition = (DateTime.Today - intervalStart).Days + 1;
-
-    //         if (todayPosition == intervalLength)
-    //         {
-    //             Console.WriteLine("Case-1: else if");
-    //             Console.WriteLine("todayPosition:" + todayPosition);
-    //             Console.WriteLine("intervalLength:" + intervalLength);
-    //             Console.WriteLine("currentInterval:" + currentInterval);
-    //             Console.WriteLine("completedUnits:" + completedUnits);
-    //             Console.WriteLine("currentInterval (type): " + currentInterval.GetType());
-    //             Console.WriteLine("completedUnits (type): " + completedUnits.GetType());
-    //             Console.WriteLine("currentInterval == completedUnits? " + (currentInterval == completedUnits));
-
-    //             if (currentInterval <= completedUnits)
-    //             {
-    //                 return "";
-    //             }
-    //             return "medium-progress-bg";
-    //         }
-
-
-    //     }
-    //     else if (currentInterval - 1 > completedUnits)
-    //     {
-    //         Console.WriteLine("Case-2: else");
-    //         Console.WriteLine("currentInterval:" + currentInterval);
-    //         Console.WriteLine("completedUnits:" + completedUnits);
-    //         return "low-progress-bg";
-    //     }
-    //     else
-    //     {
-
-
-    //         int intervalLength = (intervalEnd - intervalStart).Days;
-    //         int todayPosition = (DateTime.Today - intervalStart).Days;
-    //         if (todayPosition == intervalLength)
-    //         {
-    //             Console.WriteLine("Case-3: else if");
-    //             Console.WriteLine("todayPosition:" + todayPosition);
-    //             Console.WriteLine("intervalLength:" + intervalLength);
-    //             Console.WriteLine("currentInterval:" + currentInterval);
-    //             Console.WriteLine("completedUnits:" + completedUnits);
-    //             if (currentInterval <= completedUnits)
-    //             {
-    //                 return "";
-    //             }
-    //             return "low-progress-bg";
-    //             return "medium-progress-bg";
-    //         }
-    //         else if (currentInterval <= completedUnits)
-    //         {
-    //             return "";
-    //         }
-    //         Console.WriteLine("Case-3: else");
-    //         Console.WriteLine("todayPosition:" + todayPosition);
-    //         Console.WriteLine("intervalLength:" + intervalLength);
-    //         Console.WriteLine("currentInterval:" + currentInterval);
-    //         Console.WriteLine("completedUnits:" + completedUnits);
-
-    //     }
-
-
-    //     return "";
-
-    // }
-
     public bool IsFirstInterval(List<DateTime> breakpoints)
     {
         DateTime currentDate = DateTime.Today;
@@ -646,6 +523,8 @@
 
         return false;
     }
+
+
 
     private bool MetricMatch(WorkTaskDetailsDto w, WorkMetricType metricType)
     {

@@ -74,6 +74,30 @@ namespace OfficeProject.Servicess
 
             return workingDays;
         }
+        public int GetTotalDaysFromTodayExcludingSundays(DateTime startDate)
+        {
+            int workingDays = 0;
+            DateTime today = DateTime.Today;
+
+            // Ensure startDate is earlier or equal to today
+            if (startDate > today)
+                return 0;
+
+            TimeSpan dateDifference = today - startDate;
+            int totalDays = dateDifference.Days + 1; // +1 to include the start date
+
+            for (int i = 0; i < totalDays; i++)
+            {
+                DateTime currentDate = startDate.AddDays(i);
+                if (currentDate.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    workingDays++;
+                }
+            }
+
+            return workingDays;
+        }
+
 
         public int GetWorkingDaysBetween(DateTime startDate, DateTime currentDate)
         {

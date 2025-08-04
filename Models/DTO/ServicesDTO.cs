@@ -49,10 +49,20 @@ namespace OfficeProject.Models.DTO
         public int? CompleteBacklink { get; set; }
         public int? CompleteClasified { get; set; }
         public int? CompleteSocialSharing { get; set; }
-        public int? CompleteReels { get; set; }
+        public int? CompleteReels { get; set; } 
+        public int? DayLeft { get; set; } = 0;
+        //public int? DayLeftPost { get; set; } = 0;
+        //public int? DayLeftBacklink { get; set; } = 0;
+        //public int? DayLeftClasified { get; set; } = 0;
+        //public int? DayLeftSocialSharing { get; set; } = 0;
+        //public int? DayLeftReels { get; set; } = 0;        
+        public int? RequiredPost { get; set; } = 0;
+        public int? RequiredBacklink { get; set; } = 0;
+        public int? RequiredClasified { get; set; } = 0;
+        public int? RequiredSocialSharing { get; set; } = 0;
+        public int? RequiredReels { get; set; } = 0;
         public decimal? CompleteUsedAdsBudget { get; set; }
-       
-        
+             
 
         [DataType(DataType.Date)]
         public DateTime DeadLine { get; set; }
