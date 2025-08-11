@@ -168,31 +168,31 @@
                                         <tr>
                                             @{
                                                 var postProgress = GetWorkProgressColor(service, (int)service.TotalPost!, service.StartDate, (int)service.CompletePost!);
-                                                service.DayLeft = postProgress.DaysLeft;
+                                                service.DayLeftPost = postProgress.DaysLeft;
 
                                                 var postRequired = GetWorkProgressColor(service, (int)service.TotalPost!, service.StartDate, (int)service.CompletePost!);
                                                 service.RequiredPost = postRequired.RequiredUnit;
 
                                                 var reelProgress = GetWorkProgressColor(service, (int)service.TotalReels!, service.StartDate, (int)service.CompleteReels!);
-                                                service.DayLeft = reelProgress.DaysLeft;
+                                                service.DayLeftReels = reelProgress.DaysLeft;
 
                                                 var reelRequired = GetWorkProgressColor(service, (int)service.TotalReels!, service.StartDate, (int)service.CompleteReels!);
                                                 service.RequiredReels = reelRequired.RequiredUnit;
 
                                                 var backlinkProgress = GetWorkProgressColor(service, (int)service.Backlink!, service.StartDate, (int)service.CompleteBacklink!);
-                                                service.DayLeft = backlinkProgress.DaysLeft;
+                                                service.DayLeftBacklink = backlinkProgress.DaysLeft;
 
                                                 var backlinkRequired = GetWorkProgressColor(service, (int)service.Backlink!, service.StartDate, (int)service.CompleteBacklink!);
                                                 service.RequiredBacklink = backlinkRequired.RequiredUnit;
 
                                                 var clasifiedProgress = GetWorkProgressColor(service, (int)service.Clasified!, service.StartDate, (int)service.CompleteClasified!);
-                                                service.DayLeft = clasifiedProgress.DaysLeft;
+                                                service.DayLeftClasified= clasifiedProgress.DaysLeft;
 
                                                 var clasifiedRequired = GetWorkProgressColor(service, (int)service.Clasified!, service.StartDate, (int)service.CompleteClasified!);
                                                 service.RequiredClasified = clasifiedRequired.RequiredUnit;
 
                                                 var socilSharingProgress = GetWorkProgressColor(service, (int)service.SocialSharing!, service.StartDate, (int)service.CompleteSocialSharing!);
-                                                service.DayLeft = socilSharingProgress.DaysLeft;
+                                                service.DayLeftSocialSharing = socilSharingProgress.DaysLeft;
 
                                                 var socilSharingRequired = GetWorkProgressColor(service, (int)service.SocialSharing!, service.StartDate, (int)service.CompleteSocialSharing!);
                                                 service.RequiredSocialSharing = socilSharingRequired.RequiredUnit;
@@ -206,7 +206,7 @@
 
                                                 @if (@service.RequiredPost > 0)
                                                 {
-                                                    <div style="font-size: 0.75em;margin-top: 4px; font-weight: 500;">Post: @service.RequiredPost / @service.DayLeft Day left</div>
+                                                    <div style="font-size: 0.75em;margin-top: 4px; font-weight: 500;">Post: @service.RequiredPost / @service.DayLeftPost Day left</div>
                                                 }
                                             </td>
 
@@ -215,7 +215,7 @@
 
                                                 @if (@service.RequiredReels > 0)
                                                 {
-                                                    <div style="font-size: 0.75em;margin-top: 4px; font-weight: 500;">Post: @service.RequiredReels / @service.DayLeft Day left</div>
+                                                    <div style="font-size: 0.75em;margin-top: 4px; font-weight: 500;">Post: @service.RequiredReels / @service.DayLeftReels Day left</div>
                                                 }
                                             </td>
                                             <td class="@backlinkProgress.ColorClass" style="padding: 8px; line-height: 1.4;">
@@ -223,7 +223,7 @@
 
                                                 @if (@service.RequiredBacklink > 0)
                                                 {
-                                                    <div style="font-size: 0.75em;margin-top: 4px; font-weight: 500;">Post: @service.RequiredBacklink / @service.DayLeft Day left</div>
+                                                    <div style="font-size: 0.75em;margin-top: 4px; font-weight: 500;">Post: @service.RequiredBacklink / @service.DayLeftBacklink Day left</div>
                                                 }
                                             </td>
                                             <td class="@clasifiedProgress.ColorClass" style="padding: 8px; line-height: 1.4;">
@@ -231,7 +231,7 @@
 
                                                 @if (@service.RequiredClasified > 0)
                                                 {
-                                                    <div style="font-size: 0.75em;margin-top: 4px; font-weight: 500;">Post: @service.RequiredClasified / @service.DayLeft Day left</div>
+                                                    <div style="font-size: 0.75em;margin-top: 4px; font-weight: 500;">Post: @service.RequiredClasified / @service.DayLeftClasified Day left</div>
                                                 }
                                             </td>
 
@@ -240,7 +240,7 @@
 
                                                 @if (@service.RequiredSocialSharing > 0)
                                                 {
-                                                    <div style="font-size: 0.75em;margin-top: 4px; font-weight: 500;">Post: @service.RequiredSocialSharing / @service.DayLeft Day left</div>
+                                                    <div style="font-size: 0.75em;margin-top: 4px; font-weight: 500;">Post: @service.RequiredSocialSharing / @service.DayLeftSocialSharing Day left</div>
                                                 }
                                             </td>
 

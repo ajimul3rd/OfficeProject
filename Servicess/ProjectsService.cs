@@ -389,7 +389,7 @@ namespace OfficeProject.Servicess
                             ClientContact1 = project.Client.ClientContact1
                         } : null,
 
-                        Services = project.Services
+                        Services = project.Services!
                             .Where(service =>
                                 service.Products?.UserWorkingActivity != null &&
                                 service.Products.UserWorkingActivity.Any(ua =>
@@ -454,7 +454,7 @@ namespace OfficeProject.Servicess
                                     HostingLimit = web.HostingLimit,
                                     HostingRenewalAmount = web.HostingRenewalAmount,
                                     ServerFtpAssign = web.ServerFtpAssign,
-                                    ServerIp = web.ServerIp,
+                                    ServerIp = web.ServerIp!,
                                     ServerUserId = web.ServerUserId,
                                     ServerPassword = web.ServerPassword,
                                     DesignTools = web.DesignTools,
@@ -466,6 +466,7 @@ namespace OfficeProject.Servicess
                                     Remarks = web.Remarks,
                                     Note = web.Note
                                 }).ToList(),
+
                                 WorkTaskDetails=service.WorkTaskDetails?.Select(wr=>new WorkTaskDetailsDto
                                 {
                                     WorkTaskId = wr.WorkTaskId,
@@ -474,15 +475,12 @@ namespace OfficeProject.Servicess
                                     Task = wr.Task,
                                     Remarks = wr.Remarks,
                                     Work_UserId = wr.Work_UserId,
-
                                     SharedPost=wr.SharedPost,
                                     CreatedReels=wr.CreatedReels,
                                     UsedAdsBudget=wr.UsedAdsBudget,
                                     Clasified=wr.Clasified,
                                     Backlink=wr.Backlink,
                                     SocialSharing=wr.SocialSharing
-
-
 
                                 }).ToList()
 

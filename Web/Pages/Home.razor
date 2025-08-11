@@ -30,115 +30,269 @@
             <!-- Key Metrics -->
 
             <div class="row mb-4">
-                <div class="col-md-6 mb-4">
-                    <div class="card bg-primary text-white h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
+                @if (isLoading)
+                {
+                    <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-6 mb-4">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="text-uppercase text-white-50 small mb-0">Tasks</h6>
+                                    <i class="fas fa-tasks fa-2x opacity-50"></i>
+                                </div>
+
+                                @{
+                                    var allDays = PostDayLeftList
+                                    .Concat(ReelsDayLeftList)
+                                    .Concat(BackLinkDayLeftList)
+                                    .Concat(ClasifiedDayLeftList)
+                                    .Concat(SocialSharingDayLeftList)
+                                    .Distinct()
+                                    .OrderBy(x => x)
+                                    .ToList();
+                                }
+
+                                @{
+                                    var found = false;
+                                }
+
+                                @foreach (var day in allDays)
+                                {
+                                    var hasTasks =
+                                    GetSumByDay(allPostServices, day, s => s.DayLeftPost, s => s.RequiredPost) > 0 ||
+                                    GetSumByDay(allReelsServices, day, s => s.DayLeftReels, s => s.RequiredReels) > 0 ||
+                                    GetSumByDay(allBacklinkServices, day, s => s.DayLeftBacklink, s => s.RequiredBacklink) > 0 ||
+                                    GetSumByDay(allClasifiedServices, day, s => s.DayLeftClasified, s => s.RequiredClasified) > 0 ||
+                                    GetSumByDay(allSocialSharingServices, day, s => s.DayLeftSocialSharing, s => s.RequiredSocialSharing) > 0;
+
+                                    if (hasTasks && !found)
+                                    {
+                                        found = true;
+                                        <div>
+                                            <div><strong>@GetDayLabel(day)</strong></div>
+                                            <ul>
+
+
+
+                                                @if (GetSumByDay(allPostServices, day, s => s.DayLeftPost, s => s.RequiredPost) > 0)
+                                                {
+                                                    <li>
+                                                        <div>Pending Posts: @GetSumByDay(allPostServices, day, s => s.DayLeftPost, s => s.RequiredPost)</div>
+                                                    </li>
+                                                }
+
+
+                                                @if (GetSumByDay(allReelsServices, day, s => s.DayLeftReels, s => s.RequiredReels) > 0)
+                                                {
+                                                    <li>
+                                                        <div>Pending Reels: @GetSumByDay(allReelsServices, day, s => s.DayLeftReels, s => s.RequiredReels)</div>
+                                                    </li>
+                                                }
+
+
+                                                @if (GetSumByDay(allBacklinkServices, day, s => s.DayLeftBacklink, s => s.RequiredBacklink) > 0)
+                                                {
+                                                    <li>
+                                                        <div>Pending Backlinks: @GetSumByDay(allBacklinkServices, day, s => s.DayLeftBacklink, s => s.RequiredBacklink)</div>
+                                                    </li>
+                                                }
+
+                                                @if (GetSumByDay(allClasifiedServices, day, s => s.DayLeftClasified, s => s.RequiredClasified) > 0)
+                                                {
+                                                    <li>
+                                                        <div>Pending Classified: @GetSumByDay(allClasifiedServices, day, s => s.DayLeftClasified, s => s.RequiredClasified)</div>
+                                                    </li>
+                                                }
+
+                                                @if (GetSumByDay(allSocialSharingServices, day, s => s.DayLeftSocialSharing, s => s.RequiredSocialSharing) > 0)
+                                                {
+                                                    <li>
+                                                        <div>Pending Social Sharing: @GetSumByDay(allSocialSharingServices, day, s => s.DayLeftSocialSharing, s => s.RequiredSocialSharing)</div>
+                                                    </li>
+                                                }
+
+
+                                            </ul>
+                                        </div>
+
+                                        break; // Stop after showing the first available day
+                                    }
+                                }
+
+                                @if (!found)
+                                {
+                                    <div>No tasks available.</div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm rounded-4 border-0">
+                            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 text-primary fw-semibold">Performance Overview</h5>
+                                <i class="fas fa-tachometer-alt text-muted"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Post</span>
+                                        <span class="badge bg-success">@Math.Round(CompletionPostRate)%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-success" role="progressbar"
+                                             style="width: @Math.Round(CompletionPostRate)%;"
+                                             aria-valuenow="@Math.Round(CompletionPostRate)"
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Reel</span>
+                                        <span class="badge bg-info text-dark">@Math.Round(CompletionReelsRate)%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-info" role="progressbar"
+                                             style="width: @Math.Round(CompletionReelsRate)%;"
+                                             aria-valuenow="@Math.Round(CompletionReelsRate)"
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Backlink</span>
+                                        <span class="badge bg-primary">@Math.Round(CompletionBacklinkRate)%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-primary" role="progressbar"
+                                             style="width: @Math.Round(CompletionBacklinkRate)%;"
+                                             aria-valuenow="@Math.Round(CompletionBacklinkRate)"
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Classified</span>
+                                        <span class="badge bg-warning text-dark">@Math.Round(CompletionClassifiedRate)%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-warning" role="progressbar"
+                                             style="width: @Math.Round(CompletionClassifiedRate)%;"
+                                             aria-valuenow="@Math.Round(CompletionClassifiedRate)"
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <h6 class="text-uppercase text-white-50 small">Tasks</h6>
-
-                                    @if (dayLeftList.Count >= 2)
-                                    {
-                                        <div>
-                                            <div><strong>@GetDayLabel(dayLeftList[0])</strong></div>
-                                            <div>Posts: @FirstMinPost</div>
-                                            <div>Reels: @FirstMinReels</div>
-                                            <div>Backlinks: @FirstMinBacklink</div>
-                                            <div>Classified: @FirstMinClassified</div>
-                                            <div>Social Sharing: @FirstMinSocialSharing</div>
-                                            <hr />
-                                            <div><strong>@GetDayLabel(dayLeftList[1])</strong></div>
-                                            <div>Posts: @SecondMinPost</div>
-                                            <div>Reels: @SecondMinReels</div>
-                                            <div>Backlinks: @SecondMinBacklink</div>
-                                            <div>Classified: @SecondMinClassified</div>
-                                            <div>Social Sharing: @SecondMinSocialSharing</div>
-                                        </div>
-                                    }
-                                    else if (dayLeftList.Count == 1)
-                                    {
-                                        <div>
-                                            <div><strong>@GetDayLabel(dayLeftList[0])</strong></div>
-                                            <div>Posts: @FirstMinPost</div>
-                                            <div>Reels: @FirstMinReels</div>
-                                            <div>Backlinks: @FirstMinBacklink</div>
-                                            <div>Classified: @FirstMinClassified</div>
-                                            <div>Social Sharing: @FirstMinSocialSharing</div>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div>No tasks available.</div>
-                                    }
+                                    <div class="d-flex justify-content-between">
+                                        <span>Social Sharing</span>
+                                        <span class="badge bg-danger">@Math.Round(CompletionSocialSharingRate)%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-danger" role="progressbar"
+                                             style="width: @Math.Round(CompletionSocialSharingRate)%;"
+                                             aria-valuenow="@Math.Round(CompletionSocialSharingRate)"
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
                                 </div>
-                                <i class="fas fa-tasks fa-2x opacity-50"></i>
                             </div>
+
                         </div>
                     </div>
-                </div>
 
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm rounded-4 border-0">
-                        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0 text-primary fw-semibold">Performance Overview</h5>
-                            <i class="fas fa-tachometer-alt text-muted"></i>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span>Post</span>
-                                    <span class="badge bg-success">@CompletionPostRate%</span>
-                                </div>
-                                <div class="progress" style="height: 6px;">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: @CompletionPostRate%;" aria-valuenow="@CompletionPostRate" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
+                    <hr />
 
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span>Reel</span>
-                                    <span class="badge bg-info text-dark">@CompletionReelsRate%</span>
-                                </div>
-                                <div class="progress" style="height: 6px;">
-                                    <div class="progress-bar bg-info" role="progressbar" style="width: @CompletionReelsRate%;" aria-valuenow="@CompletionReelsRate" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="text-uppercase text-white-50 small mt-3">Averages</h6>
 
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span>Backlink</span>
-                                    <span class="badge bg-primary">@CompletionBacklinkRate%</span>
                                 </div>
-                                <div class="progress" style="height: 6px;">
-                                    <div class="progress-bar bg-primary" role="progressbar" style="width: @CompletionBacklinkRate%;" aria-valuenow="@CompletionBacklinkRate" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
+                                <div class="row">
+                                    <!-- Target Avg -->
+                                    <div class="col-md-6">
+                                        <strong>Target Avg (per day):</strong>
+                                        <ul class="mb-2">
+                                            @if (@Math.Round(TergetWorkingAvgPost, 2) > 0)
+                                            {
+                                                <li>Posts: @Math.Round(TergetWorkingAvgPost, 2)</li>
 
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span>Classified</span>
-                                    <span class="badge bg-warning text-dark">@CompletionClassifiedRate%</span>
-                                </div>
-                                <div class="progress" style="height: 6px;">
-                                    <div class="progress-bar bg-warning" role="progressbar" style="width: @CompletionClassifiedRate%;" aria-valuenow="@CompletionClassifiedRate" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
+                                            }
+                                            @if (@Math.Round(TergetWorkingAvgReels, 2) > 0)
+                                            {
+                                                <li>Reels: @Math.Round(TergetWorkingAvgReels, 2)</li>
 
-                            <div>
-                                <div class="d-flex justify-content-between">
-                                    <span>Social Sharing</span>
-                                    <span class="badge bg-danger">@CompletionSocialSharingRate%</span>
-                                </div>
-                                <div class="progress" style="height: 6px;">
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: @CompletionSocialSharingRate%;" aria-valuenow="@CompletionSocialSharingRate" aria-valuemin="0" aria-valuemax="100"></div>
+                                            }
+                                            @if (@Math.Round(TergetWorkingAvgBackLink, 2) > 0)
+                                            {
+                                                <li>Backlinks: @Math.Round(TergetWorkingAvgBackLink, 2)</li>
+
+                                            }
+                                            @if (@Math.Round(TergetWorkingAvgClasified, 2) > 0)
+                                            {
+                                                <li>Classifieds: @Math.Round(TergetWorkingAvgClasified, 2)</li>
+                                            }
+                                            @if (@Math.Round(TergetWorkingAvgSocialSharing, 2) > 0)
+                                            {
+                                                <li>Social Sharing: @Math.Round(TergetWorkingAvgSocialSharing, 2)</li>
+                                            }
+
+
+
+
+                                        </ul>
+                                    </div>
+
+                                    <!-- Current Avg -->
+                                    <div class="col-md-6">
+                                        <strong>Current Avg (per day):</strong>
+                                        <ul>
+
+                                            @if (@Math.Round(TergetWorkingAvgPost, 2) > 0)
+                                            {
+                                                <li>Posts: @Math.Round(CurrentAvgPost, 2)</li>
+                                            }
+                                            @if (@Math.Round(TergetWorkingAvgReels, 2) > 0)
+                                            {
+                                                <li>Reels: @Math.Round(CurrentAvgReels, 2)</li>
+
+                                            }
+                                            @if (@Math.Round(TergetWorkingAvgBackLink, 2) > 0)
+                                            {
+                                                <li>Backlinks: @Math.Round(CurrentAvgBackLink, 2)</li>
+
+                                            }
+                                            @if (@Math.Round(TergetWorkingAvgClasified, 2) > 0)
+                                            {
+                                                <li>Classifieds: @Math.Round(CurrentAvgClasified, 2)</li>
+
+                                            }
+                                            @if (@Math.Round(TergetWorkingAvgSocialSharing, 2) > 0)
+                                            {
+                                                <li>Social Sharing: @Math.Round(CurrentAvgSocialSharing, 2)</li>
+
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                </div>
 
-               @*  <div class="col-md-3 mb-3 mb-md-0">
+                }
+
+                @*  <div class="col-md-3 mb-3 mb-md-0">
                     <div class="card bg-success text-white h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
@@ -155,7 +309,7 @@
                         </div>
                     </div>
                 </div>
-              
+
 
                 <div class="col-md-3">
                     <div class="card bg-warning text-dark h-100">
@@ -175,8 +329,8 @@
                 </div>
             </div> *@
 
-            <!-- Quick Actions & Recent Activity -->
-            @* <div class="row">
+                <!-- Quick Actions & Recent Activity -->
+                @* <div class="row">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="card shadow-sm h-100">
                         <div class="card-header bg-white border-bottom">
@@ -259,8 +413,8 @@
                 </div>
             </div> *@
 
-            <!-- Recent Projects -->
-           @*  <div class="row mt-4">
+                <!-- Recent Projects -->
+                @*  <div class="row mt-4">
                 <div class="col-12">
                     <div class="card shadow-sm">
                         <div class="card-header bg-white border-bottom">
@@ -322,6 +476,7 @@
                     </div>
                 </div>
             </div> *@
+            </div>
         </div>
 
 
@@ -337,27 +492,48 @@
     private bool loadFailed = false;
     private bool isLoading = true;
     private List<ProjectsDTO> projects = new();
+
+    private int TotalProject { get; set; }
+    private int TotalService { get; set; }
+
+    private int FirstMinPost { get; set; }
+    private int FirstMinReels { get; set; }
+    private int FirstMinBacklink { get; set; }
+    private int FirstMinClassified { get; set; }
+    private int FirstMinSocialSharing { get; set; }
+
     private int SecondMinPost { get; set; }
     private int SecondMinReels { get; set; }
     private int SecondMinBacklink { get; set; }
     private int SecondMinClassified { get; set; }
     private int SecondMinSocialSharing { get; set; }
 
-    private int FirstMinPost { get; set; }
-    private int TotalProject { get; set; }
-    private int TotalService { get; set; }
-    private int FirstMinReels { get; set; }
-    private int FirstMinBacklink { get; set; }
-    private int FirstMinClassified { get; set; }
-    private int FirstMinSocialSharing { get; set; }
-
+    private int ThirdMinPost { get; set; }
+    private int ThirdMinReels { get; set; }
+    private int ThirdMinBacklink { get; set; }
+    private int ThirdMinClassified { get; set; }
+    private int ThirdMinSocialSharing { get; set; }
 
     private double CompletionPostRate { get; set; }
     private double CompletionReelsRate { get; set; }
     private double CompletionBacklinkRate { get; set; }
     private double CompletionClassifiedRate { get; set; }
     private double CompletionSocialSharingRate { get; set; }
-    
+
+
+    private double TergetWorkingAvgPost { get; set; }
+    private double TergetWorkingAvgReels { get; set; }
+    private double TergetWorkingAvgBackLink { get; set; }
+    private double TergetWorkingAvgClasified { get; set; }
+    private double TergetWorkingAvgSocialSharing { get; set; }
+
+
+    private double CurrentAvgPost { get; set; }
+    private double CurrentAvgReels { get; set; }
+    private double CurrentAvgBackLink { get; set; }
+    private double CurrentAvgClasified { get; set; }
+    private double CurrentAvgSocialSharing { get; set; }
+
 
     [Inject] private DateService? DateService { get; set; }
 
@@ -365,17 +541,41 @@
     [Inject] private NavigationManager Navigation { get; set; } = null!;
     [Inject] private ApiService api { get; set; } = null!;
 
-    private List<int> dayLeftList = new();
+    private List<int> PostDayLeftList = new();
+    private List<int> ReelsDayLeftList = new();
+    private List<int> BackLinkDayLeftList = new();
+    private List<int> ClasifiedDayLeftList = new();
+    private List<int> SocialSharingDayLeftList = new();
+
+
+
+    private List<ServicesDTO> allPostServices = new();
+    private List<ServicesDTO> allReelsServices = new();
+    private List<ServicesDTO> allBacklinkServices = new();
+    private List<ServicesDTO> allClasifiedServices = new();
+    private List<ServicesDTO> allSocialSharingServices = new();
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+    //     userName = authState.User.Identity?.Name;
+    //     isLoading = true;
+    //     await GetProjectPerUserAsync();
+    //     isLoading = false;
+    // }
 
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
+        StateHasChanged(); // This forces the UI to show the spinner before awaiting the data
+
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         userName = authState.User.Identity?.Name;
-        isLoading = true;
-        await GetProjectPerUserAsync();
+
+        await GetProjectPerUserAsync(); // your data loading logic
         isLoading = false;
+        StateHasChanged(); // Re-render again after loading
     }
-    
 
 
 
@@ -384,6 +584,7 @@
         try
         {
             projects = await api.GetProjectPerUserAsync();
+
             GetTodayTerget();
             // Optional: Check if the first project has no services
             if (projects.Count > 0 && (projects[0].Services == null || projects[0].Services!.Count == 0))
@@ -392,7 +593,7 @@
             }
 
             // Optional: serialize if needed
-            // DataSerializer.Serializer(projects, "ToDayWorkList:GetProjectPerUserAsync");
+            // DataSerializer.Serializer(projects, "Home Dash Board?");
         }
         catch (Exception ex)
         {
@@ -405,7 +606,7 @@
     {
         foreach (var project in projects)
         {
-            if (project.Services != null && project.Services.Any())
+            if (project.Services != null && project.ProjectType == ProjectType.SERVICE && project.Services.Any())
             {
                 TotalProject += 1;
                 foreach (var service in project.Services)
@@ -415,31 +616,31 @@
 
 
                     var postProgress = GetWorkProgressColor(service, (int)service.TotalPost!, service.StartDate, (int)service.CompletePost!);
-                    service.DayLeft = postProgress.DaysLeft;
+                    service.DayLeftPost = postProgress.DaysLeft;
 
                     var postRequired = GetWorkProgressColor(service, (int)service.TotalPost!, service.StartDate, (int)service.CompletePost!);
                     service.RequiredPost = postRequired.RequiredUnit;
 
                     var reelProgress = GetWorkProgressColor(service, (int)service.TotalReels!, service.StartDate, (int)service.CompleteReels!);
-                    service.DayLeft = reelProgress.DaysLeft;
+                    service.DayLeftReels = reelProgress.DaysLeft;
 
                     var reelRequired = GetWorkProgressColor(service, (int)service.TotalReels!, service.StartDate, (int)service.CompleteReels!);
                     service.RequiredReels = reelRequired.RequiredUnit;
 
                     var backlinkProgress = GetWorkProgressColor(service, (int)service.Backlink!, service.StartDate, (int)service.CompleteBacklink!);
-                    service.DayLeft = backlinkProgress.DaysLeft;
+                    service.DayLeftBacklink = backlinkProgress.DaysLeft;
 
                     var backlinkRequired = GetWorkProgressColor(service, (int)service.Backlink!, service.StartDate, (int)service.CompleteBacklink!);
                     service.RequiredBacklink = backlinkRequired.RequiredUnit;
 
                     var clasifiedProgress = GetWorkProgressColor(service, (int)service.Clasified!, service.StartDate, (int)service.CompleteClasified!);
-                    service.DayLeft = clasifiedProgress.DaysLeft;
+                    service.DayLeftClasified = clasifiedProgress.DaysLeft;
 
                     var clasifiedRequired = GetWorkProgressColor(service, (int)service.Clasified!, service.StartDate, (int)service.CompleteClasified!);
                     service.RequiredClasified = clasifiedRequired.RequiredUnit;
 
                     var socilSharingProgress = GetWorkProgressColor(service, (int)service.SocialSharing!, service.StartDate, (int)service.CompleteSocialSharing!);
-                    service.DayLeft = socilSharingProgress.DaysLeft;
+                    service.DayLeftSocialSharing = socilSharingProgress.DaysLeft;
 
                     var socilSharingRequired = GetWorkProgressColor(service, (int)service.SocialSharing!, service.StartDate, (int)service.CompleteSocialSharing!);
                     service.RequiredSocialSharing = socilSharingRequired.RequiredUnit;
@@ -452,6 +653,8 @@
         AvgCalculation();
 
     }
+
+
     private void AvgCalculation()
     {
         int CompletePost = 0;
@@ -467,44 +670,82 @@
         int TergetSocialSharing = 0;
 
         double SumIntervalDays = 0;
-        int TotalProject = 0;
+
 
         foreach (var project in projects)
         {
-            if (project.Services != null && project.Services.Any())
+            if (project.ProjectType == ProjectType.SERVICE)
             {
-                TotalProject += 1;
 
-                foreach (var service in project.Services)
+                if (project.Services != null && project.Services.Any())
                 {
-                    int intervalDays = DateService!.GetTotalDaysFromTodayExcludingSundays(service.StartDate);
-                    SumIntervalDays += intervalDays;
 
-                    int complete = service.CompletePost ?? 0;
-                    int target = service.TotalPost;
 
-                    CompletePost += complete;
-                    TergetPost += target;
+                    foreach (var service in project.Services)
+                    {
 
-                    Console.WriteLine("IntervalDate - " + intervalDays);
+                        SumIntervalDays += DateService!.GetTotalDaysFromTodayExcludingSundays(service.StartDate);
+
+                        CompletePost += service.CompletePost ?? 0;
+                        TergetPost += service.TotalPost;
+
+                        CompleteReels += service.CompleteReels ?? 0;
+                        TergetReels += service.TotalReels;
+
+                        CompleteBacklink += service.CompleteBacklink ?? 0;
+                        TergetBacklink += service.Backlink;
+
+                        CompleteClassified += service.CompleteClasified ?? 0;
+                        TergetClassified += service.Clasified;
+
+                        CompleteSocialSharing += service.CompleteSocialSharing ?? 0;
+                        TergetSocialSharing += service.SocialSharing;
+                    }
                 }
             }
         }
 
-        double AvgCompletePost = SumIntervalDays > 0 ? (double)CompletePost / SumIntervalDays : 0;
-        double AvgTergetPost = SumIntervalDays > 0 ? (double)TergetPost / SumIntervalDays : 0;
 
-        double AvgCompleteReels = SumIntervalDays > 0 ? (double)CompleteReels / SumIntervalDays : 0;
-        double AvgTergetReels = SumIntervalDays > 0 ? (double)TergetReels / SumIntervalDays : 0;
 
-        double AvgCompleteBacklink = SumIntervalDays > 0 ? (double)CompleteBacklink / SumIntervalDays : 0;
-        double AvgTergetBacklink = SumIntervalDays > 0 ? (double)TergetBacklink / SumIntervalDays : 0;
 
-        double AvgCompleteClassified = SumIntervalDays > 0 ? (double)CompleteClassified / SumIntervalDays : 0;
-        double AvgTergetClassified = SumIntervalDays > 0 ? (double)TergetClassified / SumIntervalDays : 0;
+        // Console.WriteLine("SumIntervalDays-" + SumIntervalDays);
+        // double AvgCompletePost = SumIntervalDays > 0 ? (double)CompletePost / (SumIntervalDays) : 0;
+        // double AvgTergetPost = SumIntervalDays > 0 ? (double)TergetPost / SumIntervalDays : 0;
 
-        double AvgCompleteSocialSharing = SumIntervalDays > 0 ? (double)CompleteSocialSharing / SumIntervalDays : 0;
-        double AvgTergetSocialSharing = SumIntervalDays > 0 ? (double)TergetSocialSharing / SumIntervalDays : 0;
+        // double AvgCompleteReels = SumIntervalDays > 0 ? (double)CompleteReels / SumIntervalDays : 0;
+        // double AvgTergetReels = SumIntervalDays > 0 ? (double)TergetReels / SumIntervalDays : 0;
+
+        // double AvgCompleteBacklink = SumIntervalDays > 0 ? (double)CompleteBacklink / SumIntervalDays : 0;
+        // double AvgTergetBacklink = SumIntervalDays > 0 ? (double)TergetBacklink / SumIntervalDays : 0;
+
+
+        // double AvgCompleteClassified = SumIntervalDays > 0 ? (double)CompleteClassified / SumIntervalDays : 0;
+        // double AvgTergetClassified = SumIntervalDays > 0 ? (double)TergetClassified / SumIntervalDays : 0;
+
+        // double AvgCompleteSocialSharing = SumIntervalDays > 0 ? (double)CompleteSocialSharing / SumIntervalDays : 0;
+        // double AvgTergetSocialSharing = SumIntervalDays > 0 ? (double)TergetSocialSharing / SumIntervalDays : 0;
+
+        double avgDays = TotalService > 0 ? SumIntervalDays / TotalService : 0;
+
+        Console.WriteLine("TotalService-" + (TotalService));
+        Console.WriteLine("SumIntervalDays-" + (SumIntervalDays));
+        Console.WriteLine("avgDays-" + (avgDays));
+
+        double AvgCompletePost = Math.Round(avgDays) > 0 ? (double)CompletePost / Math.Round(avgDays) : 0;
+        double AvgTergetPost = Math.Round(avgDays) > 0 ? (double)TergetPost / Math.Round(avgDays) : 0;
+
+        double AvgCompleteReels = Math.Round(avgDays) > 0 ? (double)CompleteReels / Math.Round(avgDays) : 0;
+        double AvgTergetReels = Math.Round(avgDays) > 0 ? (double)TergetReels / Math.Round(avgDays) : 0;
+
+        double AvgCompleteBacklink = Math.Round(avgDays) > 0 ? (double)CompleteBacklink / Math.Round(avgDays) : 0;
+        double AvgTergetBacklink = Math.Round(avgDays) > 0 ? (double)TergetBacklink / Math.Round(avgDays) : 0;
+
+
+        double AvgCompleteClassified = Math.Round(avgDays) > 0 ? (double)CompleteClassified / Math.Round(avgDays) : 0;
+        double AvgTergetClassified = Math.Round(avgDays) > 0 ? (double)TergetClassified / Math.Round(avgDays) : 0;
+
+        double AvgCompleteSocialSharing = Math.Round(avgDays) > 0 ? (double)CompleteSocialSharing / Math.Round(avgDays) : 0;
+        double AvgTergetSocialSharing = Math.Round(avgDays) > 0 ? (double)TergetSocialSharing / Math.Round(avgDays) : 0;
 
         // Compute completion percentage relative to AvgTargetPost
         CompletionPostRate = AvgTergetPost > 0 ? (AvgCompletePost / AvgTergetPost) * 100 : 0;
@@ -513,7 +754,7 @@
         CompletionReelsRate = AvgTergetReels > 0 ? (AvgCompleteReels / AvgTergetReels) * 100 : 0;
 
         // Compute completion percentage relative to AvgTargetClassified
-        CompletionClassifiedRate = AvgTergetBacklink > 0 ? (AvgCompleteBacklink / AvgTergetBacklink) * 100 : 0;
+        CompletionBacklinkRate = AvgTergetBacklink > 0 ? (AvgCompleteBacklink / AvgTergetBacklink) * 100 : 0;
 
         // Compute completion percentage relative to AvgTargetClassified
         CompletionClassifiedRate = AvgTergetClassified > 0 ? (AvgCompleteClassified / AvgTergetClassified) * 100 : 0;
@@ -521,125 +762,221 @@
         // Compute completion percentage relative to AvgTargetSocialSharing
         CompletionSocialSharingRate = AvgTergetSocialSharing > 0 ? (AvgCompleteSocialSharing / AvgTergetSocialSharing) * 100 : 0;
 
-
-
-
-
-        // Console.WriteLine("CompletePost - " + CompletePost);
-        // Console.WriteLine("TergetPost - " + TergetPost);
-        // Console.WriteLine("SumIntervalDays - " + SumIntervalDays);
-        // Console.WriteLine("AvgCompletePost - " + AvgCompletePost);
-        // Console.WriteLine("AvgTergetPost - " + AvgTergetPost);
-        // Console.WriteLine("Completion Rate - " + Math.Round(CompletionPostRate, 2) + "%");
-        // Console.WriteLine("Completion Rate - " + Math.Round(CompletionReelsRate, 2) + "%");
-        // Console.WriteLine("Completion Rate - " + Math.Round(CompletionBacklinkRate, 2) + "%");
-        // Console.WriteLine("Completion Rate - " + Math.Round(CompletionClassifiedRate, 2) + "%");
-        // Console.WriteLine("Completion Rate - " + Math.Round(CompletionSocialSharingRate, 2) + "%");
+        Console.WriteLine("TergetPost-" + (double)TergetPost / 26);
+        Console.WriteLine("CompletePost-" + CompletePost / Math.Round(avgDays));
+        TergetAvgCalculation((TergetPost - CompletePost), (TergetReels - CompleteReels), (TergetBacklink - CompleteBacklink), (TergetClassified - CompleteClassified), (TergetSocialSharing - CompleteSocialSharing), avgDays);
+        CurrentAvgCalculation(CompletePost, CompleteReels, CompleteBacklink, CompleteClassified, CompleteSocialSharing, avgDays);
     }
+
+
+    private void TergetAvgCalculation(double post, double reels, double backlink, double clasified, double social, double avgDays)
+    {
+        TergetWorkingAvgPost = post / (26 - avgDays);
+        TergetWorkingAvgReels = reels / (26 - avgDays);
+        TergetWorkingAvgBackLink = backlink / (26 - avgDays);
+        TergetWorkingAvgClasified = clasified / (26 - avgDays);
+        TergetWorkingAvgSocialSharing = social / (26 - avgDays);
+
+    }
+
+    private void CurrentAvgCalculation(double post, double reels, double backlink, double clasified, double social, double avgDays)
+    {
+        CurrentAvgPost = post / avgDays;
+        CurrentAvgReels = reels / avgDays;
+        CurrentAvgBackLink = backlink / avgDays;
+        CurrentAvgClasified = clasified / avgDays;
+        CurrentAvgSocialSharing = social / avgDays;
+    }
+
 
     private void GetFirstMinDaySecondMinDay()
     {
-        var allServices = projects
-            .Where(p => p.Services != null)
-            .SelectMany(p => p.Services!)
-            .Where(s => s.DayLeft.HasValue)
-            .ToList();
-
-        dayLeftList = allServices
-           .Select(s => s.DayLeft!.Value)
-           .Distinct()
-           .OrderBy(x => x)
+        allPostServices = projects
+           .Where(p => p.Services != null)
+           .SelectMany(p => p.Services!)
+           .Where(s => s.DayLeftPost.HasValue)
            .ToList();
 
-        if (dayLeftList.Count >= 2)
+        PostDayLeftList = allPostServices
+            .Select(s => s.DayLeftPost!.Value)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        allReelsServices = projects
+           .Where(p => p.Services != null)
+           .SelectMany(p => p.Services!)
+           .Where(s => s.DayLeftReels.HasValue)
+           .ToList();
+
+        ReelsDayLeftList = allReelsServices
+            .Select(s => s.DayLeftReels!.Value)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        allBacklinkServices = projects
+           .Where(p => p.Services != null)
+           .SelectMany(p => p.Services!)
+           .Where(s => s.DayLeftBacklink.HasValue)
+           .ToList();
+
+        BackLinkDayLeftList = allBacklinkServices
+            .Select(s => s.DayLeftBacklink!.Value)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        allClasifiedServices = projects
+           .Where(p => p.Services != null)
+           .SelectMany(p => p.Services!)
+           .Where(s => s.DayLeftClasified.HasValue)
+           .ToList();
+
+        ClasifiedDayLeftList = allClasifiedServices
+            .Select(s => s.DayLeftClasified!.Value)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        allSocialSharingServices = projects
+           .Where(p => p.Services != null)
+           .SelectMany(p => p.Services!)
+           .Where(s => s.DayLeftSocialSharing.HasValue)
+           .ToList();
+
+        SocialSharingDayLeftList = allSocialSharingServices
+            .Select(s => s.DayLeftSocialSharing!.Value)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        // Post
+        if (PostDayLeftList.Count >= 2)
         {
-            int firstMin = dayLeftList[0];
-            int secondMin = dayLeftList[1];
+            int firstMin = PostDayLeftList[0];
+            int secondMin = PostDayLeftList[1];
 
-            // Console.WriteLine($"First Min: {firstMin}, Second Min: {secondMin}");
+            FirstMinPost = allPostServices
+                .Where(s => s.DayLeftPost == firstMin)
+                .Sum(s => s.RequiredPost ?? 0);
 
-            //  firstMin
-
-            FirstMinPost = allServices
-     .Where(s => s.DayLeft == firstMin)
-     .Sum(s => s.RequiredPost ?? 0);
-
-            FirstMinReels = allServices
-                .Where(s => s.DayLeft == firstMin)
-                .Sum(s => s.RequiredReels ?? 0);
-
-            FirstMinBacklink = allServices
-                .Where(s => s.DayLeft == firstMin)
-                .Sum(s => s.RequiredBacklink ?? 0);
-
-            FirstMinClassified = allServices
-                .Where(s => s.DayLeft == firstMin)
-                .Sum(s => s.RequiredClasified ?? 0);
-
-            FirstMinSocialSharing = allServices
-                .Where(s => s.DayLeft == firstMin)
-                .Sum(s => s.RequiredSocialSharing ?? 0);
-
-            //secondMin
-
-
-            SecondMinPost = allServices
-     .Where(s => s.DayLeft == secondMin)
-     .Sum(s => s.RequiredPost ?? 0);
-
-            SecondMinReels = allServices
-                .Where(s => s.DayLeft == secondMin)
-                .Sum(s => s.RequiredReels ?? 0);
-
-            SecondMinBacklink = allServices
-                .Where(s => s.DayLeft == secondMin)
-                .Sum(s => s.RequiredBacklink ?? 0);
-
-            SecondMinClassified = allServices
-                .Where(s => s.DayLeft == secondMin)
-                .Sum(s => s.RequiredClasified ?? 0);
-
-            SecondMinSocialSharing = allServices
-                .Where(s => s.DayLeft == secondMin)
-                .Sum(s => s.RequiredSocialSharing ?? 0);
-
-
-
-
-            // Console.WriteLine($"Sum of RequiredPost for First Min: {todayPostFirstMin}");
-            // Console.WriteLine($"Sum of RequiredPost for Second Min: {todayPostSecondMin}");
+            SecondMinPost = allPostServices
+                .Where(s => s.DayLeftPost == secondMin)
+                .Sum(s => s.RequiredPost ?? 0);
         }
-        else if (dayLeftList.Count == 1)
+        else if (PostDayLeftList.Count == 1)
         {
-            int firstMin = dayLeftList[0];
+            int firstMin = PostDayLeftList[0];
+            FirstMinPost = allPostServices
+                .Where(s => s.DayLeftPost == firstMin)
+                .Sum(s => s.RequiredPost ?? 0);
+        }
 
-            FirstMinPost = allServices
-        .Where(s => s.DayLeft == firstMin)
-        .Sum(s => s.RequiredPost ?? 0);
+        // Reels
+        if (ReelsDayLeftList.Count >= 2)
+        {
+            int firstMin = ReelsDayLeftList[0];
+            int secondMin = ReelsDayLeftList[1];
 
-            FirstMinReels = allServices
-                .Where(s => s.DayLeft == firstMin)
+            FirstMinReels = allReelsServices
+                .Where(s => s.DayLeftReels == firstMin)
                 .Sum(s => s.RequiredReels ?? 0);
 
-            FirstMinBacklink = allServices
-                .Where(s => s.DayLeft == firstMin)
+            SecondMinReels = allReelsServices
+                .Where(s => s.DayLeftReels == secondMin)
+                .Sum(s => s.RequiredReels ?? 0);
+        }
+        else if (ReelsDayLeftList.Count == 1)
+        {
+            int firstMin = ReelsDayLeftList[0];
+            FirstMinReels = allReelsServices
+                .Where(s => s.DayLeftReels == firstMin)
+                .Sum(s => s.RequiredReels ?? 0);
+        }
+
+        // Backlink
+        if (BackLinkDayLeftList.Count >= 2)
+        {
+            int firstMin = BackLinkDayLeftList[0];
+            int secondMin = BackLinkDayLeftList[1];
+
+            FirstMinBacklink = allBacklinkServices
+                .Where(s => s.DayLeftBacklink == firstMin)
                 .Sum(s => s.RequiredBacklink ?? 0);
 
-            FirstMinClassified = allServices
-                .Where(s => s.DayLeft == firstMin)
+            SecondMinBacklink = allBacklinkServices
+                .Where(s => s.DayLeftBacklink == secondMin)
+                .Sum(s => s.RequiredBacklink ?? 0);
+        }
+        else if (BackLinkDayLeftList.Count == 1)
+        {
+            int firstMin = BackLinkDayLeftList[0];
+            FirstMinBacklink = allBacklinkServices
+                .Where(s => s.DayLeftBacklink == firstMin)
+                .Sum(s => s.RequiredBacklink ?? 0);
+        }
+
+        // Clasified
+        if (ClasifiedDayLeftList.Count >= 2)
+        {
+            int firstMin = ClasifiedDayLeftList[0];
+            int secondMin = ClasifiedDayLeftList[1];
+
+            FirstMinClassified = allClasifiedServices
+                .Where(s => s.DayLeftClasified == firstMin)
                 .Sum(s => s.RequiredClasified ?? 0);
 
-            FirstMinSocialSharing = allServices
-                .Where(s => s.DayLeft == firstMin)
+            SecondMinClassified = allClasifiedServices
+                .Where(s => s.DayLeftClasified == secondMin)
+                .Sum(s => s.RequiredClasified ?? 0);
+        }
+        else if (ClasifiedDayLeftList.Count == 1)
+        {
+            int firstMin = ClasifiedDayLeftList[0];
+            FirstMinClassified = allClasifiedServices
+                .Where(s => s.DayLeftClasified == firstMin)
+                .Sum(s => s.RequiredClasified ?? 0);
+        }
+
+        // Social Sharing
+        if (SocialSharingDayLeftList.Count >= 2)
+        {
+            int firstMin = SocialSharingDayLeftList[0];
+            int secondMin = SocialSharingDayLeftList[1];
+
+            FirstMinSocialSharing = allSocialSharingServices
+                .Where(s => s.DayLeftSocialSharing == firstMin)
                 .Sum(s => s.RequiredSocialSharing ?? 0);
 
-            // Console.WriteLine($"Only one DayLeft value found: {firstMin}, Sum of RequiredPost: {FirstMinPost}");
+            SecondMinSocialSharing = allSocialSharingServices
+                .Where(s => s.DayLeftSocialSharing == secondMin)
+                .Sum(s => s.RequiredSocialSharing ?? 0);
         }
-        else
+        else if (SocialSharingDayLeftList.Count == 1)
         {
-            // Console.WriteLine("No DayLeft values found.");
+            int firstMin = SocialSharingDayLeftList[0];
+            FirstMinSocialSharing = allSocialSharingServices
+                .Where(s => s.DayLeftSocialSharing == firstMin)
+                .Sum(s => s.RequiredSocialSharing ?? 0);
         }
     }
+
+    private int GetSumByDay<T>
+    (
+    List<T>
+        services,
+        int day,
+        Func<T, int?>
+            daySelector,
+            Func<T, int?>
+                valueSelector)
+    {
+        return services
+        .Where(s => daySelector(s) == day)
+        .Sum(s => valueSelector(s) ?? 0);
+    }
+
 
     private string GetDayLabel(int dayLeft)
     {
@@ -647,7 +984,7 @@
         return dayLeft switch
         {
             0 => "Today",
-            1 => "Yesterday",
+            1 => "Tomorrow",
             _ => $"{targetDate:dd MMM yyyy}"
         };
     }
@@ -798,7 +1135,8 @@
 
     }
 
-    public bool IsFirstInterval(List<DateTime> breakpoints)
+    public bool IsFirstInterval(List<DateTime>
+        breakpoints)
     {
         DateTime currentDate = DateTime.Today;
 
@@ -816,7 +1154,7 @@
     }
 
 
-   
+
 
 
 
@@ -832,6 +1170,4 @@
             _ => false
         };
     }
-
-
 }
