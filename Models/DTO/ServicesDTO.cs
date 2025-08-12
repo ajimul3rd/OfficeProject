@@ -18,6 +18,9 @@ namespace OfficeProject.Models.DTO
 
         public bool IsActive { get; set; } = true;
 
+        [Required]
+        public int SpacificUserId { get; set; } = 0;
+
         [Required(ErrorMessage = "Service name is required")]
         [MaxLength(100)]
         public string ServiceName { get; set; }

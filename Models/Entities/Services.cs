@@ -22,6 +22,9 @@ namespace OfficeProject.Models.Entities
         [Required]
         [MaxLength(100)]
         public string ServiceName { get; set; }
+
+        [Required]
+        public int SpacificUserId { get; set; } = 0;
         public bool IsActive { get; set; } = true;
 
         [Column(TypeName = "nvarchar(50)")]

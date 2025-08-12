@@ -144,6 +144,7 @@ builder.Services.AddScoped<IService, Service>();
 builder.Services.AddSingleton<AppState>();
 builder.Services.AddScoped<DateService>();
 builder.Services.AddScoped<IUserTaskMasterService, UserTaskMasterService>();
+builder.Services.AddScoped<IGlobalDataService, GlobalDataService>();
 
 
 // HttpClient registration using IHttpClientFactory (recommended)

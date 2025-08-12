@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthStateProvider
-@inject IDataSerializer? DataSerializer
+@inject IDataSerializer? JSON
 @using OfficeProject.Models.DTO
 @using OfficeProject.Models.Enums
 
@@ -148,9 +148,9 @@
                                     </div>
                                     <div class="progress" style="height: 6px;">
                                         <div class="progress-bar bg-success" role="progressbar"
-                                             style="width: @Math.Round(CompletionPostRate)%;"
-                                             aria-valuenow="@Math.Round(CompletionPostRate)"
-                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                        style="width: @Math.Round(CompletionPostRate)%;"
+                                        aria-valuenow="@Math.Round(CompletionPostRate)"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
 
@@ -161,9 +161,9 @@
                                     </div>
                                     <div class="progress" style="height: 6px;">
                                         <div class="progress-bar bg-info" role="progressbar"
-                                             style="width: @Math.Round(CompletionReelsRate)%;"
-                                             aria-valuenow="@Math.Round(CompletionReelsRate)"
-                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                        style="width: @Math.Round(CompletionReelsRate)%;"
+                                        aria-valuenow="@Math.Round(CompletionReelsRate)"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
 
@@ -174,9 +174,9 @@
                                     </div>
                                     <div class="progress" style="height: 6px;">
                                         <div class="progress-bar bg-primary" role="progressbar"
-                                             style="width: @Math.Round(CompletionBacklinkRate)%;"
-                                             aria-valuenow="@Math.Round(CompletionBacklinkRate)"
-                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                        style="width: @Math.Round(CompletionBacklinkRate)%;"
+                                        aria-valuenow="@Math.Round(CompletionBacklinkRate)"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
 
@@ -187,9 +187,9 @@
                                     </div>
                                     <div class="progress" style="height: 6px;">
                                         <div class="progress-bar bg-warning" role="progressbar"
-                                             style="width: @Math.Round(CompletionClassifiedRate)%;"
-                                             aria-valuenow="@Math.Round(CompletionClassifiedRate)"
-                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                        style="width: @Math.Round(CompletionClassifiedRate)%;"
+                                        aria-valuenow="@Math.Round(CompletionClassifiedRate)"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
 
@@ -200,9 +200,9 @@
                                     </div>
                                     <div class="progress" style="height: 6px;">
                                         <div class="progress-bar bg-danger" role="progressbar"
-                                             style="width: @Math.Round(CompletionSocialSharingRate)%;"
-                                             aria-valuenow="@Math.Round(CompletionSocialSharingRate)"
-                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                        style="width: @Math.Round(CompletionSocialSharingRate)%;"
+                                        aria-valuenow="@Math.Round(CompletionSocialSharingRate)"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
                             </div>
@@ -536,10 +536,9 @@
 
 
     [Inject] private DateService? DateService { get; set; }
-
-
     [Inject] private NavigationManager Navigation { get; set; } = null!;
     [Inject] private ApiService api { get; set; } = null!;
+    [Inject] private IGlobalDataService? GlobalDataService { get; set; }
 
     private List<int> PostDayLeftList = new();
     private List<int> ReelsDayLeftList = new();
@@ -572,7 +571,18 @@
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         userName = authState.User.Identity?.Name;
 
-        await GetProjectPerUserAsync(); // your data loading logic
+        // if (!GlobalDataService.HasData)
+        // {
+            // JSON.Serializer(GlobalDataService.Projects, "Before GlobalDataService.HasData");
+            await GetProjectPerUserAsync();
+        // }
+        // else
+        // {
+        //     JSON.Serializer(GlobalDataService.Projects, "After GlobalDataService.HasData");
+        //     projects = GlobalDataService.Projects;
+
+        // }
+
         isLoading = false;
         StateHasChanged(); // Re-render again after loading
     }
@@ -583,17 +593,20 @@
     {
         try
         {
-            projects = await api.GetProjectPerUserAsync();
+            // if (!GlobalDataService.HasData)
+            // {
+                projects = await api.GetProjectPerUserAsync();
+            //     GlobalDataService!.Projects = projects;
+            //     JSON.Serializer(GlobalDataService.Projects, "Before GlobalDataService.HasData");
+            // }
+            // else
+            // {
+            //     JSON.Serializer(GlobalDataService.Projects, "After GlobalDataService.HasData");
+            //     projects = GlobalDataService.Projects;
 
+            // }
             GetTodayTerget();
-            // Optional: Check if the first project has no services
-            if (projects.Count > 0 && (projects[0].Services == null || projects[0].Services!.Count == 0))
-            {
-                projects.Clear(); // Or assign new List<ProjectsDTO>() again if preferred
-            }
 
-            // Optional: serialize if needed
-            // DataSerializer.Serializer(projects, "Home Dash Board?");
         }
         catch (Exception ex)
         {
@@ -612,8 +625,6 @@
                 foreach (var service in project.Services)
                 {
                     TotalService += 1;
-
-
 
                     var postProgress = GetWorkProgressColor(service, (int)service.TotalPost!, service.StartDate, (int)service.CompletePost!);
                     service.DayLeftPost = postProgress.DaysLeft;

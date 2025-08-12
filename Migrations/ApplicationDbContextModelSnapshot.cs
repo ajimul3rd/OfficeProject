@@ -568,6 +568,9 @@ namespace OfficeProject.Migrations
                     b.Property<int>("SocialSharing")
                         .HasColumnType("int");
 
+                    b.Property<int>("SpacificUserId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -911,6 +914,9 @@ namespace OfficeProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CreatedReels")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CurrentUserId")
                         .HasColumnType("int");
 
                     b.Property<string>("ExtraField1")

@@ -26,6 +26,9 @@ namespace OfficeProject.Models.Entities
 
         //public string ServiceName { get; set; }
 
+        [Required]
+        public int CurrentUserId { get; set; } = 0;
+
         public int SharedPost { get; set; }
 
         public int CreatedReels { get; set; }

@@ -84,7 +84,8 @@ namespace OfficeProject.Servicess
                     var projects = await context.Projects
                     .Include(p => p.Client)
                     .Include(p => p.Services)
-                        .ThenInclude(s => s.WorkTaskDetails.Where(w=>w.Work_UserId==UserId)).Where(p=>p.ProjectId== ProjectId) 
+                        .ThenInclude(s => s.WorkTaskDetails.Where(w=>w.Work_UserId==UserId)).Where(p=>p.ProjectId== ProjectId)
+                        .AsSplitQuery()
                     .ToListAsync();
 
                     var projectDTOs = projects.Select(project => new ProjectsDTO
@@ -167,9 +168,6 @@ namespace OfficeProject.Servicess
 
                     //    }).Where(p => p.Services != null && p.Services.Any()).ToList();
 
-
-
-
                     return projectDTOs;
                 }
             }
@@ -179,6 +177,7 @@ namespace OfficeProject.Servicess
                 throw;
             }
         }
+
 
         /// Fetches the latest project work updates for a specific team member within a specific project.with in internal work
         public async Task<List<ProjectsDTO?>> GetUserWorksAsync(int ProjectId)
@@ -212,6 +211,7 @@ namespace OfficeProject.Servicess
                     .Include(p => p.Client)
                     .Include(p => p.Services)
                         .ThenInclude(s => s.WorkTaskDetails.Where(w => w.Work_UserId == UserId)).Where(p => p.ProjectId == ProjectId)
+                        .AsSplitQuery()
                     .ToListAsync();
 
                     var projectDTOs = projects.Select(project => new ProjectsDTO
@@ -351,6 +351,7 @@ namespace OfficeProject.Servicess
                         .Include(p => p.Services)
                             .ThenInclude(s=> s.WorkTaskDetails)
                         .Where(p => p.AssignedUsers.Any(u => u.UserId == userId))
+                        .AsSplitQuery()
                         .ToListAsync();
 
                     var projectDTOs = projects.Select(project => new ProjectsDTO
@@ -590,6 +591,7 @@ namespace OfficeProject.Servicess
                             .ThenInclude(o => o.OthersServices)
                         .Include(p=>p.Services)
                             .ThenInclude(w=>w.WebDevelopment )
+                            .AsSplitQuery()
                         .ToListAsync();
 
                     var projectDTOs = projects.Select(project => new ProjectsDTO

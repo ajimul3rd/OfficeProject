@@ -21,6 +21,8 @@ namespace OfficeProject.Models.DTO
 
         //public string ServiceName { get; set; }
 
+        [Required]
+        public int CurrentUserId { get; set; } = 0;
         public int SharedPost { get; set; } = 0;
         public int CreatedReels { get; set; } = 0;
         public int UsedAdsBudget { get; set; } = 0;

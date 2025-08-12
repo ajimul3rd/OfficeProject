@@ -788,6 +788,9 @@
 </style>
 
 @code {
+    
+@inject IUserService userService
+
     [Parameter]
     public ProjectsDTO project { get; set; }
 
@@ -808,6 +811,9 @@
     private List<ProjectsDTO> projectlist { get; set; } = new();
     private ClientsDTO clientsDTO { get; set; }
     private List<UserDTO> userDTO { get; set; } = new();
+
+    private List<UserDTO> userRole { get; set; } = new();
+
     private List<ProductsDTO> productsDTO { get; set; } = new();
     private List<ServicesDTO> servicesDTO { get; set; } = new();
     private List<SeoServiceDetailsDTO> SeoServiceDetails { get; set; } = new();
@@ -1161,6 +1167,22 @@
         StateHasChanged();
     }
 
+    // private async Task GetUserById(int? userId)
+    // {
+    //     try
+    //     {
+    //         isUpdate = true;
+    //         var user = await userService.GetUserDTOById((int)userId!);
+    //         if (user != null)
+    //         {
+    //             userRole
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         errorMessage = $"Error loading user: {ex.Message}";
+    //     }
+    // }
 
 
     private async Task Submit()
@@ -1198,7 +1220,9 @@
 
                 if (iSNewFormData)
                 {
+                     // DataSerializer.Serializer(projectDTO, "projectDTO");
                     await api.AddProjectAsync(projectDTO);
+                   
                 }
                 else
                 {
@@ -1259,7 +1283,9 @@
                     await DeleteOthServicessAsync();
 
                     await DeleteWebServicessAsync();
-
+                    DataSerializer.Serializer(projectDTO.AssignedUsers, "AssignedUsers");
+                    DataSerializer.Serializer(projectDTO.Services, "Services");
+                    DataSerializer.Serializer(projectDTO, "projectDTO");
                     await api.SaveOrUpdateProjects(projectDTO);
 
                 }
@@ -1362,6 +1388,7 @@
             // Consider keeping the items in the list if deletion failed
         }
     }
+
     private async Task DeleteOthServicessAsync()
     {
         try
@@ -1403,6 +1430,7 @@
             // Consider keeping the items in the list if deletion failed
         }
     }
+
     private void ResetForm()
     {
 

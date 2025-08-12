@@ -125,7 +125,7 @@
 
         <!-- Table Section -->
 
-        
+
 
 
 
@@ -135,10 +135,10 @@
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <div class="flex-grow-1" style="max-width: 400px;">
                     <input class="form-control form-control-lg"
-                           type="text"
-                           @bind="searchText"
-                           @bind:event="oninput"
-                           placeholder="🔍 Search by PID, Project Name or Client Name..." />
+                    type="text"
+                    @bind="searchText"
+                    @bind:event="oninput"
+                    placeholder="🔍 Search by PID, Project Name or Client Name..." />
                 </div>
 
             </div>
@@ -373,6 +373,7 @@
     [Inject] private IDataSerializer? JSON { get; set; }
     [Inject] private DateService? DateService { get; set; }
     [Inject] private IService? GetServices { get; set; }
+    [Inject] private IGlobalDataService? GlobalDataService { get; set; }
 
 
     private List<DateTime> breakpoints = new();
@@ -404,8 +405,20 @@
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-        await GetProjectPerUserAsync();
+        if (!GlobalDataService.HasData)
+        {
+            // JSON.Serializer(GlobalDataService.Projects, "Before GlobalDataService.HasData");
+            await GetProjectPerUserAsync();
+        }
+        else
+        {
+            // JSON.Serializer(GlobalDataService.Projects, "After GlobalDataService.HasData");
+            projects = GlobalDataService.Projects;
+            data = GlobalDataService.Data;
+        }
+
         isLoading = false;
+
     }
 
 
@@ -422,8 +435,11 @@
                 projects.Clear(); // Or assign new List<ProjectsDTO>() again if preferred
             }
 
+            // Save globally
+            GlobalDataService!.Projects = projects;
+            GlobalDataService.Data = data;
             // Optional: serialize if needed
-            JSON.Serializer(projects, "ToDayWorkList:GetProjectPerUserAsync");
+            // JSON.Serializer(projects, "ToDayWorkList:GetProjectPerUserAsync");
         }
         catch (Exception ex)
         {
@@ -571,7 +587,8 @@
                 //return ((int)currentInterval - 1) - completedUnits;// return privious pending only
                 // Console.WriteLine("check privious pending else ");
 
-                if (service.ServiceId == 118){
+                if (service.ServiceId == 118)
+                {
                     Console.WriteLine("check privious pending else");
                     Console.WriteLine("currentInterval:" + currentInterval);
                     Console.WriteLine("completedUnits:" + completedUnits);
@@ -847,7 +864,7 @@
 
 
     // Summary Properties
-    private int TotalPosts =>  projects
+    private int TotalPosts => projects
     .Where(p => p.ProjectType == ProjectType.SERVICE)
     .SelectMany(p => p.Services ?? Enumerable.Empty<ServicesDTO>())
     .Sum(s => s.TotalPost);
