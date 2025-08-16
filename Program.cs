@@ -127,6 +127,7 @@ builder.Services.AddScoped<IProductsService, ProductsService>();
 builder.Services.AddScoped<IUserActivityMasterService, UserActivityMasterService>();
 builder.Services.AddScoped<IUserRolesService, UserRolesService>();
 builder.Services.AddScoped<IAssignedUsersService, AssignedUsersService>();
+builder.Services.AddScoped<ISpacificUserTaskService, SpacificUserTaskService>();
 builder.Services.AddScoped<IProductVsServices, ProductVsServices>();
 builder.Services.AddScoped<IOthersServices, OthersServices>();
 builder.Services.AddScoped<IWebDevelopmentService, WebDevelopmentService>();

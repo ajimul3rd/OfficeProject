@@ -215,6 +215,7 @@
     private async Task LoadProjects()
     {
         projects = await api.GetAllProjectAsync();
+        //DataSerializer.Serializer(projects, "LoadProjects");
         StateHasChanged();
     }
 
@@ -329,6 +330,7 @@
             .ToList();
         showProjectModal = true;
         iSNewFormData = false;
+        //DataSerializer.Serializer(projects, "EditProject");
         StateHasChanged();
     } 
     

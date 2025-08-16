@@ -6,6 +6,7 @@
 @using System.Text.Json
 @inject ApiService api
 @inject IAssignedUsersService assignedUsers
+@inject ISpacificUserTaskService SpacificUserTaskService
 @inject IProductVsServices productVsServices
 @inject IOthersServices othersServices
 @inject IWebDevelopmentService webDevelopmentService
@@ -61,13 +62,13 @@
                                                     <div class="mb-2" @onclick="getClients">
                                                         <label class="form-label small">Selected Client</label>
                                                         <input class="form-control form-control-sm @(projectDTO.ClientId == null && clientsDTO == null ? "is-invalid" : "")"
-                                                               value="@(projectDTO.ClientId != null ?
+                                                        value="@(projectDTO.ClientId != null ?
                   $"{projectDTO.Client?.ClientName} (ID: {projectDTO.ClientId})" :
                   clientsDTO != null ?
                   $"{clientsDTO.ClientName} (ID: {clientsDTO.ClientId})" :
                   "No client selected")"
-                                                               readonly style="cursor: pointer;" />
-                                                        @if (projectDTO.ClientId == null || projectDTO.ClientId==0)
+                                                        readonly style="cursor: pointer;" />
+                                                        @if (projectDTO.ClientId == null || projectDTO.ClientId == 0)
                                                         {
                                                             <div class="form-text text-danger mt-1">
                                                                 <i class="fas fa-exclamation-circle me-1"></i> Please select client
@@ -77,8 +78,8 @@
                                                     <div class="mb-2">
                                                         <label class="form-label small required">Project Name</label>
                                                         <InputText @bind-Value="@projectDTO.ProjectName"
-                                                                   @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectName)))"
-                                                                   class="form-control form-control-sm" />
+                                                        @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectName)))"
+                                                        class="form-control form-control-sm" />
                                                         <ValidationMessage For="@(() => projectDTO.ProjectName)" class="text-danger small" />
                                                     </div>
                                                 </div>
@@ -88,8 +89,8 @@
                                                     <div class="mb-2">
                                                         <label class="form-label small required">Billing Type</label>
                                                         <InputSelect class="form-select form-select-sm"
-                                                                     @bind-Value="projectDTO.BillingType"
-                                                                     @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.BillingType)))">
+                                                        @bind-Value="projectDTO.BillingType"
+                                                        @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.BillingType)))">
                                                             <option value="">Select Type</option>
                                                             <option value="@BillingType.Monthly">Monthly</option>
                                                             <option value="@BillingType.Quarterly">Quarterly</option>
@@ -102,8 +103,8 @@
                                                     <div class="mb-2">
                                                         <label class="form-label small">Project Cost</label>
                                                         <InputNumber @bind-Value="@projectDTO.ProjectCost"
-                                                                     @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectCost)))"
-                                                                     class="form-control form-control-sm" readonly />
+                                                        @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectCost)))"
+                                                        class="form-control form-control-sm" readonly />
                                                     </div>
 
 
@@ -114,8 +115,8 @@
                                                     <div class="mb-2">
                                                         <label class="form-label small required">Start Date</label>
                                                         <InputDate @bind-Value="@projectDTO.ProjectStartDate"
-                                                                   @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectStartDate)))"
-                                                                   class="form-control form-control-sm" />
+                                                        @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectStartDate)))"
+                                                        class="form-control form-control-sm" />
                                                         <ValidationMessage For="@(() => projectDTO.ProjectStartDate)" class="text-danger small" />
                                                     </div>
 
@@ -138,8 +139,8 @@
                                                     <div class="mb-2">
                                                         <label class="form-label small">Current Issue</label>
                                                         <InputTextArea @bind-Value="@projectDTO.CurrentIssue"
-                                                                       @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.CurrentIssue)))"
-                                                                       class="form-control form-control-sm" rows="2" />
+                                                        @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.CurrentIssue)))"
+                                                        class="form-control form-control-sm" rows="2" />
                                                     </div>
                                                 </div>
 
@@ -147,8 +148,8 @@
                                                     <div class="mb-2">
                                                         <label class="form-label small">Internal Remark</label>
                                                         <InputTextArea @bind-Value="@projectDTO.InternalRemark"
-                                                                       @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.InternalRemark)))"
-                                                                       class="form-control form-control-sm" rows="2" />
+                                                        @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.InternalRemark)))"
+                                                        class="form-control form-control-sm" rows="2" />
                                                     </div>
                                                 </div>
 
@@ -156,8 +157,8 @@
                                                     <div class="mb-2">
                                                         <label class="form-label small">Customer Note</label>
                                                         <InputTextArea @bind-Value="@projectDTO.CustomerNote"
-                                                                       @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.CustomerNote)))"
-                                                                       class="form-control form-control-sm" rows="2" />
+                                                        @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.CustomerNote)))"
+                                                        class="form-control form-control-sm" rows="2" />
                                                     </div>
                                                 </div>
 
@@ -165,8 +166,8 @@
                                                     <div class="mb-2">
                                                         <label class="form-label small">Facebook Followers</label>
                                                         <InputText @bind-Value="@projectDTO.FbFollowers"
-                                                                   @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.FbFollowers)))"
-                                                                   class="form-control form-control-sm" />
+                                                        @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.FbFollowers)))"
+                                                        class="form-control form-control-sm" />
                                                     </div>
                                                 </div>
 
@@ -174,8 +175,8 @@
                                                     <div class="mb-2">
                                                         <label class="form-label small">Instagram Followers</label>
                                                         <InputText @bind-Value="@projectDTO.IgFollowers"
-                                                                   @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.IgFollowers)))"
-                                                                   class="form-control form-control-sm" />
+                                                        @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.IgFollowers)))"
+                                                        class="form-control form-control-sm" />
                                                     </div>
                                                 </div>
 
@@ -183,8 +184,8 @@
                                                     <div class="mb-2">
                                                         <label class="form-label small">Google My Business</label>
                                                         <InputText @bind-Value="@projectDTO.GmbRakning"
-                                                                   @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.GmbRakning)))"
-                                                                   class="form-control form-control-sm" />
+                                                        @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.GmbRakning)))"
+                                                        class="form-control form-control-sm" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -204,8 +205,8 @@
                                                 <label class="form-label fw-semibold">Assign Team Members</label>
                                                 <div class="input-group">
                                                     <div class="form-control p-2 @(projectDTO.AssignedUsers == null || !projectDTO.AssignedUsers.Any() ? "border-danger" : "")"
-                                                         style="min-height: 38px; cursor: pointer;"
-                                                         @onclick="getUsers">
+                                                    style="min-height: 38px; cursor: pointer;"
+                                                    @onclick="getUsers">
                                                         @if (projectDTO.AssignedUsers == null || !projectDTO.AssignedUsers.Any())
                                                         {
                                                             <div class="text-muted d-flex align-items-center">
@@ -222,10 +223,10 @@
                                                                     <span class="badge bg-primary rounded-pill d-flex align-items-center">
                                                                         @user.UserName
                                                                         <button class="btn-close custom-close ms-1"
-                                                                                @onclick="@(() => RemoveUser(user))"
+                                                                        @onclick="@(() => RemoveUser(user))"
                                                                         @onclick:stopPropagation
                                                                         @onclick:preventDefault
-                                                                                aria-label="Remove">
+                                                                        aria-label="Remove">
                                                                         </button>
                                                                     </span>
                                                                 }
@@ -272,8 +273,8 @@
 
                                                 <div class="input-group">
                                                     <div class="form-control p-2 @(projectDTO.Services == null || !projectDTO.Services.Any() ? "border-danger" : "border-primary")"
-                                                         style="min-height: 42px; cursor: pointer;"
-                                                         @onclick="getServices">
+                                                    style="min-height: 42px; cursor: pointer;"
+                                                    @onclick="getServices">
 
                                                         @if (projectDTO.Services == null || !projectDTO.Services.Any())
                                                         {
@@ -292,10 +293,10 @@
                                                                     <span class="badge bg-primary rounded-pill d-flex align-items-center">
                                                                         @service.ServiceName
                                                                         <button class="btn-close custom-close ms-1"
-                                                                                @onclick="@(async (e) => {await RemoveService(service);})"
+                                                                        @onclick="@(async (e) => {await RemoveService(service);})"
                                                                         @onclick:stopPropagation
                                                                         @onclick:preventDefault
-                                                                                aria-label="Remove">
+                                                                        aria-label="Remove">
                                                                         </button>
                                                                     </span>
                                                                 }
@@ -332,7 +333,7 @@
                                                         <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
                                                             <h6 class="mb-0">@service.ServiceName</h6>
                                                             <button class="btn btn-sm btn-outline-danger"
-                                                                    @onclick="@(async (e) => {await RemoveService(service);})"
+                                                            @onclick="@(async (e) => {await RemoveService(service);})"
                                                             @onclick:stopPropagation
                                                             @onclick:preventDefault>
                                                                 Remove
@@ -432,27 +433,98 @@
                                                                 <div class="col-md-12">
                                                                     <label class="form-label">Note</label>
                                                                     <InputText @bind-Value="service.ExtraField1" class="form-control" />
-                                                                </div>
+                                                                </div> 
+
+                                                                <div class="col-md-12">
+                                                                    <button type="button"
+                                                                    @onclick="() => AddUserAllotmentTask(index)"
+                                                                    class="btn btn-primary btn-sm shadow-sm d-flex align-items-center">
+                                                                        <i class="fas fa-plus-circle me-2"></i>
+                                                                        User Allotment
+                                                                    </button>
+                                                                    @if (service.SpacificUserTask != null && service.SpacificUserTask.Any())
+                                                                    {
+                                                                        <div class="card mb-4 border-0 shadow-sm">
+                                                                            <div class="card-header bg-light-subtle py-2 d-flex justify-content-between align-items-center">
+
+                                                                            </div>
+
+                                                                            <div class="card-body p-0">
+                                                                                <div class="table-responsive">
+                                                                                    <table class="table table-bordered table-striped table-sm mb-0">
+                                                                                        <thead class="bg-light-subtle">
+                                                                                            <tr>
+                                                                                                <th style="width: 5%">#</th>
+                                                                                                <th style="width: 25%">Select User</th>
+                                                                                                <th style="width: 25%">Task Description</th>
+                                                                                                <th style="width: 8%">Action</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            @for (int k = 0; k < service.SpacificUserTask.Count; k++)
+                                                                                            {
+                                                                                                var task = service.SpacificUserTask[k];
+                                                                                                var SpacificUser = k + 1;
+
+                                                                                                <tr>
+                                                                                                    <td>@SpacificUser</td>
+
+                                                                                                    <td>
+                                                                                                        <InputSelect @bind-Value="task.UserId" class="form-select">
+                                                                                                            <option value="">-- Select User --</option>
+                                                                                                            @foreach (var user in projectDTO.AssignedUsers)
+                                                                                                            {
+                                                                                                                <option value="@user.UserId">@user.UserName (ID: @user.UserId)</option>
+                                                                                                            }
+                                                                                                        </InputSelect>
+                                                                                                    </td>
+
+                                                                                                    <td>
+                                                                                                        <InputText @bind-Value="task.TaskDescription" class="form-control form-control-sm" />
+                                                                                                    </td>
+
+                                                                                                    <td class="text-center">
+                                                                                                        <button class="btn btn-sm btn-outline-danger"
+                                                                                                        @onclick="@(async (e) => {await RemoveUserAllotmentTask(index, task);})"
+                                                                                                        @onclick:stopPropagation
+                                                                                                        @onclick:preventDefault>
+                                                                                                            <i class="fas fa-trash-alt"></i>
+                                                                                                        </button>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            }
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                </div>      
+
+
+
+
 
                                                             </div>
                                                         </div>
                                                     </div>
+                                                                                                    
 
                                                     <div class="col-md-6 mb-4">
                                                         <div class="d-flex gap-2">
                                                             <button type="button"
-                                                                    @onclick="@(() => AddSeoService(index))"
-                                                                    class="btn btn-primary btn-sm shadow-sm d-flex align-items-center">
+                                                            @onclick="@(() => AddSeoService(index))"
+                                                            class="btn btn-primary btn-sm shadow-sm d-flex align-items-center">
                                                                 <i class="fas fa-plus-circle me-2"></i> Add SEO Service
                                                             </button>
                                                             <button type="button"
-                                                                    @onclick="@(() => AddOthersService(index))"
-                                                                    class="btn btn-outline-secondary btn-sm shadow-sm d-flex align-items-center">
+                                                            @onclick="@(() => AddOthersService(index))"
+                                                            class="btn btn-outline-secondary btn-sm shadow-sm d-flex align-items-center">
                                                                 <i class="fas fa-plus me-2"></i> Add Other Service
                                                             </button>
                                                             <button type="button"
-                                                                    @onclick="@(() => AddWebDevelopment(index))"
-                                                                    class="btn btn-outline-secondary btn-sm shadow-sm d-flex align-items-center">
+                                                            @onclick="@(() => AddWebDevelopment(index))"
+                                                            class="btn btn-outline-secondary btn-sm shadow-sm d-flex align-items-center">
                                                                 <i class="fas fa-plus me-2"></i> Add Web Development Service
                                                             </button>
                                                         </div>
@@ -507,7 +579,7 @@
                                                                                     </td>
                                                                                     <td class="text-center">
                                                                                         <button class="btn btn-sm btn-outline-danger"
-                                                                                                @onclick="@(async (e) => {await RemoveSeoService(index, seoDetail);})"
+                                                                                        @onclick="@(async (e) => {await RemoveSeoService(index, seoDetail);})"
                                                                                         @onclick:stopPropagation
                                                                                         @onclick:preventDefault>
                                                                                             <i class="fas fa-trash-alt"></i>
@@ -571,7 +643,7 @@
                                                                                     </td>
                                                                                     <td class="text-center">
                                                                                         <button class="btn btn-sm btn-outline-danger"
-                                                                                                @onclick="@(async () => await RemoveOthersService(index, othersService))"
+                                                                                        @onclick="@(async () => await RemoveOthersService(index, othersService))"
                                                                                         @onclick:stopPropagation
                                                                                         @onclick:preventDefault>
                                                                                             <i class="fas fa-trash-alt"></i>
@@ -604,7 +676,7 @@
                                                                     </h6>
 
                                                                     <button class="btn btn-sm btn-outline-danger"
-                                                                            @onclick="@(async () => await RemoveWebDevelopment(index, web))"
+                                                                    @onclick="@(async () => await RemoveWebDevelopment(index, web))"
                                                                     @onclick:stopPropagation
                                                                     @onclick:preventDefault>
                                                                         <i class="fas fa-trash-alt"></i> Remove
@@ -751,45 +823,83 @@
 @if (showClientModal)
 {
     <DialogClientList OnClientSelected="HandleClientSelected"
-                      selectedClientId="selectedClientId"
-                      showModalChanged="@((value) => showClientModal = value)"
-                      showModal="@showClientModal" />
+    selectedClientId="selectedClientId"
+    showModalChanged="@((value) => showClientModal = value)"
+    showModal="@showClientModal" />
 }
 @if (showServiceModal)
 {
 
     <DialogProductsList OnProductSelected="HandleServiceSelected"
-                        callerSelectedProducts="@productVsService"
-                        showModalChanged="@((value) => showServiceModal = value)"
-                        showModal="@showServiceModal" />
+    callerSelectedProducts="@productVsService"
+    showModalChanged="@((value) => showServiceModal = value)"
+    showModal="@showServiceModal" />
 }
 @if (showUserModal)
 {
     <DialogUserList onSelectUser="HandleUserSelected"
-                    assignedUsers="assignUser"
-                    showModalChanged="@((value) => showUserModal = value)"
-                    showModal="@showUserModal" />
+    assignedUsers="assignUser"
+    showModalChanged="@((value) => showUserModal = value)"
+    showModal="@showUserModal" />
 }
 
 <style>
     .custom-close {
-        filter: invert(25%) sepia(93%) saturate(7487%) hue-rotate(359deg) brightness(100%) contrast(106%);
-        width: 1rem;
-        height: 1rem;
-        background-size: 1rem 1rem;
-        opacity: 1;
+    filter: invert(25%) sepia(93%) saturate(7487%) hue-rotate(359deg) brightness(100%) contrast(106%);
+    width: 1rem;
+    height: 1rem;
+    background-size: 1rem 1rem;
+    opacity: 1;
     }
 
-        .custom-close:hover {
-            filter: invert(14%) sepia(96%) saturate(6389%) hue-rotate(359deg) brightness(98%) contrast(110%);
-            transform: scale(1.2);
-        }
+    .custom-close:hover {
+    filter: invert(14%) sepia(96%) saturate(6389%) hue-rotate(359deg) brightness(98%) contrast(110%);
+    transform: scale(1.2);
+    }
+
+
+    .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+    .modal-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    }
+
+    .options {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    }
+
+    .option-btn {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    }
+
+    .option-btn.selected {
+    background: #007bff;
+    color: white;
+    }
 
 </style>
 
 @code {
-    
-@inject IUserService userService
+
+    @inject IUserService userService
 
     [Parameter]
     public ProjectsDTO project { get; set; }
@@ -806,6 +916,13 @@
     private List<string> hostingLimits = Enumerable.Range(1, 10)
         .Select(y => $"{y} Year{(y > 1 ? "s" : "")}")
         .ToList();
+
+    private List<UserDTO> users = new();
+    // private int? selectedUserId;
+
+
+
+
 
     private ProjectsDTO projectDTO { get; set; } = new();
     private List<ProjectsDTO> projectlist { get; set; } = new();
@@ -825,6 +942,7 @@
     private List<int> assignUserDeleteList = new List<int>();
     private List<int> serviceDeleteList = new List<int>();
     private List<int> seoDeleteList = new List<int>();
+    private List<int> userAllotmentDeleteList = new List<int>();
     private List<int> webDelete = new List<int>();
     private List<int> othersServiceDeleteList = new List<int>();
 
@@ -852,8 +970,10 @@
 
             projectDTO ??= new ProjectsDTO
                 {
-                    Services = new List<ServicesDTO>(),
-                    AssignedUsers = new List<AssignedUsersDTO>(),
+                    Services = new List<ServicesDTO>
+        (),
+                    AssignedUsers = new List<AssignedUsersDTO>
+            (),
                 };
         }
 
@@ -861,15 +981,29 @@
         formErrorMessage = string.Empty;
         showFormError = false;
         editContext = new EditContext(projectDTO);
-
+        await GetUsers();
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task GetUsers()
+    {
+        try
+        {
+            users = await userService.GetAllUsersDTOAsync();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 
     private ProjectsDTO DeepClone(ProjectsDTO source)
     {
         var json = JsonSerializer.Serialize(source);
-        return JsonSerializer.Deserialize<ProjectsDTO>(json);
+        return JsonSerializer.Deserialize<ProjectsDTO>
+            (json);
     }
 
     private void MarkAsTouched(object model, string fieldName)
@@ -878,6 +1012,7 @@
         editContext?.NotifyFieldChanged(fieldIdentifier);
     }
 
+  
     private void getClients()
     {
         selectedClientId = (int)projectDTO.ClientId!;
@@ -916,7 +1051,8 @@
 
 
 
-    private void HandleUserSelected(List<UserDTO> model)
+    private void HandleUserSelected(List<UserDTO>
+        model)
     {
 
         if (model == null) return;
@@ -928,7 +1064,9 @@
                 UserName = user.UserName,
                 Role = user.Role.ToString()
             }).ToList();
-
+        // DataSerializer.Serializer(model, "Model:HandleUserSelected");
+        // DataSerializer.Serializer(assignedUsersDTOs, "AssignedUsersDTOs:HandleUserSelected");
+        
         // Initialize if null
         projectDTO.AssignedUsers ??= new List<AssignedUsersDTO>();
 
@@ -936,7 +1074,7 @@
         foreach (var assignedUser in assignedUsersDTOs)
         {
             bool alreadyExists = projectDTO.AssignedUsers
-                .Any(existing => existing.UserId == assignedUser.UserId);
+            .Any(existing => existing.UserId == assignedUser.UserId);
 
             if (!alreadyExists)
             {
@@ -946,19 +1084,23 @@
 
         // Remove duplicates
         projectDTO.AssignedUsers = projectDTO.AssignedUsers
-            .GroupBy(u => u.UserId)
-            .Select(g => g.First())
-            .ToList();
-
+        .GroupBy(u => u.UserId)
+        .Select(g => g.First())
+        .ToList();
+       
         StateHasChanged();
     }
 
 
-    private void HandleServiceSelected(List<ProductsDTO> model)
+    private void HandleServiceSelected(List<ProductsDTO>
+        model)
     {
-        productsDTO = model ?? new List<ProductsDTO>();
-        servicesDTO ??= new List<ServicesDTO>();
-        projectDTO.Services ??= new List<ServicesDTO>();
+        productsDTO = model ?? new List<ProductsDTO>
+            ();
+        servicesDTO ??= new List<ServicesDTO>
+            ();
+        projectDTO.Services ??= new List<ServicesDTO>
+            ();
 
         // DataSerializer.Serializer(model, "DialogAddProject:HandleServiceSelected");
 
@@ -1016,7 +1158,8 @@
         // Add to delete list if this is an existing user (has an ID)
         if (user.AssignedUsersId.HasValue && user.AssignedUsersId != 0)
         {
-            assignUserDeleteList ??= new List<int>(); // Ensure list exists
+            assignUserDeleteList ??= new List<int>
+                (); // Ensure list exists
             if (!assignUserDeleteList.Contains(user.AssignedUsersId.Value))
             {
                 assignUserDeleteList.Add(user.AssignedUsersId.Value);
@@ -1032,15 +1175,38 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private void AddSeoService(int serviceIndex)
+    private void AddUserAllotmentTask(int serviceIndex)
     {
         if (projectDTO?.Services == null ||
-            serviceIndex < 0 ||
-            serviceIndex >= projectDTO.Services.Count)
+        serviceIndex < 0 ||
+        serviceIndex >= projectDTO.Services.Count)
             return;
 
         var service = projectDTO.Services[serviceIndex];
-        service.SeoServiceDetails ??= new List<SeoServiceDetailsDTO>();
+        service.SpacificUserTask ??= new List<SpacificUserTaskDTO>
+            ();
+        var newTask = new SpacificUserTaskDTO
+            {
+                TaskId = 0,
+                Service_Id = (int)service.ServiceId!,
+            };
+
+        service.SpacificUserTask.Add(newTask);
+
+        StateHasChanged();
+    }    
+
+
+    private void AddSeoService(int serviceIndex)
+    {
+        if (projectDTO?.Services == null ||
+        serviceIndex < 0 ||
+        serviceIndex >= projectDTO.Services.Count)
+            return;
+
+        var service = projectDTO.Services[serviceIndex];
+        service.SeoServiceDetails ??= new List<SeoServiceDetailsDTO>
+            ();
         var newSeo = new SeoServiceDetailsDTO
             {
                 SeoServiceDetailsId = 0,
@@ -1060,7 +1226,8 @@
 
         var service = projectDTO.Services[serviceIndex];
 
-        service.OthersServices ??= new List<OthersServiceDTO>();
+        service.OthersServices ??= new List<OthersServiceDTO>
+            ();
 
         service.OthersServices.Add(new OthersServiceDTO
             {
@@ -1078,7 +1245,8 @@
 
         var service = projectDTO.Services[serviceIndex];
 
-        service.WebDevelopment ??= new List<WebDevelopmentDTO>();
+        service.WebDevelopment ??= new List<WebDevelopmentDTO>
+            ();
 
         service.WebDevelopment.Add(new WebDevelopmentDTO
             {
@@ -1104,12 +1272,29 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    
+    private async Task RemoveUserAllotmentTask(int serviceIndex, SpacificUserTaskDTO detail)
+    {
+        if (projectDTO.Services == null ||
+        serviceIndex < 0 ||
+        serviceIndex >= projectDTO.Services.Count ||
+        detail == null)
+            return;
+        userAllotmentDeleteList.Add(detail.TaskId!.Value);
+
+        var service = projectDTO.Services[serviceIndex];
+        service.SpacificUserTask?.Remove(detail); // mutate the actual list
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    
     private async Task RemoveSeoService(int serviceIndex, SeoServiceDetailsDTO detail)
     {
         if (projectDTO.Services == null ||
-            serviceIndex < 0 ||
-            serviceIndex >= projectDTO.Services.Count ||
-            detail == null)
+        serviceIndex < 0 ||
+        serviceIndex >= projectDTO.Services.Count ||
+        detail == null)
             return;
         seoDeleteList.Add(detail.SeoServiceDetailsId!.Value);
 
@@ -1119,12 +1304,13 @@
         await InvokeAsync(StateHasChanged);
     }
 
+
     private async Task RemoveOthersService(int serviceIndex, OthersServiceDTO others)
     {
         if (projectDTO.Services == null ||
-            serviceIndex < 0 ||
-            serviceIndex >= projectDTO.Services.Count ||
-            others == null)
+        serviceIndex < 0 ||
+        serviceIndex >= projectDTO.Services.Count ||
+        others == null)
             return;
 
         othersServiceDeleteList.Add(others.OthersId!.Value);
@@ -1137,9 +1323,9 @@
     private async Task RemoveWebDevelopment(int serviceIndex, WebDevelopmentDTO web)
     {
         if (projectDTO.Services == null ||
-            serviceIndex < 0 ||
-            serviceIndex >= projectDTO.Services.Count ||
-            web == null)
+        serviceIndex < 0 ||
+        serviceIndex >= projectDTO.Services.Count ||
+        web == null)
             return;
         webDelete.Add(web.WebDevelopmentId!.Value);
 
@@ -1152,7 +1338,8 @@
 
     private async Task CloseModal()
     {
-        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", new object[] { "Are you sure you want to close the form?" });
+        bool confirmed = await JSRuntime.InvokeAsync<bool>
+            ("confirm", new object[] { "Are you sure you want to close the form?" });
 
         if (!confirmed)
             return; // User cancelled
@@ -1187,13 +1374,15 @@
 
     private async Task Submit()
     {
+      
         showFormError = false;
         showSuccessMessage = false;
         formErrorMessage = null;
         editContext?.MarkAsUnmodified();
-        var validationErrors = new List<string>();
+        var validationErrors = new List<string>
+            ();
         // Validation checks
-       
+
         if (projectDTO.AssignedUsers == null || !projectDTO.AssignedUsers.Any())
         {
             validationErrors.Add("At least one team member must be assigned");
@@ -1220,9 +1409,9 @@
 
                 if (iSNewFormData)
                 {
-                     // DataSerializer.Serializer(projectDTO, "projectDTO");
+                    // DataSerializer.Serializer(projectDTO, "projectDTO");
                     await api.AddProjectAsync(projectDTO);
-                   
+
                 }
                 else
                 {
@@ -1233,6 +1422,19 @@
                         {
                             service.ProjectId = (int)projectDTO.ProjectId!;
                         }
+                        
+                        
+                        if (service.SpacificUserTask != null)
+                        {
+                            foreach (var sut in service.SpacificUserTask)
+                            {
+                                if (sut.TaskId == null || sut.TaskId != 0)
+                                {
+                                    sut.Service_Id = (int)service.ServiceId!;
+                                }
+                            }
+                        }                  
+                        
                         if (service.SeoServiceDetails != null)
                         {
                             foreach (var seo in service.SeoServiceDetails)
@@ -1276,6 +1478,8 @@
 
                     await DeleteAssignedUsersAsync();
 
+                    await DeleteSpacificUserOnProjectAsync();
+
                     await DeleteservicesAsync();
 
                     await DeleteSeoAsync();
@@ -1283,9 +1487,9 @@
                     await DeleteOthServicessAsync();
 
                     await DeleteWebServicessAsync();
-                    DataSerializer.Serializer(projectDTO.AssignedUsers, "AssignedUsers");
-                    DataSerializer.Serializer(projectDTO.Services, "Services");
-                    DataSerializer.Serializer(projectDTO, "projectDTO");
+                    // DataSerializer.Serializer(projectDTO.AssignedUsers, "AssignedUsers");
+                    // DataSerializer.Serializer(projectDTO.Services, "Services");
+                    // DataSerializer.Serializer(projectDTO, "projectDTO");
                     await api.SaveOrUpdateProjects(projectDTO);
 
                 }
@@ -1322,6 +1526,33 @@
             StateHasChanged();
         }
     }
+
+
+
+    private async Task DeleteSpacificUserOnProjectAsync()
+    {
+        try
+        {
+           
+
+
+            if (userAllotmentDeleteList?.Count > 0 && assignedUsers != null)
+            {
+                foreach (var TaskId in userAllotmentDeleteList)
+                {
+                    await SpacificUserTaskService.DeleteSpacificUserOnProjectAsync(TaskId);
+                }
+                userAllotmentDeleteList.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or show message
+            Console.WriteLine($"Error deleting assigned users: {ex.Message}");
+            // Consider keeping the items in the list if deletion failed
+        }
+    } 
+
 
 
 
@@ -1438,18 +1669,20 @@
 
         clientsDTO = null;
 
-        userDTO = new List<UserDTO>();
+        userDTO = new List<UserDTO>
+            ();
 
-        productsDTO = new List<ProductsDTO>();
+        productsDTO = new List<ProductsDTO>
+            ();
 
-        servicesDTO = new List<ServicesDTO>();
+        servicesDTO = new List<ServicesDTO>
+            ();
 
-        assignedUsersDTOs = new List<AssignedUsersDTO>();
+        assignedUsersDTOs = new List<AssignedUsersDTO>
+            ();
 
         editContext = new EditContext(projectDTO);
 
         StateHasChanged();
     }
-
-
 }

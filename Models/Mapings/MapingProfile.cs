@@ -34,6 +34,7 @@ public class MapingProfile:Profile
         CreateMap<ProductsDTO, Products>().ReverseMap();
         CreateMap<WorkTaskDetailsDto, WorkTaskDetails>().ReverseMap();
         CreateMap<OthersServiceDTO, OthersService>().ReverseMap();
+        CreateMap<SpacificUserTaskDTO, SpacificUserTask>().ReverseMap();
         CreateMap<SeoServiceDetailsDTO, SeoServiceDetails>().ReverseMap();
         CreateMap<SeoTaskDetailsDto, SeoTaskDetails>().ReverseMap();
         CreateMap<AssignedUsersDTO, AssignedUsers>()

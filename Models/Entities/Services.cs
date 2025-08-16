@@ -55,9 +55,7 @@ namespace OfficeProject.Models.Entities
         public bool IsSocialSharing { get; set; } = false;
         public bool IsPost { get; set; } = false;
         public bool IsReels { get; set; } = false;
-        public bool IsAdsBudget { get; set; } = false;
-
-       
+        public bool IsAdsBudget { get; set; } = false;       
 
         [DataType(DataType.Date)]
         public DateTime DeadLine { get; set; }
@@ -72,6 +70,7 @@ namespace OfficeProject.Models.Entities
         public string? ExtraField3 { get; set; }
         [JsonIgnore]
         public Products Products { get; set; } = null!;
+        public List<SpacificUserTask>? SpacificUserTask { get; set; }
         public List<SeoServiceDetails>? SeoServiceDetails { get; set; }
         public List<OthersService>? OthersServices { get; set; }
         public List<WorkTaskDetails>? WorkTaskDetails { get; set; }

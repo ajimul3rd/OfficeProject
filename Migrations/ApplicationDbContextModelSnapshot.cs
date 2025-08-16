@@ -589,6 +589,30 @@ namespace OfficeProject.Migrations
                     b.ToTable("Services");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.SpacificUserTask", b =>
+                {
+                    b.Property<int>("TaskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskId"));
+
+                    b.Property<int>("Service_Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TaskDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TaskId");
+
+                    b.HasIndex("Service_Id");
+
+                    b.ToTable("SpacificUserTask");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.Transactions", b =>
                 {
                     b.Property<int>("TransactionId")
@@ -1139,6 +1163,17 @@ namespace OfficeProject.Migrations
                     b.Navigation("Projects");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.SpacificUserTask", b =>
+                {
+                    b.HasOne("OfficeProject.Models.Entities.Services", "Services")
+                        .WithMany("SpacificUserTask")
+                        .HasForeignKey("Service_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Services");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.Transactions", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Accounts", "Accounts")
@@ -1272,6 +1307,8 @@ namespace OfficeProject.Migrations
                     b.Navigation("PaymentSchedule");
 
                     b.Navigation("SeoServiceDetails");
+
+                    b.Navigation("SpacificUserTask");
 
                     b.Navigation("WebDevelopment");
 

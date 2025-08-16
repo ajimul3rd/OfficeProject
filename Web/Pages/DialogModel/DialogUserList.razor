@@ -498,7 +498,7 @@
         try
         {
             tableData = await userService.GetAllUsersDTOAsync() ?? new List<UserDTO>();
-            DataSerializer.Serializer(tableData, "DialogUserList:GetUsers");
+            // DataSerializer.Serializer(tableData, "DialogUserList:GetUsers");
              
         }
         catch (Exception ex)

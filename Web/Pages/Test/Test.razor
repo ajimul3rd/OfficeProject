@@ -1,0 +1,80 @@
+﻿@page "/test"
+@inject IUserService userService
+@using OfficeProject.Models.DTO
+
+<h3>User Task Assignment</h3>
+
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        Select Users
+    </button>
+    <ul class="dropdown-menu p-2" style="max-height: 250px; overflow-y: auto;" aria-labelledby="userDropdown">
+        @foreach (var task in AllUsers)
+        {
+            <li class="dropdown-item">
+                <input type="checkbox"
+                       class="form-check-input me-2"
+                       checked="@task.IsSelected"
+                       @onchange="(e) => OnUserSelectionChanged(task, e)" />
+                <label>@task.UserName</label>
+            </li>
+        }
+    </ul>
+</div>
+
+@if (AllUsers.Any(u => u.IsSelected))
+{
+    <div class="mt-3">
+        @foreach (var task in AllUsers.Where(u => u.IsSelected))
+        {
+            <div class="mb-2">
+                <label>@task.UserName's Task</label>
+                <input type="text" class="form-control" placeholder="Enter Task Name" @bind="task.TaskName" />
+            </div>
+        }
+    </div>
+}
+
+<button class="btn btn-primary mt-3" @onclick="SaveTasks">Save Tasks</button>
+
+@code {
+    private List<SpacificUserTaskDTO> AllUsers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var usersFromDb = await userService.GetAllUsersAsync();
+
+        AllUsers = usersFromDb.Select(u => new SpacificUserTaskDTO
+            {
+                UserId = u.UserId,
+                UserName = u.UserName
+            }).ToList();
+    }
+
+    private void OnUserSelectionChanged(SpacificUserTaskDTO user, ChangeEventArgs e)
+    {
+        user.IsSelected = (bool)e.Value;
+        if (!user.IsSelected)
+        {
+            user.TaskName = null; // optional: clear task when deselected
+        }
+        StateHasChanged(); // Force UI update
+    }
+
+    private void SaveTasks()
+    {
+        var selectedTasks = AllUsers
+            .Where(t => t.IsSelected && !string.IsNullOrWhiteSpace(t.TaskName))
+            .ToList();
+
+        // Save to DB or call API
+    }
+
+    public class SpacificUserTaskDTO
+    {
+        public int UserId { get; set; }
+        public string? UserName { get; set; }
+        public string? TaskName { get; set; }
+        public bool IsSelected { get; set; }
+    }
+}

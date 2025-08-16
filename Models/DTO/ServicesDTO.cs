@@ -80,7 +80,10 @@ namespace OfficeProject.Models.DTO
         public string? ExtraField3 { get; set; }
 
         [ValidateComplexType]
-        public List<SeoServiceDetailsDTO>? SeoServiceDetails { get; set; }
+        public List<SeoServiceDetailsDTO>? SeoServiceDetails { get; set; }        
+        
+        [ValidateComplexType]
+        public List<SpacificUserTaskDTO>? SpacificUserTask { get; set; }
 
         [ValidateComplexType]
         public List<OthersServiceDTO>? OthersServices { get; set; }

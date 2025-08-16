@@ -12,6 +12,7 @@ using OfficeProject.Models.DTO;
 using OfficeProject.Models.Entities;
 using OfficeProject.Models.Enums;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 
 
@@ -59,11 +60,11 @@ namespace OfficeProject.Servicess
 
         /// Fetches the latest project work updates for a specific team member within a specific project.
         /// and any one can see this work
-        public async Task<List<ProjectsDTO?>> GetTeamWorksAsync(int UserId,int ProjectId)
+        public async Task<List<ProjectsDTO?>> GetTeamWorksAsync(int UserId, int ProjectId)
         {
             try
             {
-               
+
 
                 using (var context = dbContextFactory.CreateDbContext())
                 {
@@ -84,7 +85,7 @@ namespace OfficeProject.Servicess
                     var projects = await context.Projects
                     .Include(p => p.Client)
                     .Include(p => p.Services)
-                        .ThenInclude(s => s.WorkTaskDetails.Where(w=>w.Work_UserId==UserId)).Where(p=>p.ProjectId== ProjectId)
+                        .ThenInclude(s => s.WorkTaskDetails.Where(w => w.Work_UserId == UserId)).Where(p => p.ProjectId == ProjectId)
                         .AsSplitQuery()
                     .ToListAsync();
 
@@ -116,7 +117,7 @@ namespace OfficeProject.Servicess
                         } : null,
 
                         Services = project.Services
-                          
+
                             .Select(service => new ServicesDTO
                             {
                                 ServiceId = service.ServiceId,
@@ -164,7 +165,7 @@ namespace OfficeProject.Servicess
             .ToList();
                     DataSerializer.Serializer(projectDTOs, "ProjectsService:GetTeamWorksAsync:");
 
-                //}).ToList()
+                    //}).ToList()
 
                     //    }).Where(p => p.Services != null && p.Services.Any()).ToList();
 
@@ -257,9 +258,9 @@ namespace OfficeProject.Servicess
                                 TotalPost = service.TotalPost,
                                 TotalReels = service.TotalReels,
                                 AdsBudget = service.AdsBudget,
-                                Backlink=service.Backlink,
-                                Clasified=service.Clasified,
-                                SocialSharing=service.SocialSharing,
+                                Backlink = service.Backlink,
+                                Clasified = service.Clasified,
+                                SocialSharing = service.SocialSharing,
                                 DeadLine = service.DeadLine,
                                 ExtraField1 = service.ExtraField1,
                                 ExtraField2 = service.ExtraField2,
@@ -297,7 +298,7 @@ namespace OfficeProject.Servicess
                     })
             .Where(p => p.Services != null && p.Services.Any())
             .ToList();
-                                    
+
                     return projectDTOs;
                 }
             }
@@ -307,6 +308,7 @@ namespace OfficeProject.Servicess
                 throw;
             }
         }
+
 
         public async Task<List<ProjectsDTO?>> GetProjectPerUserAsync()
         {
@@ -349,7 +351,9 @@ namespace OfficeProject.Servicess
                         .Include(p => p.Services)
                             .ThenInclude(s => s.WebDevelopment)
                         .Include(p => p.Services)
-                            .ThenInclude(s=> s.WorkTaskDetails)
+                            .ThenInclude(s => s.WorkTaskDetails)
+                        .Include(p => p.Services)
+                            .ThenInclude(s => s.SpacificUserTask)
                         .Where(p => p.AssignedUsers.Any(u => u.UserId == userId))
                         .AsSplitQuery()
                         .ToListAsync();
@@ -371,7 +375,7 @@ namespace OfficeProject.Servicess
                         IgFollowers = project.IgFollowers,
                         GmbRakning = project.GmbRakning,
                         IsActive = project.IsActive,
-                        IsUserWorkDone=project.IsUserWorkDone,
+                        IsUserWorkDone = project.IsUserWorkDone,
 
                         AssignedUsers = project.AssignedUsers?.Select(user => new AssignedUsersDTO
                         {
@@ -394,13 +398,29 @@ namespace OfficeProject.Servicess
                             .Where(service =>
                                 service.Products?.UserWorkingActivity != null &&
                                 service.Products.UserWorkingActivity.Any(ua =>
-                                designationNames.Contains(ua.WorkingActivityName)))
+                                designationNames.Contains(ua.WorkingActivityName)) &&
+                                (
+                                service.SpacificUserTask!.Count == 0 ||
+                                service.SpacificUserTask.Any(su =>
+                                su.UserId == 0 || su.UserId == userId)))
                             .Select(service => new ServicesDTO
                             {
                                 ServiceId = service.ServiceId,
                                 ProjectId = service.ProjectId,
                                 ProductsId = service.ProductsId,
-                                ServiceName = service.ServiceName,
+                                //ServiceName = service.ServiceName,
+
+                                ServiceName = service.SpacificUserTask == null
+    ? service.ServiceName
+    : string.Join(", ",
+        service.SpacificUserTask
+            .Where(su => su.UserId == 0 || su.UserId == userId)
+            .Select(su => su.TaskDescription ?? string.Empty))
+        is string tasks && !string.IsNullOrWhiteSpace(tasks)
+            ? $"{service.ServiceName} - ({tasks})"
+            : service.ServiceName,
+
+
                                 BillingType = service.BillingType,
                                 Price = service.Price,
                                 FinalPrice = service.FinalPrice,
@@ -422,6 +442,14 @@ namespace OfficeProject.Servicess
                                 ExtraField1 = service.ExtraField1,
                                 ExtraField2 = service.ExtraField2,
                                 ExtraField3 = service.ExtraField3,
+
+                                SpacificUserTask = service.SpacificUserTask?.Select(detail => new SpacificUserTaskDTO
+                                {
+                                    TaskId = detail.TaskId,
+                                    Service_Id = detail.Service_Id,
+                                    TaskDescription = detail.TaskDescription,
+                                    UserId = detail.UserId
+                                }).ToList(),
 
                                 SeoServiceDetails = service.SeoServiceDetails?.Select(detail => new SeoServiceDetailsDTO
                                 {
@@ -468,7 +496,9 @@ namespace OfficeProject.Servicess
                                     Note = web.Note
                                 }).ToList(),
 
-                                WorkTaskDetails=service.WorkTaskDetails?.Select(wr=>new WorkTaskDetailsDto
+                                WorkTaskDetails = service.WorkTaskDetails?
+                                .Where(wr => wr.Work_UserId == userId)
+                                .Select(wr => new WorkTaskDetailsDto
                                 {
                                     WorkTaskId = wr.WorkTaskId,
                                     ServiceId = wr.ServiceId,
@@ -476,12 +506,217 @@ namespace OfficeProject.Servicess
                                     Task = wr.Task,
                                     Remarks = wr.Remarks,
                                     Work_UserId = wr.Work_UserId,
-                                    SharedPost=wr.SharedPost,
-                                    CreatedReels=wr.CreatedReels,
-                                    UsedAdsBudget=wr.UsedAdsBudget,
-                                    Clasified=wr.Clasified,
-                                    Backlink=wr.Backlink,
-                                    SocialSharing=wr.SocialSharing
+                                    SharedPost = wr.SharedPost,
+                                    CreatedReels = wr.CreatedReels,
+                                    UsedAdsBudget = wr.UsedAdsBudget,
+                                    Clasified = wr.Clasified,
+                                    Backlink = wr.Backlink,
+                                    SocialSharing = wr.SocialSharing
+
+                                }).ToList()
+
+                            }).ToList()
+
+                    }).Where(p => p.Services != null && p.Services.Any()).ToList();
+
+                    DataSerializer.Serializer(projectDTOs, "ProjectsService:GetProjectPerUserAsync:");
+
+
+                    //return projectDTOs;
+                    return await GetWorkServicesByIdAndBetweenDate(projectDTOs, userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving projects: {ex.Message}");
+                throw;
+            }
+        }  
+        public async Task<List<ProjectsDTO?>> GetProjectAdminUserAsync()
+        {
+            try
+            {
+                var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    throw new UnauthorizedAccessException("User is not authenticated.");
+                }
+
+                using (var context = dbContextFactory.CreateDbContext())
+                {
+                    // Get user with designation
+                    var user = await context.Users
+                        .Include(u => u.UserDesignation)
+                        .FirstOrDefaultAsync(u => u.UserId == userId);
+
+                    if (user == null)
+                    {
+                        throw new UnauthorizedAccessException("User not found.");
+                    }
+
+                    //var userDesignations = user.UserDesignation?? new List<UserDesignation>();
+                    var designationNames = user.UserDesignation?.Select(d => d.Designation).ToHashSet() ?? new HashSet<string>();
+
+
+
+                    var projects = await context.Projects
+                        .Include(p => p.Client)
+                        .Include(p => p.AssignedUsers)
+                        .Include(p => p.Services)
+                            .ThenInclude(s => s.Products)
+                                .ThenInclude(p => p.UserWorkingActivity)
+                        .Include(p => p.Services)
+                            .ThenInclude(s => s.SeoServiceDetails)
+                        .Include(p => p.Services)
+                            .ThenInclude(s => s.OthersServices)
+                        .Include(p => p.Services)
+                            .ThenInclude(s => s.WebDevelopment)
+                        .Include(p => p.Services)
+                            .ThenInclude(s => s.WorkTaskDetails)
+                        .Include(p => p.Services)
+                            .ThenInclude(s => s.SpacificUserTask)
+                        .Where(p => p.AssignedUsers.Any(u => u.UserId == userId))
+                        .AsSplitQuery()
+                        .ToListAsync();
+
+                    var projectDTOs = projects.Select(project => new ProjectsDTO
+                    {
+                        ProjectId = project.ProjectId,
+                        UserId = project.UserId,
+                        ClientId = project.ClientId,
+                        ProjectName = project.ProjectName,
+                        BillingType = project.BillingType,
+                        ProjectType = project.ProjectType,
+                        ProjectStartDate = project.ProjectStartDate,
+                        ProjectCost = project.ProjectCost,
+                        CurrentIssue = project.CurrentIssue,
+                        InternalRemark = project.InternalRemark,
+                        CustomerNote = project.CustomerNote,
+                        FbFollowers = project.FbFollowers,
+                        IgFollowers = project.IgFollowers,
+                        GmbRakning = project.GmbRakning,
+                        IsActive = project.IsActive,
+                        IsUserWorkDone = project.IsUserWorkDone,
+
+                        AssignedUsers = project.AssignedUsers?.Select(user => new AssignedUsersDTO
+                        {
+                            AssignedUsersId = user.AssignedUsersId,
+                            ProjectId = user.ProjectId,
+                            UserId = user.UserId,
+                            UserName = user.UserName,
+                            Role = user.Role
+                        }).ToList(),
+
+                        Client = project.Client != null ? new ClientsDTO
+                        {
+                            ClientId = project.Client.ClientId,
+                            ClientName = project.Client.ClientName,
+                            ClientEmail1 = project.Client.ClientEmail1,
+                            ClientContact1 = project.Client.ClientContact1
+                        } : null,
+
+                        Services = project.Services!
+                            .Where(service =>
+                                service.Products?.UserWorkingActivity != null &&
+                                service.Products.UserWorkingActivity.Any(ua =>
+                                designationNames.Contains(ua.WorkingActivityName)))
+                            .Select(service => new ServicesDTO
+                            {
+                                ServiceId = service.ServiceId,
+                                ProjectId = service.ProjectId,
+                                ProductsId = service.ProductsId,
+                                ServiceName = service.ServiceName,
+
+                                BillingType = service.BillingType,
+                                Price = service.Price,
+                                FinalPrice = service.FinalPrice,
+                                StartDate = service.StartDate,
+                                EndDate = service.EndDate,
+                                TotalPost = service.TotalPost,
+                                TotalReels = service.TotalReels,
+                                AdsBudget = service.AdsBudget,
+                                Backlink = service.Backlink,
+                                Clasified = service.Clasified,
+                                SocialSharing = service.SocialSharing,
+                                IsBacklink = service.IsBacklink,
+                                IsClasified = service.IsClasified,
+                                IsSocialSharing = service.IsSocialSharing,
+                                IsPost = service.IsPost,
+                                IsReels = service.IsReels,
+                                IsAdsBudget = service.IsAdsBudget,
+                                DeadLine = service.DeadLine,
+                                ExtraField1 = service.ExtraField1,
+                                ExtraField2 = service.ExtraField2,
+                                ExtraField3 = service.ExtraField3,
+
+                                SpacificUserTask = service.SpacificUserTask?.Select(detail => new SpacificUserTaskDTO
+                                {
+                                    TaskId = detail.TaskId,
+                                    Service_Id = detail.Service_Id,
+                                    TaskDescription = detail.TaskDescription,
+                                    UserId = detail.UserId
+                                }).ToList(),
+
+                                SeoServiceDetails = service.SeoServiceDetails?.Select(detail => new SeoServiceDetailsDTO
+                                {
+                                    SeoServiceDetailsId = detail.SeoServiceDetailsId,
+                                    ServiceId = detail.ServiceId,
+                                    KeyWord = detail.KeyWord,
+                                    Rank = detail.Rank,
+                                    Note = detail.Note,
+                                    ExtraField1 = detail.ExtraField1,
+                                    ExtraField2 = detail.ExtraField2
+                                }).ToList(),
+
+                                OthersServices = service.OthersServices?.Select(other => new OthersServiceDTO
+                                {
+                                    OthersId = other.OthersId,
+                                    ServiceId = other.ServiceId,
+                                    LableName = other.LableName,
+                                    Post = other.Post,
+                                    Note = other.Note,
+                                    ExtraField1 = other.ExtraField1,
+                                    ExtraField2 = other.ExtraField2
+                                }).ToList(),
+
+                                WebDevelopment = service.WebDevelopment?.Select(web => new WebDevelopmentDTO
+                                {
+                                    WebDevelopmentId = web.WebDevelopmentId,
+                                    ServiceId = web.ServiceId,
+                                    DomainName = web.DomainName,
+                                    HostingDate = web.HostingDate,
+                                    HostingRenewalDate = web.HostingRenewalDate,
+                                    HostingLimit = web.HostingLimit,
+                                    HostingRenewalAmount = web.HostingRenewalAmount,
+                                    ServerFtpAssign = web.ServerFtpAssign,
+                                    ServerIp = web.ServerIp!,
+                                    ServerUserId = web.ServerUserId,
+                                    ServerPassword = web.ServerPassword,
+                                    DesignTools = web.DesignTools,
+                                    MackupLink = web.MackupLink,
+                                    Languages = web.Languages,
+                                    IsActive = web.IsActive,
+                                    StartDate = web.StartDate,
+                                    Deadline = web.Deadline,
+                                    Remarks = web.Remarks,
+                                    Note = web.Note
+                                }).ToList(),
+
+                                WorkTaskDetails = service.WorkTaskDetails?.Select(wr => new WorkTaskDetailsDto
+                                {
+                                    WorkTaskId = wr.WorkTaskId,
+                                    ServiceId = wr.ServiceId,
+                                    WorkDate = wr.WorkDate,
+                                    Task = wr.Task,
+                                    Remarks = wr.Remarks,
+                                    Work_UserId = wr.Work_UserId,
+                                    SharedPost = wr.SharedPost,
+                                    CreatedReels = wr.CreatedReels,
+                                    UsedAdsBudget = wr.UsedAdsBudget,
+                                    Clasified = wr.Clasified,
+                                    Backlink = wr.Backlink,
+                                    SocialSharing = wr.SocialSharing
 
                                 }).ToList()
 
@@ -493,7 +728,7 @@ namespace OfficeProject.Servicess
 
 
                     //return projectDTOs;
-                    return await GetWorkServicesByIdAndBetweenDate(projectDTOs);
+                    return await GetWorkServicesByIdAndBetweenDateForAdminSupport(projectDTOs);
                 }
             }
             catch (Exception ex)
@@ -503,7 +738,7 @@ namespace OfficeProject.Servicess
             }
         }
 
-        public async Task<List<ProjectsDTO>> GetWorkServicesByIdAndBetweenDate(List<ProjectsDTO> projectDTOs)
+        public async Task<List<ProjectsDTO>> GetWorkServicesByIdAndBetweenDateForAdminSupport(List<ProjectsDTO> projectDTOs)
         {
             foreach (var project in projectDTOs)
             {
@@ -525,7 +760,7 @@ namespace OfficeProject.Servicess
 
                     //Console.WriteLine($"Billing Period: {periodStart:yyyy-MM-dd} to {periodEnd:yyyy-MM-dd}");
 
-                    var summary= await GetWorkTaskSummary((int)service.ServiceId!, periodStart, periodEnd);
+                    var summary = await GetWorkTaskSummaryForAdminSupport((int)service.ServiceId!, periodStart, periodEnd);
                     {
                         service.CompletePost = summary.TotalSharedPost;
                         service.CompleteReels = summary.TotalCreatedReels;
@@ -540,14 +775,86 @@ namespace OfficeProject.Servicess
             return projectDTOs;
         }
 
-        public async Task<WorkTaskSummaryDto> GetWorkTaskSummary(int serviceId, DateTime startDate, DateTime endDate)
+        public async Task<WorkTaskSummaryDto> GetWorkTaskSummaryForAdminSupport(int serviceId, DateTime startDate, DateTime endDate)
         {
             try
             {
                 using var context = dbContextFactory.CreateDbContext();
 
                 var filteredRecords = await context.WorkRecords
-                    .Where(w => w.ServiceId == serviceId &&
+                    .Where(w => w.ServiceId == serviceId && 
+                                w.WorkDate >= startDate && w.WorkDate <= endDate && w.Status == "Completed")
+                    .ToListAsync();
+
+
+                //DataSerializer?.Serializer(filteredRecords, "ProjectsService->GetWorkTaskSummary:");
+
+                var summary = new WorkTaskSummaryDto
+                {
+                    TotalSharedPost = filteredRecords.Sum(w => w.SharedPost),
+                    TotalCreatedReels = filteredRecords.Sum(w => w.CreatedReels),
+                    TotalUsedAdsBudget = filteredRecords.Sum(w => w.UsedAdsBudget),
+                    TotalBacklink = filteredRecords.Sum(w => w.Backlink),
+                    TotalClasified = filteredRecords.Sum(w => w.Clasified),
+                    TotalSocialSharing = filteredRecords.Sum(w => w.SocialSharing)
+                };
+
+                return summary;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetWorkTaskSummary: {ex.Message}");
+                throw;
+            }
+        }
+
+
+
+        public async Task<List<ProjectsDTO>> GetWorkServicesByIdAndBetweenDate(List<ProjectsDTO> projectDTOs, int currentUserId)
+        {
+            foreach (var project in projectDTOs)
+            {
+                foreach (var service in project.Services!)
+                {
+                    if (service.BillingType == null) continue;
+
+                    // Subtract 1 month from service start date
+                    DateTime adjustedStartDate = service.StartDate;
+
+                    // Get billing period
+                    //Console.WriteLine($"Service: {service.ServiceName}, Billing: {service.BillingType}, Start: {adjustedStartDate:yyyy-MM-dd}");
+
+                    var (periodStart, periodEnd) = billingCycleHelper.GetCurrentBillingPeriod(
+                        adjustedStartDate,
+                        (BillingType)service.BillingType,
+                        DateTime.Today
+                    );
+
+                    //Console.WriteLine($"Billing Period: {periodStart:yyyy-MM-dd} to {periodEnd:yyyy-MM-dd}");
+
+                    var summary = await GetWorkTaskSummary((int)service.ServiceId!, periodStart, periodEnd, currentUserId);
+                    {
+                        service.CompletePost = summary.TotalSharedPost;
+                        service.CompleteReels = summary.TotalCreatedReels;
+                        service.CompleteUsedAdsBudget = summary.TotalUsedAdsBudget;
+                        service.CompleteBacklink = summary.TotalBacklink;
+                        service.CompleteClasified = summary.TotalClasified;
+                        service.CompleteSocialSharing = summary.TotalSocialSharing;
+                    }
+                }
+            }
+
+            return projectDTOs;
+        }
+
+        public async Task<WorkTaskSummaryDto> GetWorkTaskSummary(int serviceId, DateTime startDate, DateTime endDate, int currentUserId)
+        {
+            try
+            {
+                using var context = dbContextFactory.CreateDbContext();
+
+                var filteredRecords = await context.WorkRecords
+                    .Where(w => w.ServiceId == serviceId && w.Work_UserId == currentUserId &&
                                 w.WorkDate >= startDate && w.WorkDate <= endDate && w.Status == "Completed")
                     .ToListAsync();
 
@@ -589,8 +896,10 @@ namespace OfficeProject.Servicess
                             .ThenInclude(s => s.SeoServiceDetails)
                         .Include(p => p.Services)
                             .ThenInclude(o => o.OthersServices)
-                        .Include(p=>p.Services)
-                            .ThenInclude(w=>w.WebDevelopment )
+                        .Include(p => p.Services)
+                            .ThenInclude(w => w.WebDevelopment)
+                         .Include(p => p.Services)
+                            .ThenInclude(s => s.SpacificUserTask)
                             .AsSplitQuery()
                         .ToListAsync();
 
@@ -611,7 +920,7 @@ namespace OfficeProject.Servicess
                         IgFollowers = project.IgFollowers,
                         GmbRakning = project.GmbRakning,
                         IsActive = project.IsActive,
-                        IsUserWorkDone= project.IsUserWorkDone,
+                        IsUserWorkDone = project.IsUserWorkDone,
 
                         AssignedUsers = project.AssignedUsers?.Select(user => new AssignedUsersDTO
                         {
@@ -658,6 +967,14 @@ namespace OfficeProject.Servicess
                             ExtraField2 = service.ExtraField2,
                             ExtraField3 = service.ExtraField3,
 
+                            SpacificUserTask = service.SpacificUserTask?.Select(detail => new SpacificUserTaskDTO
+                            {
+                                TaskId = detail.TaskId,
+                                Service_Id = detail.Service_Id,
+                                TaskDescription = detail.TaskDescription,
+                                UserId=detail.UserId
+                            }).ToList(),
+
                             SeoServiceDetails = service.SeoServiceDetails?.Select(detail => new SeoServiceDetailsDTO
                             {
                                 SeoServiceDetailsId = detail.SeoServiceDetailsId,
@@ -679,14 +996,14 @@ namespace OfficeProject.Servicess
                                 ExtraField1 = other.ExtraField1,
                                 ExtraField2 = other.ExtraField2
                             }).ToList(),
-                            WebDevelopment=service.WebDevelopment?.Select(web=> new WebDevelopmentDTO
+                            WebDevelopment = service.WebDevelopment?.Select(web => new WebDevelopmentDTO
                             {
-                                WebDevelopmentId=web.WebDevelopmentId,
+                                WebDevelopmentId = web.WebDevelopmentId,
                                 ServiceId = web.ServiceId,
                                 DomainName = web.DomainName,
                                 HostingDate = web.HostingDate,
                                 HostingRenewalDate = web.HostingRenewalDate,
-                                HostingLimit=web.HostingLimit,
+                                HostingLimit = web.HostingLimit,
                                 HostingRenewalAmount = web.HostingRenewalAmount,
                                 ServerFtpAssign = web.ServerFtpAssign,
                                 ServerIp = web.ServerIp,
@@ -767,6 +1084,7 @@ namespace OfficeProject.Servicess
         {
             try
             {
+                
                 using var context = dbContextFactory.CreateDbContext();
 
                 Projects? existingProject = null;
@@ -894,6 +1212,7 @@ namespace OfficeProject.Servicess
                                 ExtraField1 = serviceDto.ExtraField1,
                                 ExtraField2 = serviceDto.ExtraField2,
                                 ExtraField3 = serviceDto.ExtraField3,
+
                                 PaymentSchedule = new PaymentSchedule
                                 {
                                     DueDate = serviceDto.StartDate,
@@ -932,6 +1251,40 @@ namespace OfficeProject.Servicess
 
                             context.Services.Update(existingService);
                             await context.SaveChangesAsync();
+                        }
+
+                        // Spacific User Task
+                        foreach (var sut in serviceDto.SpacificUserTask ?? [])
+                        {
+                            try
+                            {
+                                var existingSut = await context.SpacificUserTask
+                                    .FirstOrDefaultAsync(x => x.TaskId == sut.TaskId);
+
+                                if (existingSut == null)
+                                {
+                                    context.SpacificUserTask.Add(new SpacificUserTask
+                                    {
+                                        Service_Id = existingService.ServiceId,
+                                        UserId = sut.UserId,
+                                        TaskDescription = sut.TaskDescription,
+
+                                    });
+                                }
+                                else
+                                {
+                                    existingSut.UserId = sut.UserId;
+                                    existingSut.TaskDescription = sut.TaskDescription;
+
+                                    context.SpacificUserTask.Update(existingSut);
+                                }
+
+                                await context.SaveChangesAsync();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error in SpacificUserTask: {ex.Message}");
+                            }
                         }
 
                         // SeoServiceDetails
@@ -1093,7 +1446,7 @@ namespace OfficeProject.Servicess
             throw new NotImplementedException();
         }
 
-       
+
     }
 
 

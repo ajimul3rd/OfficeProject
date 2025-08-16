@@ -11,10 +11,12 @@ namespace OfficeProject.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectsService _projectsService;
+        private readonly IDataSerializer? DataSerializer;
 
-        public ProjectsController(IProjectsService projectsService)
+        public ProjectsController(IProjectsService projectsService, IDataSerializer? dataSerializer)
         {
             _projectsService = projectsService;
+            DataSerializer = dataSerializer;
         }
 
 
@@ -31,14 +33,46 @@ namespace OfficeProject.Controllers
 
 
 
+        //[HttpGet("user")]
+        ////[Authorize]
+        //public async Task<ActionResult<List<ProjectsDTO>>> GetProjectPerUser()
+        //{
+        //    try
+        //    {
+        //        var project = await _projectsService.GetProjectPerUserAsync();
+        //        return Ok(project);
+        //    }
+        //    catch (UnauthorizedAccessException ex)
+        //    {
+        //        return Unauthorized(new { message = ex.Message });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new { message = "An error occurred while retrieving clients", error = ex.Message });
+        //    }
+        //}
+
         [HttpGet("user")]
         //[Authorize]
         public async Task<ActionResult<List<ProjectsDTO>>> GetProjectPerUser()
         {
             try
             {
-                var project = await _projectsService.GetProjectPerUserAsync();
-                return Ok(project);
+                List<ProjectsDTO> projects;
+
+                // Check role
+                if (User.IsInRole("ADMIN") || User.IsInRole("MANAGER"))
+                {
+                    // Call an admin/manager-specific method
+                    projects = await _projectsService.GetProjectAdminUserAsync();
+                }
+                else
+                {
+                    // Current method for regular users
+                    projects = await _projectsService.GetProjectPerUserAsync();
+                }
+
+                return Ok(projects);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -49,6 +83,7 @@ namespace OfficeProject.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving clients", error = ex.Message });
             }
         }
+
 
         [HttpGet]
         //[Authorize]
@@ -100,6 +135,7 @@ namespace OfficeProject.Controllers
         //[Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> AddProjectAsync([FromBody] ProjectsDTO projectDto)
         {
+            //DataSerializer.Serializer(projectDto, "SaveOrUpdateProjectsAsync");
             if (projectDto == null)
             {
                 return BadRequest("Project data is required.");
