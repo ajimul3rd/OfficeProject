@@ -24,7 +24,7 @@ public class ApiService
     private async Task AddAuthHeaderAsync()
     {
         var token = await localStorage.GetItemAsync<string>("authToken");
-        Console.WriteLine($"Token being added: {token}"); // Add this line for debug
+        //Console.WriteLine($"Token being added: {token}"); // Add this line for debug
         if (!string.IsNullOrWhiteSpace(token))
         {
             http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -333,7 +333,7 @@ public class ApiService
         }
         }
 
-    public async Task<List<ProjectsDTO>> GetProjectPerUserAsync()
+     public async Task<List<ProjectsDTO>> GetProjectPerUserAsync()
     {
         try
         {
@@ -369,8 +369,6 @@ public class ApiService
             throw;
         }
     }
-
-
    
 
 

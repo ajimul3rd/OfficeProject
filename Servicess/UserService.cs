@@ -27,6 +27,38 @@ namespace OfficeProject.Servicess
         }
 
 
+
+        public async Task<Users> GetUserUserDesignationAsync()
+        {
+            try
+            {
+                var userIdClaim = _httpClient.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    throw new UnauthorizedAccessException("User is not authenticated.");
+                }
+
+                using (var context = dbContextFactory.CreateDbContext())
+                {
+                    // Get user with designation
+                    var user = await context.Users
+                        .Include(u => u.UserDesignation)
+                        .FirstOrDefaultAsync(u => u.UserId == userId);
+                    return user!;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving projects: {ex.Message}");
+                throw;
+            }
+        }
+
+
+
         public async Task<List<UserDTO>> GetAllUsersDTOAsync()
         {
             using (var context = dbContextFactory.CreateDbContext())

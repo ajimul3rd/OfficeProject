@@ -436,6 +436,7 @@
             }
 
             // Save globally
+            GlobalDataService!.Clear();
             GlobalDataService!.Projects = projects;
             GlobalDataService.Data = data;
             // Optional: serialize if needed

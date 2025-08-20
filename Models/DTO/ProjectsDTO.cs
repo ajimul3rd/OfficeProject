@@ -58,6 +58,7 @@ namespace OfficeProject.Models.DTO
             }
 
         }
+
         [Column(TypeName = "nvarchar(50)")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ProjectType ProjectType { get; set; } = ProjectType.SERVICE;

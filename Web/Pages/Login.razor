@@ -28,14 +28,14 @@
 
                         <div class="form-floating mb-4">
                             <InputText id="userName" @bind-Value="loginModel.UserName"
-                                       class="form-control form-control-lg" placeholder="Username" />
+                            class="form-control form-control-lg" placeholder="Username" />
                             <label for="userName" class="form-label">Username</label>
                             <ValidationMessage For="@(() => loginModel.UserName)" class="text-danger small" />
                         </div>
 
                         <div class="form-floating mb-4">
                             <InputText id="password" type="password" @bind-Value="loginModel.UserPassword"
-                                       class="form-control form-control-lg" placeholder="Password" />
+                            class="form-control form-control-lg" placeholder="Password" />
                             <label for="password" class="form-label">Password</label>
                             <ValidationMessage For="@(() => loginModel.UserPassword)" class="text-danger small" />
                         </div>
@@ -72,34 +72,36 @@
 
 <style>
     body {
-        background-color: #f8f9fa;
+    background-color: #f8f9fa;
     }
 
     .card {
-        border: none;
-        overflow: hidden;
+    border: none;
+    overflow: hidden;
     }
 
     .form-control {
-        border-radius: 0.5rem;
+    border-radius: 0.5rem;
     }
 
     .btn-primary {
-        background-color: #0d6efd;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
+    background-color: #0d6efd;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
     }
 
-        .btn-primary:hover {
-            background-color: #0b5ed7;
-        }
+    .btn-primary:hover {
+    background-color: #0b5ed7;
+    }
 </style>
 
 @code {
     private LoginModel loginModel = new();
     private bool isLoading = false;
     private string errorMessage = string.Empty;
+
+    [Inject] private IGlobalDataService? GlobalDataService { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -121,8 +123,8 @@
     {
         loginModel = new LoginModel
             {
-                //UserName = "Ajay",
-                //UserPassword = "admin123" //Set default password here
+            //UserName = "Ajay",
+                UserPassword = "admin123" //Set default password here
             };
         await base.OnInitializedAsync();
     }
@@ -146,7 +148,7 @@
                 {
                     await authProvider.NotifyUserAuthentication(loginResponse.AccessToken);
                 }
-
+                GlobalDataService!.Clear();//clear global data
                 Navigation.NavigateTo("/", forceLoad: true);
             }
             else

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeProject.Models.DTO;
+using OfficeProject.Models.Entities;
 using OfficeProject.Servicess;
 
 namespace OfficeProject.Controllers
@@ -33,24 +34,6 @@ namespace OfficeProject.Controllers
 
 
 
-        //[HttpGet("user")]
-        ////[Authorize]
-        //public async Task<ActionResult<List<ProjectsDTO>>> GetProjectPerUser()
-        //{
-        //    try
-        //    {
-        //        var project = await _projectsService.GetProjectPerUserAsync();
-        //        return Ok(project);
-        //    }
-        //    catch (UnauthorizedAccessException ex)
-        //    {
-        //        return Unauthorized(new { message = ex.Message });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new { message = "An error occurred while retrieving clients", error = ex.Message });
-        //    }
-        //}
 
         [HttpGet("user")]
         //[Authorize]
@@ -58,21 +41,8 @@ namespace OfficeProject.Controllers
         {
             try
             {
-                List<ProjectsDTO> projects;
-
-                // Check role
-                if (User.IsInRole("ADMIN") || User.IsInRole("MANAGER"))
-                {
-                    // Call an admin/manager-specific method
-                    projects = await _projectsService.GetProjectAdminUserAsync();
-                }
-                else
-                {
-                    // Current method for regular users
-                    projects = await _projectsService.GetProjectPerUserAsync();
-                }
-
-                return Ok(projects);
+                var project = await _projectsService.GetProjectPerUserAsync();
+                return Ok(project);
             }
             catch (UnauthorizedAccessException ex)
             {

@@ -9,6 +9,7 @@ namespace OfficeProject.Servicess
         Task<UserDTO?> GetUserDTOById(int id);
         Task<Users?> GetUserById(int id);
         Task<UserDTO?> GetUserDTOByUsername(string username);
+        Task<Users> GetUserUserDesignationAsync();
         Task<Users?> GetUserByUsername(string username);
         Task AddUserAsync(Users user);
         Task UpdateUserAsync(UserDTO user);
