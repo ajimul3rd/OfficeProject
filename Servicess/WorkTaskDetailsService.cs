@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
+using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using OfficeProject.Data;
@@ -26,8 +28,50 @@ namespace OfficeProject.Servicess
         }
 
         //(WorkingRecordsDto workingRecordsDto)
+        public async Task<List<BacklinkDetails>> GetIssuedBacklinkAsync(int serviceId)
+        {
+            var threeMonthsAgo = DateTime.UtcNow.AddMonths(-3);
+            var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        public async Task AddOrUpdateUserWorkingRecordAsync(WorkTaskDetailsDto workingRecordsDto)
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+                throw new UnauthorizedAccessException("User is not authenticated.");
+
+            using var context = dbContextFactory.CreateDbContext();
+
+            var issuedBacklinks = await context.WorkRecords
+                .Where(w => w.ServiceId == serviceId && w.Work_UserId == currentUserId)
+                .SelectMany(w => w.BacklinkDetails!
+                    .Where(b => b.StartDate >= threeMonthsAgo)) // return full objects
+                .Distinct()
+                .ToListAsync();
+
+            return issuedBacklinks; 
+        }
+       
+        
+        public async Task<List<ClassifiedDetails>> GetIssuedClassifiedAsync(int serviceId)
+        {
+            var threeMonthsAgo = DateTime.UtcNow.AddMonths(-3);
+            var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+                throw new UnauthorizedAccessException("User is not authenticated.");
+
+            using var context = dbContextFactory.CreateDbContext();
+
+            var issuedClassifiedLink = await context.WorkRecords
+                .Where(w => w.ServiceId == serviceId && w.Work_UserId == currentUserId)
+                .SelectMany(w => w.ClassifiedDetails!
+                    .Where(b => b.StartDate >= threeMonthsAgo)) 
+                .Distinct()
+                .ToListAsync();
+
+            return issuedClassifiedLink; 
+        }
+
+
+
+        public async Task AddOrUpdateBacklinkAsync(WorkTaskDetailsDto workingRecordsDto)
         {
             try
             {
@@ -47,7 +91,7 @@ namespace OfficeProject.Servicess
                 if (workingRecordsDto.WorkTaskId > 0)
                 {
                     existingRecords = await context.WorkRecords
-                        .FirstOrDefaultAsync(p => 
+                        .FirstOrDefaultAsync(p =>
                         p.WorkTaskId == workingRecordsDto.WorkTaskId &&
                         p.Work_UserId == currentUserId);
                 }
@@ -103,6 +147,263 @@ namespace OfficeProject.Servicess
                 }
 
 
+
+                foreach (var backlinkDto in workingRecordsDto.BacklinkDetailsDto ?? [])
+                {
+                    try
+                    {
+                        var existingBacklinkDto = await context.BacklinkDetails
+                            .FirstOrDefaultAsync(x => x.BacklinkId == backlinkDto.BacklinkId);
+
+                        if (existingBacklinkDto == null)
+                        {
+                            context.BacklinkDetails.Add(new BacklinkDetails
+                            {
+                                WorkTaskId = WorkTaskId,
+                                SiteUrl = backlinkDto.SiteUrl,
+                                PublishUrl = backlinkDto.PublishUrl,
+                                PublishTime = backlinkDto.PublishTime,
+                                BacklinkUrlId= (int)backlinkDto.BacklinkUrlId!
+
+                            });
+                        }
+                        else
+                        {
+                            existingBacklinkDto.WorkTaskId = WorkTaskId;
+                            existingBacklinkDto.SiteUrl = backlinkDto.SiteUrl;
+                            existingBacklinkDto.PublishUrl = backlinkDto.PublishUrl;
+                            existingBacklinkDto.PublishTime = existingBacklinkDto.PublishTime;
+                            context.BacklinkDetails.Update(existingBacklinkDto);
+                        }
+
+                        await context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error saving BacklinkUrlList:{ex.Message}");
+                    }
+                }
+
+                if (workingRecordsDto.ProjectId > 0 && workingRecordsDto.Status == "Completed")
+                {
+                    await UpdateProjectsUserWorkDoneFlagAsync((int)workingRecordsDto.ProjectId);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Critical failure in AddOrUpdateBacklinkAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task AddOrUpdateClassifiedAsync(WorkTaskDetailsDto workingRecordsDto)
+        {
+            try
+            {
+                
+                var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+                {
+                    throw new UnauthorizedAccessException("User is not authenticated.");
+                }
+
+
+                using var context = dbContextFactory.CreateDbContext();
+
+                WorkTaskDetails? existingRecords = null;
+                int WorkTaskId;
+
+                if (workingRecordsDto.WorkTaskId > 0)
+                {
+                    existingRecords = await context.WorkRecords
+                        .FirstOrDefaultAsync(p =>
+                        p.WorkTaskId == workingRecordsDto.WorkTaskId &&
+                        p.Work_UserId == currentUserId);
+                }
+
+                if (existingRecords == null)
+                {
+                    var newRecords = new WorkTaskDetails
+                    {
+                        ServiceId = (int)workingRecordsDto.ServiceId,
+                        WorkDate = workingRecordsDto.WorkDate,
+                        //ServiceName = workingRecordsDto.ServiceName,
+                        Work_UserId = currentUserId,
+                        SharedPost = workingRecordsDto.SharedPost,
+                        CreatedReels = workingRecordsDto.CreatedReels,
+                        UsedAdsBudget = workingRecordsDto.UsedAdsBudget,
+                        Backlink = workingRecordsDto.Backlink,
+                        BacklinkURL = workingRecordsDto.BacklinkURL,
+                        Clasified = workingRecordsDto.Clasified,
+                        ClasifiedURL = workingRecordsDto.ClasifiedURL,
+                        SocialSharing = workingRecordsDto.SocialSharing,
+                        SocialSharingURL = workingRecordsDto.SocialSharingURL,
+                        Task = workingRecordsDto.Task,
+                        Status = workingRecordsDto.Status,
+                        Remarks = workingRecordsDto.Remarks
+
+                    };
+
+                    context.WorkRecords.Add(newRecords);
+                    await context.SaveChangesAsync();
+                    WorkTaskId = newRecords.WorkTaskId; // ✅ get generated ID
+                }
+                else
+                {
+                    existingRecords.ServiceId = (int)workingRecordsDto.ServiceId;
+                    existingRecords.WorkDate = workingRecordsDto.WorkDate;
+                    //existingRecords.ServiceName = workingRecordsDto.ServiceName;
+                    existingRecords.SharedPost = workingRecordsDto.SharedPost;
+                    existingRecords.CreatedReels = workingRecordsDto.CreatedReels;
+                    existingRecords.Backlink = workingRecordsDto.Backlink;
+                    existingRecords.BacklinkURL = workingRecordsDto.BacklinkURL;
+                    existingRecords.Clasified = workingRecordsDto.Clasified;
+                    existingRecords.ClasifiedURL = workingRecordsDto.ClasifiedURL;
+                    existingRecords.SocialSharing = workingRecordsDto.SocialSharing;
+                    existingRecords.SocialSharingURL = workingRecordsDto.SocialSharingURL;
+                    existingRecords.UsedAdsBudget = workingRecordsDto.UsedAdsBudget;
+                    existingRecords.Task = workingRecordsDto.Task;
+                    existingRecords.Status = workingRecordsDto.Status;
+                    existingRecords.Remarks = workingRecordsDto.Remarks;
+
+                    context.WorkRecords.Update(existingRecords);
+                    await context.SaveChangesAsync();
+                    WorkTaskId = existingRecords.WorkTaskId;
+                }
+
+
+
+                foreach (var classifiedDto in workingRecordsDto.ClassifiedDetailsDto ?? [])
+                {
+                    try
+                    {
+                        var existingClassifiedDto = await context.ClasdifiedDetails
+                            .FirstOrDefaultAsync(x => x.ClassifiedId == classifiedDto.ClasifiedlinkId);
+
+                        if (existingClassifiedDto == null)
+                        {
+                            context.ClasdifiedDetails.Add(new ClassifiedDetails
+                            {
+                                WorkTask_Id = WorkTaskId,
+                                SiteUrl = classifiedDto.SiteUrl,
+                                PublishUrl = classifiedDto.PublishUrl,
+                                PublishTime = classifiedDto.PublishTime,
+                                BacklinkUrlId = (int)classifiedDto.BacklinkUrlId!
+
+                            });
+                        }
+                        else
+                        {
+                            existingClassifiedDto.WorkTask_Id = WorkTaskId;
+                            existingClassifiedDto.SiteUrl = classifiedDto.SiteUrl;
+                            existingClassifiedDto.PublishUrl = classifiedDto.PublishUrl;
+                            existingClassifiedDto.PublishTime = existingClassifiedDto.PublishTime;
+                            context.ClasdifiedDetails.Update(existingClassifiedDto);
+                        }
+
+                        await context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error saving ClassifiedUrlList:{ex.Message}");
+                    }
+                }
+
+                if (workingRecordsDto.ProjectId > 0 && workingRecordsDto.Status == "Completed")
+                {
+                    await UpdateProjectsUserWorkDoneFlagAsync((int)workingRecordsDto.ProjectId);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Critical failure in AddOrUpdateClassifiedAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+
+        public async Task AddOrUpdateUserWorkingRecordAsync(WorkTaskDetailsDto workingRecordsDto)
+        {
+            try
+            {
+                var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
+                {
+                    throw new UnauthorizedAccessException("User is not authenticated.");
+                }
+
+
+                using var context = dbContextFactory.CreateDbContext();
+
+                WorkTaskDetails? existingRecords = null;
+                int WorkTaskId;
+
+                if (workingRecordsDto.WorkTaskId > 0)
+                {
+                    existingRecords = await context.WorkRecords
+                        .FirstOrDefaultAsync(p =>
+                        p.WorkTaskId == workingRecordsDto.WorkTaskId &&
+                        p.Work_UserId == currentUserId);
+                }
+
+                if (existingRecords == null)
+                {
+                    var newRecords = new WorkTaskDetails
+                    {
+                        ServiceId = (int)workingRecordsDto.ServiceId,
+                        WorkDate = workingRecordsDto.WorkDate,
+                        //ServiceName = workingRecordsDto.ServiceName,
+                        Work_UserId = currentUserId,
+                        SharedPost = workingRecordsDto.SharedPost,
+                        CreatedReels = workingRecordsDto.CreatedReels,
+                        UsedAdsBudget = workingRecordsDto.UsedAdsBudget,
+                        Backlink = workingRecordsDto.Backlink,
+                        BacklinkURL = workingRecordsDto.BacklinkURL,
+                        Clasified = workingRecordsDto.Clasified,
+                        ClasifiedURL = workingRecordsDto.ClasifiedURL,
+                        SocialSharing = workingRecordsDto.SocialSharing,
+                        SocialSharingURL = workingRecordsDto.SocialSharingURL,
+                        Task = workingRecordsDto.Task,
+                        Status = workingRecordsDto.Status,
+                        Remarks = workingRecordsDto.Remarks
+
+                    };
+
+                    context.WorkRecords.Add(newRecords);
+                    await context.SaveChangesAsync();
+                    WorkTaskId = newRecords.WorkTaskId; // ✅ get generated ID
+                }
+                else
+                {
+                    existingRecords.ServiceId = (int)workingRecordsDto.ServiceId;
+                    existingRecords.WorkDate = workingRecordsDto.WorkDate;
+                    //existingRecords.ServiceName = workingRecordsDto.ServiceName;
+                    existingRecords.SharedPost = workingRecordsDto.SharedPost;
+                    existingRecords.CreatedReels = workingRecordsDto.CreatedReels;
+                    existingRecords.Backlink = workingRecordsDto.Backlink;
+                    existingRecords.BacklinkURL = workingRecordsDto.BacklinkURL;
+                    existingRecords.Clasified = workingRecordsDto.Clasified;
+                    existingRecords.ClasifiedURL = workingRecordsDto.ClasifiedURL;
+                    existingRecords.SocialSharing = workingRecordsDto.SocialSharing;
+                    existingRecords.SocialSharingURL = workingRecordsDto.SocialSharingURL;
+                    existingRecords.UsedAdsBudget = workingRecordsDto.UsedAdsBudget;
+                    existingRecords.Task = workingRecordsDto.Task;
+                    existingRecords.Status = workingRecordsDto.Status;
+                    existingRecords.Remarks = workingRecordsDto.Remarks;
+
+                    context.WorkRecords.Update(existingRecords);
+                    await context.SaveChangesAsync();
+                    WorkTaskId = existingRecords.WorkTaskId;
+                }
+
+
+
+
+
                 foreach (var seoTaskDto in workingRecordsDto.SeoTaskDetailsDto ?? [])
                 {
                     try
@@ -138,6 +439,7 @@ namespace OfficeProject.Servicess
                         Console.WriteLine($"Error saving SeoTaskDetails: {ex.Message}");
                     }
                 }
+
                 foreach (var othersTaskDto in workingRecordsDto.OthersTaskDetailsDto ?? [])
                 {
                     try
@@ -210,11 +512,11 @@ namespace OfficeProject.Servicess
                 }
                 //Console.WriteLine("workingRecordsDto.ProjectId:"+ workingRecordsDto.ProjectId);
                 //Console.WriteLine("workingRecordsDto.Task:" + workingRecordsDto.Status);
-                if (workingRecordsDto.ProjectId > 0&& workingRecordsDto.Status == "Completed")
+                if (workingRecordsDto.ProjectId > 0 && workingRecordsDto.Status == "Completed")
                 {
                     await UpdateProjectsUserWorkDoneFlagAsync((int)workingRecordsDto.ProjectId);
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -249,10 +551,10 @@ namespace OfficeProject.Servicess
                     {
                         // Optionally handle updates for non-EXTRA_SERVICE types if needed
                         Console.WriteLine($"Project {existingProject.ProjectId} is not of type EXTRA_SERVICE, no update performed.");
-                        
+
                     }
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -349,7 +651,7 @@ namespace OfficeProject.Servicess
                         WorkDate = wr.WorkDate,
                         Task = wr.Task,
                         Remarks = wr.Remarks,
-                        Work_UserId=wr.Work_UserId
+                        Work_UserId = wr.Work_UserId
                     })
                     .ToListAsync();
 
@@ -434,6 +736,6 @@ namespace OfficeProject.Servicess
                 Console.WriteLine($"Error in GetWorkTaskDetailsById: {ex.Message}");
                 throw;
             }
-        }       
+        }
     }
 }

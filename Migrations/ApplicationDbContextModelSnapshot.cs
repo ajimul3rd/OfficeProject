@@ -90,6 +90,96 @@ namespace OfficeProject.Migrations
                     b.ToTable("AssignedUsers");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.BacklinkDetails", b =>
+                {
+                    b.Property<int>("BacklinkId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BacklinkId"));
+
+                    b.Property<int>("BacklinkUrlId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan?>("PublishTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("PublishUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SiteUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WorkTaskId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BacklinkId");
+
+                    b.HasIndex("WorkTaskId");
+
+                    b.ToTable("BacklinkDetails");
+                });
+
+            modelBuilder.Entity("OfficeProject.Models.Entities.BacklinkUrlList", b =>
+                {
+                    b.Property<int>("BacklinkUrlId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BacklinkUrlId"));
+
+                    b.Property<bool>("IsSuspend")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SiteUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BacklinkUrlId");
+
+                    b.ToTable("BacklinkUrlList");
+                });
+
+            modelBuilder.Entity("OfficeProject.Models.Entities.ClassifiedDetails", b =>
+                {
+                    b.Property<int>("ClassifiedId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClassifiedId"));
+
+                    b.Property<int>("BacklinkUrlId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan?>("PublishTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("PublishUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SiteUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WorkTask_Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("ClassifiedId");
+
+                    b.HasIndex("WorkTask_Id");
+
+                    b.ToTable("ClasdifiedDetails");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.ClientSources", b =>
                 {
                     b.Property<int>("ClientSourcesId")
@@ -1044,6 +1134,28 @@ namespace OfficeProject.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("OfficeProject.Models.Entities.BacklinkDetails", b =>
+                {
+                    b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
+                        .WithMany("BacklinkDetails")
+                        .HasForeignKey("WorkTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkRecords");
+                });
+
+            modelBuilder.Entity("OfficeProject.Models.Entities.ClassifiedDetails", b =>
+                {
+                    b.HasOne("OfficeProject.Models.Entities.WorkTaskDetails", "WorkRecords")
+                        .WithMany("ClassifiedDetails")
+                        .HasForeignKey("WorkTask_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkRecords");
+                });
+
             modelBuilder.Entity("OfficeProject.Models.Entities.Clients", b =>
                 {
                     b.HasOne("OfficeProject.Models.Entities.Users", "User")
@@ -1326,6 +1438,10 @@ namespace OfficeProject.Migrations
 
             modelBuilder.Entity("OfficeProject.Models.Entities.WorkTaskDetails", b =>
                 {
+                    b.Navigation("BacklinkDetails");
+
+                    b.Navigation("ClassifiedDetails");
+
                     b.Navigation("OthersTaskDetails");
 
                     b.Navigation("SeoTaskDetails");

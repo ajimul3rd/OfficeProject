@@ -69,13 +69,13 @@
                                 </div>
                             }
                            
-                            @if (flags.IsBacklink)
+                        @* @if (flags.IsBacklink)
                             {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Used Backlink:</label>
-                                        <InputNumber @bind-Value="@WorkRecord.Backlink" class="form-control" />
+                                            <InputNumber @bind-Value="@WorkRecord.Backlink" class="form-control" readonly />
                                         <ValidationMessage For="@(() => WorkRecord.Backlink)" />
                                     </div>
                                 </div>
@@ -83,12 +83,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Backlink URL:</label>
-                                        <InputText @bind-Value="@WorkRecord.BacklinkURL" class="form-control" />
-                                        @* <ValidationMessage For="@(() => WorkRecord.BacklinkURL)" /> *@
+                                            <InputText @bind-Value="@WorkRecord.BacklinkURL" class="form-control" readonly />
                                     </div>
                                 </div>
                             </div>
-                            }
+                            } *@
+
+
                             @if (flags.IsClasified)
                             {
                             <div class="row mb-3">

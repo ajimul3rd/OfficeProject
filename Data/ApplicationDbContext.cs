@@ -31,6 +31,9 @@ namespace OfficeProject.Data
         public DbSet<WebDeveTaskDetails> WebDeveTaskDetails { get; set; }
         public DbSet<UserTaskMaster> UserTask { get; set; }
         public DbSet<SpacificUserTask> SpacificUserTask { get; set; }
+        public DbSet<BacklinkUrlList> BacklinkUrlList { get; set; }
+        public DbSet<BacklinkDetails> BacklinkDetails { get; set; }
+        public DbSet<ClassifiedDetails> ClasdifiedDetails { get; set; }
 
 
 

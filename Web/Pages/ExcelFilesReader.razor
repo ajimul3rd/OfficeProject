@@ -1,0 +1,513 @@
+﻿@page "/upload-excel"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Forms
+@using ClosedXML.Excel
+@inject IDataSerializer? DataSerializer
+
+@using OfficeProject.Models.DTO;
+
+<style>
+
+.upload-container {
+  max-width: 80vw;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.upload-header {
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.upload-header i {
+  color: #16a34a;
+  font-size: 1.75rem;
+}
+
+/* File Upload */
+.file-upload-box {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  transition: all 0.25s ease-in-out;
+  background: #f8fafc;
+  cursor: pointer;
+  position: relative;
+}
+
+.file-upload-box:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.file-upload-box input {
+  opacity: 0;
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  color: #2563eb;
+  margin-bottom: 1rem;
+}
+
+.upload-instructions {
+  color: #334155;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.upload-note {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* File Info Panel */
+.file-info-panel {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.file-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.file-icon {
+  font-size: 1.75rem;
+  color: #16a34a;
+}
+
+.file-details {
+  flex-grow: 1;
+}
+
+.file-name {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.sheet-selector {
+  margin-bottom: 1.25rem;
+}
+
+.stats-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.badge {
+  padding: 0.4rem 0.9rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.8rem;
+  display: inline-block;
+}
+
+.badge-primary {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* Button */
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover:not([disabled]) {
+  background: #1d4ed8;
+}
+
+button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Table */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-size: 0.9rem;
+}
+
+.data-table thead th {
+  background: #16a34a;
+  color: white;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.data-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
+.data-table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Status Badges (✅ ❌) */
+.valid {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.invalid {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Alerts */
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.alert-info {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-left: 4px solid #0369a1;
+}
+
+.alert-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-left: 4px solid #b91c1c;
+}
+
+/* Spinner */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid rgba(59, 130, 246, 0.2);
+  border-radius: 50%;
+  border-top-color: #2563eb;
+  animation: spin 1s linear infinite;
+}
+
+@@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
+
+<div class="upload-container">
+    <h3 class="upload-header">
+        <i class="fas fa-file-excel"></i> Upload Excel File Here!
+    </h3>
+
+    <div class="file-upload-box">
+        <div class="upload-icon">
+            <i class="fas fa-file-upload"></i>
+        </div>
+        <p class="upload-instructions">Drag & drop your Excel file here or click to browse</p>
+        <p class="upload-note">Supports .xlsx files only (max 10MB)</p>
+        <InputFile OnChange="OnFileChange" accept=".xlsx" />
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="spinner-container">
+            <div class="spinner"></div>
+        </div>
+    }
+
+    @if (message != null)
+    {
+        <div class="alert @(message.Contains("Error") ? "alert-error" : "alert-info")">
+            <i class="@(message.Contains("Error") ? "fas fa-exclamation-circle" : "fas fa-info-circle")"></i>
+            @message
+        </div>
+    }
+
+    @if (excelData != null && !isLoading)
+    {
+        <div class="file-info-panel">
+            <div class="file-meta">
+                <div class="file-icon">
+                    <i class="fas fa-file-excel"></i>
+                </div>
+                <div class="file-details">
+                    <div class="file-name">@fileName</div>
+                    <div class="stats-badges">
+                        <span class="badge badge-secondary">@workbook?.Worksheets.Count sheets</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sheet-selector">
+                <label class="form-label">Select Sheet:</label>
+                <select @onchange="OnSheetChanged" class="form-select">
+                    @for (int i = 0; i < sheetNames.Count; i++)
+                    {
+                        <option value="@i">@sheetNames[i]</option>
+                    }
+                </select>
+            </div>
+
+            <div class="stats-badges">
+                <span class="badge badge-primary">Rows: @excelData.Rows.Count</span>
+                <span class="badge badge-primary">Columns: @excelData.Headers.Count</span>
+                <button @onclick="UploadBacklinks" disabled="@(!backlinkDtoList.Any())">
+                    Upload Backlinks
+                </button>
+
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        @foreach (var header in excelData.Headers)
+                        {
+                            <th>@header</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in excelData.Rows)
+                    {
+                        <tr>
+                            @foreach (var cell in row)
+                            {
+                                <td>@cell</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    string? message;
+    ExcelData? excelData;
+    string fileName = string.Empty;
+    List<string> sheetNames = new();
+    int selectedSheetIndex = 0;
+    IXLWorkbook? workbook;
+    bool isLoading = false;
+    [Inject]
+    private IBacklinkUrlListServices? BacklinkUrlListServices { get; set; }
+
+    public List<BacklinkUrlListDTO> backlinkDtoList { get; set; } = new();
+
+    class ExcelData
+    {
+        public List<string> Headers { get; set; } = new();
+        public List<List<string>> Rows { get; set; } = new();
+
+    }
+
+    private async Task OnFileChange(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        message = null;
+        excelData = null;
+        sheetNames.Clear();
+        fileName = string.Empty;
+        StateHasChanged();
+
+        try
+        {
+            var file = e.File;
+            fileName = file.Name;
+
+            using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+
+            workbook = new XLWorkbook(memoryStream);
+
+            // Get all sheet names
+            sheetNames = workbook.Worksheets.Select(ws => ws.Name).ToList();
+
+            // Load first sheet by default
+            if (sheetNames.Count > 0)
+            {
+                await LoadSheetData();
+                message = $"File loaded successfully";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnSheetChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int newIndex))
+        {
+            isLoading = true;
+            StateHasChanged();
+
+            selectedSheetIndex = newIndex;
+            await LoadSheetData();
+
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+    
+
+    private Task LoadSheetData()
+    {
+        if (workbook == null || selectedSheetIndex < 0 || selectedSheetIndex >= sheetNames.Count)
+            return Task.CompletedTask;
+
+        try
+        {
+            var worksheet = workbook.Worksheet(selectedSheetIndex + 1);
+            var range = worksheet.RangeUsed();
+            var data = new ExcelData();
+
+            backlinkDtoList.Clear(); // ✅ clear before reloading
+
+            if (range != null)
+            {
+                // Read headers (first row)
+                var firstRow = range.FirstRow();
+                var firstColumnHeader = firstRow.Cell(1).GetString();
+                data.Headers.Add(firstColumnHeader);
+
+                // Read data rows (skip first row)
+                foreach (var row in range.Rows().Skip(1))
+                {
+                    var firstColumnValue = row.Cell(1).GetString();
+
+                    if (!string.IsNullOrWhiteSpace(firstColumnValue))
+                    {
+                        if (IsValidUrl(firstColumnValue))
+                        {
+                            // ✅ Mark valid URLs
+                            data.Rows.Add(new List<string> { $"✅ {firstColumnValue}" });
+
+                            backlinkDtoList.Add(new BacklinkUrlListDTO
+                                {
+                                    SiteUrl = firstColumnValue
+                                });
+                        }
+                        else
+                        {
+                            // ❌ Mark invalid URLs
+                            data.Rows.Add(new List<string> { $"❌ {firstColumnValue}" });
+                        }
+                    }
+                }
+
+            }
+
+            excelData = data;
+            // DataSerializer?.Serializer(backlinkDtoList, "ExcelFilesReader:LoadSheetData");
+        }
+        catch (Exception ex)
+        {
+            message = $"Error loading sheet '{sheetNames[selectedSheetIndex]}': {ex.Message}";
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private bool IsValidUrl(string url)
+    {
+        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+    }
+
+    private async Task UploadBacklinks()
+    {
+        DataSerializer?.Serializer(backlinkDtoList, "ExcelFilesReader:LoadSheetData");
+        if (backlinkDtoList.Count == 0)
+        {
+            message = "No data to upload.";
+            return;
+        }
+
+        if (BacklinkUrlListServices == null)
+        {
+            message = "Service not available.";
+            return;
+        }
+
+        try
+        {
+            await BacklinkUrlListServices.AddBacklinkUrlListAsync(backlinkDtoList);
+            message = "Backlinks uploaded successfully!";
+            backlinkDtoList.Clear();
+        }
+        catch (Exception ex)
+        {
+            message = $"Upload failed: {ex.Message}";
+        }
+    }
+
+
+}

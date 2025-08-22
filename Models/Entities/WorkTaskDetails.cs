@@ -77,7 +77,8 @@ namespace OfficeProject.Models.Entities
 
         [JsonIgnore]
         public Users Users { get; set; } = null!;
-
+        public List<BacklinkDetails>? BacklinkDetails { get; set; }
+        public List<ClassifiedDetails>? ClassifiedDetails { get; set; }
         public List<SeoTaskDetails>? SeoTaskDetails { get; set; }
         public List<OthersTaskDetails>? OthersTaskDetails { get; set; }
         public List<WebDeveTaskDetails>? WebDeveTaskDetails { get; set; }

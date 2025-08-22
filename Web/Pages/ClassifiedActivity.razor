@@ -1,0 +1,509 @@
+﻿@using OfficeProject.Models.DTO
+@using OfficeProject.Models.Enums
+@using OfficeProject.Models.Entities
+@using OfficeProject.Web.Pages.DialogModel
+@using OfficeProject.Web.Pages.TappanDialog
+@page "/classified"
+@inject ApiService api
+@inject IDataSerializer? Json
+@inject IUserService userService
+@inject IProjectsService ProjectsService
+@inject IJSRuntime JSRuntime
+
+
+@inject IDataSerializer? DataSerializer
+<AuthorizeView>
+    <Authorized>
+        <style>
+            .hover-row:hover {
+                background-color: #f9f9f9;
+            }
+
+            .badge-complete {
+                background-color: #28a745;
+                color: white;
+            }
+
+            .badge-pending {
+                background-color: #ffc107;
+                color: black;
+            }
+
+            .btn-icon {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0.35rem;
+            }
+
+            .error-text {
+                color: #dc3545;
+                font-size: 0.85rem;
+                margin-top: 0.25rem;
+            }
+
+            .btn-custom {
+                border-radius: 12px; /* rounded corners */
+                padding: 8px 18px; /* better spacing */
+                font-weight: 600; /* bold text */
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            }
+
+                .btn-custom:hover {
+                    transform: translateY(-2px); /* hover lift effect */
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                }
+
+        </style>
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-primary">🔗 Classified Works</h3>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-success btn-custom" @onclick="()=>OpenServiceDialog()">
+                    <i class="fas fa-cogs me-1"></i> Choose Service
+                </button>
+                <button class="btn btn-success btn-custom" @onclick="()=>SaveAction()">
+                    <i class="fas fa-save me-1"></i> Save
+                </button>
+            </div>
+        </div>
+
+
+        <!-- Service Validation -->
+        @if (!string.IsNullOrEmpty(ServiceErrorMessage))
+        {
+            <div class="alert alert-danger py-2">@ServiceErrorMessage</div>
+        }
+
+        <!-- Selected Service -->
+        <div class="mb-3">
+            <strong class="text-secondary">Selected Service:</strong>
+            @if (ServiceId > 0)
+            {
+                <span class="badge bg-success ms-2">Service ID: @ServiceId</span>
+            }
+            else
+            {
+                <span class="badge bg-danger ms-2">Not Selected</span>
+            }
+        </div>
+
+        <!-- Projects -->
+        <div class="mb-4">
+            <strong class="text-secondary">Projects for Backlink:</strong>
+            <ul class="list-inline mt-2">
+                @foreach (var project in projectNames)
+                {
+                    <li class="list-inline-item badge bg-info text-dark p-2 me-2">@project</li>
+                }
+            </ul>
+        </div>
+
+        <!-- Feedback Messages -->
+        @if (!string.IsNullOrEmpty(Message))
+        {
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                @Message
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- Backlinks Table -->
+        @if (PagedBacklinks != null)
+        {
+            <div class="table-responsive shadow-sm rounded">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th>#</th>
+                            <th>Sites URL</th>
+                            <th>Published URL</th>
+                            <th>Completed Time</th>
+                            <th>Url Action</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Classified.Count; i++)
+                        {
+                            var link = Classified[i];
+                            bool isDisabled = link.IsIssuee;
+                            <tr class="hover-row @(isDisabled? "table-secondary disabled-row" :"")">
+                                @* <td>@(i + 1)</td> *@
+                                <td>@link.BacklinkUrlId</td>
+                                <td>
+                                    <span>@link.SiteUrl</span>
+                                    <button class="btn text-primary bg-transparent border-0 p-0 ms-2"
+                                            title="Copy to clipboard" disabled="@isDisabled"
+                                            @onclick="() => CopyToClipboard(link.SiteUrl)">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </td>
+
+                                <!-- Published URL -->
+                                <td>
+                                    <InputText @bind-Value="link.PublishUrl"
+                                               class="form-control" disabled="@isDisabled"
+                                               @oninput="e => OnPublishedUrlInput(e, link)" />
+
+                                    @if (link.PublishedUrlError)
+                                    {
+                                        <div class="error-text">⚠ Please provide a valid published URL.</div>
+                                    }
+                                </td>
+
+                                <!-- Completed Time -->
+                                <td class="text-center">
+                                    @if (link.PublishTime.HasValue)
+                                    {
+                                        <span class="badge badge-complete">
+                                            @FormatTimeTaken(link.PublishTime)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-pending">Pending</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-warning btn-sm ms-2" disabled="@isDisabled" @onclick="() => SuspendUrl(link)">
+                                        Suspend
+                                    </button>
+
+
+                                </td>
+
+                                <!-- Save Button -->
+                                <td class="text-center">
+                                    <button class="btn btn-danger btn-sm" disabled="@isDisabled" @onclick="() => RemoveUrl(link)">
+                                        Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <nav>
+                    <ul class="pagination">
+                        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                            <button class="page-link" @onclick="() => GoToPage(currentPage - 1)">Previous</button>
+                        </li>
+                        @for (int p = 1; p <= totalPages; p++)
+                        {
+                            var pageNum = p;
+                            <li class="page-item @(currentPage == pageNum ? "active" : "")">
+                                <button class="page-link" @onclick="() => GoToPage(pageNum)">@pageNum</button>
+                            </li>
+                        }
+                        <li class="page-item @(currentPage >= Math.Ceiling((double)PagedBacklinks.Total / pageSize) ? "disabled" : "")">
+                            <button class="page-link" @onclick="() => GoToPage(currentPage + 1)">Next</button>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+        }
+        else
+        {
+            <div class="text-center p-3">
+                <span class="spinner-border text-primary" role="status"></span>
+                <span class="ms-2">Loading backlinks...</span>
+            </div>
+        }
+
+        <!-- Dialog Components -->
+        @if (ShowServiceModel)
+        {
+            <DialogServiceList ShowModal="@ShowServiceModel"
+                               ModelAction="@ModelServiceAction"
+                               ModelData="@HandleServiceId" />
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        @{
+            Navigation.NavigateTo("/login", replace: true);
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private PagedResult<BacklinkUrlListDTO>? PagedBacklinks;
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalPages = 0;
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+    [Inject] private IWorkTaskDetailsService? WorkTaskDetailsService { get; set; }
+    [Inject] private IBacklinkUrlListServices? BacklinkUrlListServices { get; set; }
+    private string? ServiceErrorMessage { get; set; }
+    private string? Message { get; set; }
+    private bool ShowModel = false;
+    private bool ShowServiceModel = false;
+    private List<ClassifiedDetailsDTO> Classified = new();
+    private List<ClassifiedDetails> IssuedClassifiedList = new();
+    private List<string> projectNames = new();
+    private int ServiceId { get; set; } = 0;
+    protected override async Task OnInitializedAsync()
+    {
+
+        await LoadData();
+
+        await Task.CompletedTask;
+    }
+
+    private async Task LoadData()
+    {
+        PagedBacklinks = await BacklinkUrlListServices!.GetBacklinks(currentPage, pageSize);
+
+        totalPages = (int)Math.Ceiling((double)PagedBacklinks.Total / pageSize);
+
+        Classified.Clear();
+        if (PagedBacklinks?.Data != null)
+        {
+            foreach (var backlink in PagedBacklinks.Data)
+            {
+                Classified.Add(new ClassifiedDetailsDTO
+                    {
+                        SiteUrl = backlink.SiteUrl,
+                        BacklinkUrlId = backlink.BacklinkUrlId,
+                        PublishUrl = "",
+                    });
+
+            }
+        }
+        IssuedClassifiedlinksChecker();
+    }
+
+    private async Task GoToPage(int page)
+    {
+        if (page < 1 || (PagedBacklinks != null && page > Math.Ceiling((double)PagedBacklinks.Total / pageSize)))
+            return;
+
+        currentPage = page;
+        await LoadData();
+
+    }
+
+    private async Task CopyToClipboard(string? text)
+    {
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+
+            var link = Classified.FirstOrDefault(b => b.SiteUrl == text);
+            if (link != null)
+            {
+                link.CopiedTime = DateTime.Now;
+                Console.WriteLine($"Copied {link.SiteUrl} at {link.CopiedTime}");
+            }
+        }
+    }
+
+
+
+    private string FormatTimeTaken(TimeSpan? duration)
+    {
+        if (!duration.HasValue) return string.Empty;
+
+        if (duration.Value.TotalMinutes < 1)
+        {
+            return $"{Math.Round(duration.Value.TotalSeconds, 0)} secs";
+        }
+        else if (duration.Value.TotalHours < 1)
+        {
+            return $"{Math.Round(duration.Value.TotalMinutes, 1)} mins";
+        }
+        else
+        {
+            return $"{Math.Round(duration.Value.TotalHours, 1)} hours";
+        }
+    }
+
+    private void CheckForCompletion(ClassifiedDetailsDTO link)
+    {
+
+        if (!string.IsNullOrWhiteSpace(link.PublishUrl) && !link.CompletedTime.HasValue)
+        {
+            if (!link.CopiedTime.HasValue)
+            {
+                link.CopiedTime = DateTime.Now;
+                Console.WriteLine("CopiedTime set: " + link.CopiedTime);
+            }
+
+            link.CompletedTime = DateTime.Now;
+            Console.WriteLine("CompletedTime just set: " + link.CompletedTime);
+        }
+        else
+        {
+            Console.WriteLine("Skipped setting CompletedTime. Either PublishedUrl is null or already set.");
+            Console.WriteLine("PublishedUrl: " + link.PublishUrl);
+            Console.WriteLine("CompletedTime (pre-check): " + link.CompletedTime);
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnPublishedUrlInput(ChangeEventArgs e, ClassifiedDetailsDTO data)
+    {
+        data.PublishUrl = e.Value?.ToString()!;
+        if (string.IsNullOrWhiteSpace(data.PublishUrl))
+        {
+            data.PublishedUrlError = true;
+        }
+        else
+        {
+            data.PublishedUrlError = false;
+        }
+        CheckForCompletion(data);
+    }
+
+
+    private async Task SuspendUrl(ClassifiedDetailsDTO data)
+    {
+        if (data.BacklinkUrlId == null)
+        {
+            Message = "Backlink ID is missing, cannot suspend.";
+            return;
+        }
+
+        var BacklinkUrlId = data.BacklinkUrlId.Value; // safe now
+        var result = await BacklinkUrlListServices!.SuspendBacklinkAsync(BacklinkUrlId);
+
+        if (!result)
+        {
+            Message = $"Backlink with ID {BacklinkUrlId} not found.";
+        }
+        else
+        {
+            Message = $"Backlink with ID {BacklinkUrlId} has been suspended successfully.";
+
+        }
+
+        Classified.Remove(data);
+        StateHasChanged(); // render UI so the message appears
+
+        // keep the message for 5 seconds
+        await Task.Delay(5000);
+
+        Message = "";
+        StateHasChanged(); // render again to clear the message
+
+    }
+
+
+
+    private async Task RemoveUrl(ClassifiedDetailsDTO data)
+    {
+        Classified.Remove(data);
+    }
+
+
+    private async Task SaveAction()
+    {
+
+
+        if (ServiceId <= 0)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Please select a service before saving.");
+            return;
+        }
+
+        // Validate all rows first
+        foreach (var data in Classified)
+        {
+            if (string.IsNullOrWhiteSpace(data.PublishUrl))
+            {
+                data.PublishedUrlError = true;
+                StateHasChanged();
+                return; // stop if any row is invalid
+            }
+
+        }
+
+        // Prepare DTO for bulk save
+        var dto = new WorkTaskDetailsDto
+            {
+                ServiceId = ServiceId,
+                WorkDate = DateTime.Now,
+                Clasified = Classified.Count,
+                ClasifiedURL = "Bulkuploaded!",
+                Status = "Completed",
+                Task = "Classified Submission",
+                ClassifiedDetailsDto = Classified // send all rows at once
+            };
+
+        try
+        {
+            await api.AddOrUpdateClassifiedAsync(dto);
+
+            // Now clear list AFTER saving
+            Classified.Clear();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error submitting backlink: " + ex.Message);
+        }
+    }
+
+
+    private void OpenDialog()
+    {
+        ShowModel = true;
+    }
+
+    private void ModelAction()
+    {
+        ShowModel = false;
+    }
+    private void OpenServiceDialog()
+    {
+        ShowServiceModel = true;
+    }
+
+    private void ModelServiceAction()
+    {
+        ShowServiceModel = false;
+    }
+
+    private Task HandleSelectedBacklinks(List<ClassifiedDetailsDTO> selected)
+    {
+        Classified = selected;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task HandleServiceId(int id)
+    {
+        ServiceId = id;
+        IssuedClassifiedList.Clear();
+        IssuedClassifiedList = await api.GetIssuedClassifiedAsync(id);
+        IssuedClassifiedlinksChecker();
+        StateHasChanged();
+    }
+
+    private void IssuedClassifiedlinksChecker()
+    {
+        if (IssuedClassifiedList.Any())
+        {
+            var issuedUrls = IssuedClassifiedList
+                .Where(x => !string.IsNullOrEmpty(x.SiteUrl))
+                .Select(x => x.SiteUrl)
+                .ToHashSet();
+
+            Classified = Classified
+                .Select(b =>
+                {
+                    b.IsIssuee = !string.IsNullOrEmpty(b.SiteUrl) && issuedUrls.Contains(b.SiteUrl);
+                    return b;
+                })
+                .ToList();
+
+            StateHasChanged();
+        }
+    }
+
+}

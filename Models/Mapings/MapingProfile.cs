@@ -31,6 +31,7 @@ public class MapingProfile:Profile
             .ReverseMap();
 
         CreateMap<ServicesDTO, Services>().ReverseMap();
+        CreateMap<BacklinkUrlListDTO, BacklinkUrlList>().ReverseMap();
         CreateMap<ProductsDTO, Products>().ReverseMap();
         CreateMap<WorkTaskDetailsDto, WorkTaskDetails>().ReverseMap();
         CreateMap<OthersServiceDTO, OthersService>().ReverseMap();

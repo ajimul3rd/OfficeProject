@@ -9,16 +9,20 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Security.Claims;
+using OfficeProject.Servicess;
+
 
 public class ApiService
 {
     private readonly HttpClient http;
     private readonly ILocalStorageService localStorage;
+    private readonly IDataSerializer? DataSerializer;
 
-    public ApiService(HttpClient httpClient, ILocalStorageService localStorage)
+    public ApiService(HttpClient httpClient, ILocalStorageService localStorage, IDataSerializer? DataSerializer)
     {
         http = httpClient;
         this.localStorage = localStorage;
+        this.DataSerializer = DataSerializer;
     }
     // 🛡️ Add Authorization Header with JWT
     private async Task AddAuthHeaderAsync()
@@ -451,10 +455,60 @@ public class ApiService
 
     //############################################### Work Task  Services ##################################################
 
+    public async Task<List<BacklinkDetails>> GetIssuedBacklinksAsync(int serviceId)
+    {
+        await AddAuthHeaderAsync();
+
+        var response = await http.GetAsync($"api/WorkTask/issued-backlink/{serviceId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<BacklinkDetails>>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }) ?? new List<BacklinkDetails>();
+        }
+        else
+        {
+            throw new Exception($"Failed to fetch issued backlinks: {response.StatusCode}");
+        }
+    }
+    public async Task<List<ClassifiedDetails>> GetIssuedClassifiedAsync(int serviceId)
+    {
+        await AddAuthHeaderAsync();
+       
+        var response = await http.GetAsync($"api/WorkTask/issued-classified/{serviceId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<ClassifiedDetails>>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }) ?? new List<ClassifiedDetails>();
+        }
+        else
+        {
+            throw new Exception($"Failed to fetch issued backlinks: {response.StatusCode}");
+        }
+    }
     public async Task<HttpResponseMessage> SaveOrUpdateProjectsAsync(WorkTaskDetailsDto dto)
     {
         await AddAuthHeaderAsync();
         return await http.PostAsJsonAsync("api/WorkTask/save-or-update", dto);
+    }
+     public async Task<HttpResponseMessage> AddOrUpdateBacklinkAsync(WorkTaskDetailsDto dto)
+    {
+        await AddAuthHeaderAsync();
+        
+        return await http.PostAsJsonAsync("api/WorkTask/backlink", dto);
+    }
+    public async Task<HttpResponseMessage> AddOrUpdateClassifiedAsync(WorkTaskDetailsDto dto)
+    {
+        await AddAuthHeaderAsync();
+        
+        return await http.PostAsJsonAsync("api/WorkTask/classified", dto);
     }
 
     public async Task<WorkTaskDetailsDto> GetWorkTaskDetailsById(int workTaskId)

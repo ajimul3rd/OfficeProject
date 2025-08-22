@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeProject.Models.DTO;
+using OfficeProject.Models.Entities;
 using OfficeProject.Servicess;
 
 namespace OfficeProject.Controller
@@ -11,9 +12,12 @@ namespace OfficeProject.Controller
     {
         private readonly IWorkTaskDetailsService _workTaskDetailsService;
 
-        public WorkTaskController(IWorkTaskDetailsService workTaskDetailsService)
+    private readonly IDataSerializer? DataSerializer; 
+
+        public WorkTaskController(IWorkTaskDetailsService workTaskDetailsService, IDataSerializer? dataSerializer)
         {
             _workTaskDetailsService = workTaskDetailsService;
+            DataSerializer = dataSerializer;
         }
 
 
@@ -35,6 +39,79 @@ namespace OfficeProject.Controller
                 return StatusCode(500, new { message = "An error occurred while saving or updating work task.", error = ex.Message });
             }
         }
+        
+        [HttpPost("backlink")]
+        public async Task<IActionResult> AddOrUpdateBacklinkAsync([FromBody] WorkTaskDetailsDto workTaskDetailsDto)
+        {
+            DataSerializer?.Serializer(workTaskDetailsDto, "API Data");
+            if (workTaskDetailsDto == null)
+                return BadRequest("Work Task is missing.");
+
+            try
+            {
+                await _workTaskDetailsService.AddOrUpdateBacklinkAsync(workTaskDetailsDto);
+                return Ok(new { message = "Backlink saved or updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Optionally log error here
+                return StatusCode(500, new { message = "An error occurred while saving or updating backlink.", error = ex.Message });
+            }
+        }
+        [HttpPost("classified")]
+        public async Task<IActionResult> AddOrUpdateClassifiedAsync([FromBody] WorkTaskDetailsDto workTaskDetailsDto)
+        {
+            
+            if (workTaskDetailsDto == null)
+                return BadRequest("Work Task is missing.");
+
+            try
+            {
+                await _workTaskDetailsService.AddOrUpdateClassifiedAsync(workTaskDetailsDto);
+                return Ok(new { message = "Classified saved or updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Optionally log error here
+                return StatusCode(500, new { message = "An error occurred while saving or updating classified.", error = ex.Message });
+            }
+        }
+
+        [HttpGet("issued-backlink/{serviceId}")]
+        public async Task<IActionResult> GetIssuedBacklinks(int serviceId)
+        {
+            try
+            {
+                var result = await _workTaskDetailsService.GetIssuedBacklinkAsync(serviceId);
+                return Ok(result);  // returns list of IDs
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+        [HttpGet("issued-classified/{serviceId}")]
+        public async Task<IActionResult> GetIssuedClassifiedAsync(int serviceId)
+        {
+            try
+            {
+                var result = await _workTaskDetailsService.GetIssuedClassifiedAsync(serviceId);
+                return Ok(result);  // returns list of IDs
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
 
         [HttpGet]
         public async Task<ActionResult<List<WorkTaskDetailsDto?>>> GetWorkingRecords()

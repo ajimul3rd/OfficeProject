@@ -80,6 +80,12 @@ namespace OfficeProject.Models.DTO
         public UserDTO? Users { get; set; } = null!;
 
         [ValidateComplexType]
+        public List<ClassifiedDetailsDTO>? ClassifiedDetailsDto{ get; set; }
+        
+        [ValidateComplexType]
+        public List<BacklinkDetailsDto>? BacklinkDetailsDto { get; set; }
+
+        [ValidateComplexType]
         public List<SeoTaskDetailsDto>? SeoTaskDetailsDto { get; set; }
 
         [ValidateComplexType]

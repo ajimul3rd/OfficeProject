@@ -146,6 +146,7 @@ builder.Services.AddSingleton<AppState>();
 builder.Services.AddScoped<DateService>();
 builder.Services.AddScoped<IUserTaskMasterService, UserTaskMasterService>();
 builder.Services.AddScoped<IGlobalDataService, GlobalDataService>();
+builder.Services.AddScoped<IBacklinkUrlListServices, BacklinkUrlListServices>();
 
 
 // HttpClient registration using IHttpClientFactory (recommended)
@@ -153,6 +154,7 @@ builder.Services.AddHttpClient<ApiService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7153/");
 });
+
 
 // Authorization policies
 builder.Services.AddAuthorizationBuilder()
