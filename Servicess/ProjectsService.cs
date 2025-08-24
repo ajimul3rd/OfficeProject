@@ -88,6 +88,7 @@ namespace OfficeProject.Servicess
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
                         ProjectType = project.ProjectType,
+                        ProjectCategory = project.ProjectCategory,
                         ProjectStartDate = project.ProjectStartDate,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
@@ -170,7 +171,6 @@ namespace OfficeProject.Servicess
             }
         }
 
-
         /// Fetches the latest project work updates for a specific team member within a specific project.with in internal work
         public async Task<List<ProjectsDTO?>> GetUserWorksAsync(int ProjectId)
         {
@@ -214,6 +214,7 @@ namespace OfficeProject.Servicess
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
                         ProjectType = project.ProjectType,
+                        ProjectCategory = project.ProjectCategory,
                         ProjectStartDate = project.ProjectStartDate,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
@@ -300,63 +301,6 @@ namespace OfficeProject.Servicess
             }
         }
 
-
-        //public async Task<List<Projects>> GetProjectPerUserAsyncTest()
-        //{
-        //    try
-        //    {
-        //        var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        //        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-        //        {
-        //            throw new UnauthorizedAccessException("User is not authenticated.");
-        //        }
-
-        //        using (var context = dbContextFactory.CreateDbContext())
-        //        {
-        //            // Get user with designation
-        //            var user = await context.Users
-        //                .Include(u => u.UserDesignation)
-        //                .FirstOrDefaultAsync(u => u.UserId == userId);
-
-        //            if (user == null)
-        //            {
-        //                throw new UnauthorizedAccessException("User not found.");
-        //            }
-
-        //            //var userDesignations = user.UserDesignation?? new List<UserDesignation>();
-        //            var designationNames = user.UserDesignation?.Select(d => d.Designation).ToHashSet() ?? new HashSet<string>();
-
-        //            var projects = await context.Projects
-        //                .Include(p => p.Client!)
-        //                .Include(p => p.AssignedUsers!)
-        //                .Include(p => p.Services!)
-        //                    .ThenInclude(s => s.Products!)
-        //                        .ThenInclude(p => p.UserWorkingActivity!)
-        //                .Include(p => p.Services!)
-        //                    .ThenInclude(s => s.SeoServiceDetails!)
-        //                .Include(p => p.Services!)
-        //                    .ThenInclude(s => s.OthersServices!)
-        //                .Include(p => p.Services!)
-        //                    .ThenInclude(s => s.WebDevelopment!)
-        //                .Include(p => p.Services!)
-        //                    .ThenInclude(s => s.WorkTaskDetails!)
-        //                .Include(p => p.Services!)
-        //                    .ThenInclude(s => s.SpacificUserTask)
-        //                .Where(p => p.AssignedUsers!.Any(u => u.UserId == userId))
-        //                .AsSplitQuery()
-        //                .ToListAsync();
-
-        //            return projects;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error retrieving projects: {ex.Message}");
-        //        throw;
-        //    }
-        //} 
-        
         public async Task<List<ProjectsDTO>> GetProjectPerUserAsync()
         {
             try
@@ -424,6 +368,7 @@ namespace OfficeProject.Servicess
                 ProjectName = project.ProjectName,
                 BillingType = project.BillingType,
                 ProjectType = project.ProjectType,
+                ProjectCategory = project.ProjectCategory,
                 ProjectStartDate = project.ProjectStartDate,
                 ProjectCost = project.ProjectCost,
                 CurrentIssue = project.CurrentIssue,
@@ -587,7 +532,6 @@ namespace OfficeProject.Servicess
             //DataSerializer?.Serializer(GetProject, "ProjectsService->GetWorkTaskSummary:");
             return GetWorkServicesByIdAndBetweenDate(GetProject, userId);
         } 
-
       
         public async Task<List<ProjectsDTO>> GetWorkServicesByIdAndBetweenDate(List<ProjectsDTO> projectDTOs, int currentUserId)
         {
@@ -625,7 +569,6 @@ namespace OfficeProject.Servicess
 
             return projectDTOs;
         }
-
 
         public async Task<WorkTaskSummaryDto> GetWorkTaskSummary(int serviceId, DateTime startDate, DateTime endDate, int currentUserId)
         {
@@ -692,6 +635,7 @@ namespace OfficeProject.Servicess
                         ProjectName = project.ProjectName,
                         BillingType = project.BillingType,
                         ProjectType = project.ProjectType,
+                        ProjectCategory = project.ProjectCategory,
                         ProjectStartDate = project.ProjectStartDate,
                         ProjectCost = project.ProjectCost,
                         CurrentIssue = project.CurrentIssue,
@@ -840,6 +784,7 @@ namespace OfficeProject.Servicess
                     existingProject.ProjectCost = project.ProjectCost;
                     existingProject.BillingType = project.BillingType;
                     existingProject.ProjectType = project.ProjectType;
+                    existingProject.ProjectCategory = project.ProjectCategory;
                     existingProject.ProjectCreatedAt = project.ProjectCreatedAt;
 
                     await context.SaveChangesAsync();
@@ -884,6 +829,7 @@ namespace OfficeProject.Servicess
                         ProjectName = projectDto.ProjectName,
                         BillingType = projectDto.BillingType,
                         ProjectType = projectDto.ProjectType,
+                        ProjectCategory = projectDto.ProjectCategory,
                         ProjectStartDate = projectDto.ProjectStartDate,
                         ProjectCost = projectDto.ProjectCost,
                         CurrentIssue = projectDto.CurrentIssue,
@@ -906,6 +852,7 @@ namespace OfficeProject.Servicess
                     existingProject.ProjectName = projectDto.ProjectName;
                     existingProject.BillingType = projectDto.BillingType;
                     existingProject.ProjectType = projectDto.ProjectType;
+                    existingProject.ProjectCategory = projectDto.ProjectCategory;
                     existingProject.ProjectStartDate = projectDto.ProjectStartDate;
                     existingProject.ProjectCost = projectDto.ProjectCost;
                     existingProject.CurrentIssue = projectDto.CurrentIssue;

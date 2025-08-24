@@ -375,7 +375,6 @@
     [Inject] private IService? GetServices { get; set; }
     [Inject] private IGlobalDataService? GlobalDataService { get; set; }
 
-
     private List<DateTime> breakpoints = new();
 
     private BillingType billingType = BillingType.Monthly;
@@ -420,6 +419,7 @@
         isLoading = false;
 
     }
+    
 
 
     protected async Task GetProjectPerUserAsync()

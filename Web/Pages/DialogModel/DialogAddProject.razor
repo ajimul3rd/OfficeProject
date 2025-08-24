@@ -87,6 +87,18 @@
                                                 <!-- Column 2 -->
                                                 <div class="col-md-6 col-lg-4">
                                                     <div class="mb-2">
+                                                        <label class="form-label small required">Project Category</label>
+                                                        <InputSelect class="form-select form-select-sm"
+                                                                     @bind-Value="projectDTO.ProjectCategory"
+                                                                     @onblur="@(() => MarkAsTouched(projectDTO, nameof(projectDTO.ProjectCategory)))">
+                                                            <option value="">Select Type</option>
+                                                            <option value="@ProjectCategory.OTHERS">Others</option>
+                                                            <option value="@ProjectCategory.HEALTHCARE">Health Care</option>
+                                                            <option value="@ProjectCategory.TRAVEL_HOSPITALITY">Travel & Hospitality</option>
+                                                        </InputSelect>
+                                                        <ValidationMessage For="@(() => projectDTO.ProjectCategory)" class="small text-danger" />
+                                                    </div>
+                                                    <div class="mb-2">
                                                         <label class="form-label small required">Billing Type</label>
                                                         <InputSelect class="form-select form-select-sm"
                                                         @bind-Value="projectDTO.BillingType"

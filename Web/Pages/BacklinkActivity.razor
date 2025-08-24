@@ -61,9 +61,12 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold text-primary">🔗 Backlink Works</h3>
             <div class="d-flex gap-2">
-                <button class="btn btn-outline-success btn-custom" @onclick="()=>OpenServiceDialog()">
-                    <i class="fas fa-cogs me-1"></i> Choose Service
-                </button>
+                @if (ServiceId > 0)
+                {
+                    <button class="btn btn-outline-success btn-custom" @onclick="()=>OpenServiceDialog()">
+                        <i class="fas fa-cogs me-1"></i> Choose Service
+                    </button>
+                }
                 <button class="btn btn-success btn-custom" @onclick="()=>SaveAction()">
                     <i class="fas fa-save me-1"></i> Save
                 </button>
@@ -111,106 +114,120 @@
         }
 
         <!-- Backlinks Table -->
-        @if (PagedBacklinks != null)
+        @if (ServiceId > 0)
         {
-            <div class="table-responsive shadow-sm rounded">
-                <table class="table table-bordered align-middle">
-                    <thead class="table-primary text-center">
-                        <tr>
-                            <th>#</th>
-                            <th>Sites URL</th>
-                            <th>Published URL</th>
-                            <th>Completed Time</th>
-                            <th>Url Action</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < Backlinks.Count; i++)
-                        {
-                            var link = Backlinks[i];
-                            bool isDisabled = link.IsIssuee;
-                            <tr class="hover-row @(isDisabled? "table-secondary disabled-row" :"")">
-                                @* <td>@(i + 1)</td> *@
-                                <td>@link.BacklinkUrlId</td>
-                                <td>
-                                    <span>@link.SiteUrl</span>
-                                    <button class="btn text-primary bg-transparent border-0 p-0 ms-2"
-                                    title="Copy to clipboard" disabled="@isDisabled"
-                                    @onclick="() => CopyToClipboard(link.SiteUrl)">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </td>
-
-                                <!-- Published URL -->
-                                <td>
-                                    <InputText @bind-Value="link.PublishUrl"
-                                    class="form-control" disabled="@isDisabled"
-                                    @oninput="e => OnPublishedUrlInput(e, link)" />
-
-                                    @if (link.PublishedUrlError)
-                                    {
-                                        <div class="error-text">⚠ Please provide a valid published URL.</div>
-                                    }
-                                </td>
-
-                                <!-- Completed Time -->
-                                <td class="text-center">
-                                    @if (link.PublishTime.HasValue)
-                                    {
-                                        <span class="badge badge-complete">
-                                            @FormatTimeTaken(link.PublishTime)
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge badge-pending">Pending</span>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-warning btn-sm ms-2" disabled="@isDisabled" @onclick="() => SuspendUrl(link)">
-                                        Suspend
-                                    </button>
-
-
-                                </td>
-
-                                <!-- Save Button -->
-                                <td class="text-center">
-                                    <button class="btn btn-danger btn-sm" disabled="@isDisabled" @onclick="() => RemoveUrl(link)">
-                                        Remove
-                                    </button>
-                                </td>
+            @if (PagedBacklinks != null)
+            {
+                <div class="table-responsive shadow-sm rounded">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-primary text-center">
+                            <tr>
+                                <th>#</th>
+                                <th>Sites URL</th>
+                                <th>Published URL</th>
+                                <th>Completed Time</th>
+                                <th>Url Action</th>
+                                <th>Action</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Backlinks.Count; i++)
+                            {
+                                var link = Backlinks[i];
+                                bool isDisabled = link.IsIssuee;
+                                <tr class="hover-row @(isDisabled? "table-secondary disabled-row" :"")">
+                                    @* <td>@(i + 1)</td> *@
+                                    <td>@link.BacklinkUrlId</td>
+                                    <td>
+                                        <span>@link.SiteUrl</span>
+                                        <button class="btn text-primary bg-transparent border-0 p-0 ms-2"
+                                        title="Copy to clipboard" disabled="@isDisabled"
+                                        @onclick="() => CopyToClipboard(link.SiteUrl)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </td>
 
-                <nav>
-                    <ul class="pagination">
-                        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                            <button class="page-link" @onclick="() => GoToPage(currentPage - 1)">Previous</button>
-                        </li>
-                        @for (int p = 1; p <= totalPages; p++)
-                        {
-                            var pageNum = p;
-                            <li class="page-item @(currentPage == pageNum ? "active" : "")">
-                                <button class="page-link" @onclick="() => GoToPage(pageNum)">@pageNum</button>
+                                    <!-- Published URL -->
+                                    <td>
+                                        <InputText @bind-Value="link.PublishUrl"
+                                        class="form-control" disabled="@isDisabled"
+                                        @oninput="e => OnPublishedUrlInput(e, link)" />
+
+                                        @if (link.PublishedUrlError)
+                                        {
+                                            <div class="error-text">⚠ Please provide a valid published URL.</div>
+                                        }
+                                    </td>
+
+                                    <!-- Completed Time -->
+                                    <td class="text-center">
+                                        @if (link.PublishTime.HasValue)
+                                        {
+                                            <span class="badge badge-complete">
+                                                @FormatTimeTaken(link.PublishTime)
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-pending">Pending</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-warning btn-sm ms-2" disabled="@isDisabled" @onclick="() => SuspendUrl(link)">
+                                            Suspend
+                                        </button>
+
+
+                                    </td>
+
+                                    <!-- Save Button -->
+                                    <td class="text-center">
+                                        <button class="btn btn-danger btn-sm" disabled="@isDisabled" @onclick="() => RemoveUrl(link)">
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <nav>
+                        <ul class="pagination">
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <button class="page-link" @onclick="() => GoToPage(currentPage - 1)">Previous</button>
                             </li>
-                        }
-                        <li class="page-item @(currentPage >= Math.Ceiling((double)PagedBacklinks.Total / pageSize) ? "disabled" : "")">
-                            <button class="page-link" @onclick="() => GoToPage(currentPage + 1)">Next</button>
-                        </li>
+                            @for (int p = 1; p <= totalPages; p++)
+                            {
+                                var pageNum = p;
+                                <li class="page-item @(currentPage == pageNum ? "active" : "")">
+                                    <button class="page-link" @onclick="() => GoToPage(pageNum)">@pageNum</button>
+                                </li>
+                            }
+                            <li class="page-item @(currentPage >= Math.Ceiling((double)PagedBacklinks.Total / pageSize) ? "disabled" : "")">
+                                <button class="page-link" @onclick="() => GoToPage(currentPage + 1)">Next</button>
+                            </li>
 
-                    </ul>
-                </nav>
-            </div>
+                        </ul>
+                    </nav>
+                </div>
+            }
+            else
+            {
+                <div class="text-center p-3">
+                    <span class="spinner-border text-primary" role="status"></span>
+                    <span class="ms-2">Loading backlinks...</span>
+                </div>
+            }
         }
         else
         {
-            <div class="text-center p-3">
-                <span class="spinner-border text-primary" role="status"></span>
-                <span class="ms-2">Loading backlinks...</span>
+            <div class="text-center p-5 my-4 border rounded shadow-sm bg-light">
+                <i class="fas fa-link fa-2x text-primary mb-3"></i>
+                <h5 class="text-secondary">No Service Selected</h5>
+                <p class="text-muted">Choose a service to start managing your backlinks.</p>
+                <button class="btn btn-outline-primary mt-2" @onclick="()=>OpenServiceDialog()">
+                    <i class="fas fa-cogs me-1"></i> Select Service
+                </button>
             </div>
         }
 
@@ -248,17 +265,12 @@
     private List<BacklinkDetails> IssuedBacklinkList = new();
     private List<string> projectNames = new();
     private int ServiceId { get; set; } = 0;
-    protected override async Task OnInitializedAsync()
+    private ProjectCategory Category { get; set; }
+
+
+    private async Task LoadData(ProjectCategory Category)
     {
-
-        await LoadData();
-
-        await Task.CompletedTask;
-    }
-
-    private async Task LoadData()
-    {
-        PagedBacklinks = await BacklinkUrlListServices!.GetBacklinks(currentPage, pageSize);
+        PagedBacklinks = await BacklinkUrlListServices!.GetBacklinks(currentPage, pageSize, Category);
 
         totalPages = (int)Math.Ceiling((double)PagedBacklinks.Total / pageSize);
 
@@ -276,7 +288,7 @@
 
             }
         }
-        IssuedBacklinksChecker();
+        await IssuedBacklinksChecker();
     }
 
     private async Task GoToPage(int page)
@@ -285,7 +297,7 @@
             return;
 
         currentPage = page;
-        await LoadData();
+        await LoadData(Category);
 
     }
 
@@ -441,7 +453,17 @@
         {
             await api.AddOrUpdateBacklinkAsync(dto);
 
-            // Now clear list AFTER saving
+            IssuedBacklinkList.AddRange(
+    Backlinks.Select(data => new BacklinkDetails
+        {
+            BacklinkUrlId = data.BacklinkUrlId ?? 0,  
+            WorkTaskId = data.WorkTaskId,        
+            SiteUrl = data.SiteUrl,
+            PublishUrl = data.PublishUrl,
+            PublishTime = data.PublishTime,
+            StartDate = data.StartDate
+        })
+    );
             Backlinks.Clear();
             StateHasChanged();
         }
@@ -478,16 +500,20 @@
         return Task.CompletedTask;
     }
 
-    private async Task HandleServiceId(int id)
+
+    private async Task HandleServiceId((int Id, ProjectCategory Category) data)
     {
-        ServiceId = id;
+        ServiceId = data.Id;
+        Category = data.Category;
+        await LoadData(data.Category);
+        await Task.CompletedTask;
         IssuedBacklinkList.Clear();
-        IssuedBacklinkList = await api.GetIssuedBacklinksAsync(id);
-        IssuedBacklinksChecker();
+        IssuedBacklinkList = await api.GetIssuedBacklinksAsync(data.Id);
+        await IssuedBacklinksChecker();
         StateHasChanged();
     }
 
-    private void IssuedBacklinksChecker()
+    private async Task IssuedBacklinksChecker()
     {
         if (IssuedBacklinkList.Any())
         {
@@ -496,13 +522,22 @@
                 .Select(x => x.SiteUrl)
                 .ToHashSet();
 
+            // Backlinks = Backlinks
+            //     .Select(b =>
+            //     {
+            //         b.IsIssuee = !string.IsNullOrEmpty(b.SiteUrl) && issuedUrls.Contains(b.SiteUrl);
+            //         return b;
+            //     })
+            //     .ToList();
             Backlinks = Backlinks
-                .Select(b =>
-                {
-                    b.IsIssuee = !string.IsNullOrEmpty(b.SiteUrl) && issuedUrls.Contains(b.SiteUrl);
-                    return b;
-                })
-                .ToList();
+           .Where(b => string.IsNullOrEmpty(b.SiteUrl) || !issuedUrls.Contains(b.SiteUrl))
+           .ToList();
+
+            if (Backlinks.Count == 0)
+            {
+                currentPage += 1;   // Increment current page
+                await GoToPage(currentPage); // Navigate to the next page
+            }
 
             StateHasChanged();
         }

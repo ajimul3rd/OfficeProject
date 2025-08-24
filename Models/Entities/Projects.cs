@@ -38,6 +38,10 @@ namespace OfficeProject.Models.Entities
         [Column(TypeName = "nvarchar(50)")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ProjectType ProjectType { get; set; } = ProjectType.SERVICE;
+        
+        [Column(TypeName = "nvarchar(50)")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ProjectCategory ProjectCategory { get; set; } = ProjectCategory.OTHERS;
 
         public bool IsUserWorkDone { get; set; } = false;
         public bool IsUserMarkAsRead { get; set; } = false;

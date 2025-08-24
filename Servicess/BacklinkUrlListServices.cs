@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OfficeProject.Data;
 using OfficeProject.Models.DTO;
 using OfficeProject.Models.Entities;
+using OfficeProject.Models.Enums;
 using System.Security.Claims;
 
 namespace OfficeProject.Servicess
@@ -45,7 +46,7 @@ namespace OfficeProject.Servicess
             }
         }
 
-        public async Task<PagedResult<BacklinkUrlListDTO>> GetBacklinks(int pageNumber = 1, int pageSize = 50)
+        public async Task<PagedResult<BacklinkUrlListDTO>> GetBacklinks(int pageNumber = 1, int pageSize = 50, ProjectCategory? category = null)
         {
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 50;
@@ -53,8 +54,18 @@ namespace OfficeProject.Servicess
             using var context = dbContextFactory.CreateDbContext();
 
             var skip = (pageNumber - 1) * pageSize;
+
             var query = context.BacklinkUrlList
-                               .Where(b => !b.IsSuspend);
+                       .Where(b => !b.IsSuspend);
+
+            // 👇 Apply category filter if provided
+            if (category.HasValue)
+            {
+                query = query.Where(b => b.ProjectCategory == category.Value);
+            }
+
+            //var query = context.BacklinkUrlList
+            //                   .Where(b => !b.IsSuspend);
 
             var total = await query.CountAsync();
             var data = await query

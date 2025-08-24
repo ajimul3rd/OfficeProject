@@ -30,12 +30,13 @@
         SERVICE,
         EXTRA_SERVICE,
     }
-    //public enum ProjectCategory
-    //{
-    //    "HEALTHCARE", 
-    //    "TRAVEL & HOSPITALITY", 
-    //    "OTHERS"
-    //}
+    public enum ProjectCategory
+    {
+        OTHERS,
+        HEALTHCARE, 
+        TRAVEL_HOSPITALITY
+        
+    }
 
     public enum ProjectPhaseType
     {

@@ -136,6 +136,10 @@ namespace OfficeProject.Migrations
                     b.Property<bool>("IsSuspend")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProjectCategory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("SiteUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -474,6 +478,10 @@ namespace OfficeProject.Migrations
 
                     b.Property<bool>("IsUserWorkDone")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ProjectCategory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("ProjectCost")
                         .HasPrecision(18, 2)

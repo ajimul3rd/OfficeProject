@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using ClosedXML.Excel
 @inject IDataSerializer? DataSerializer
+@using OfficeProject.Models.Enums;
 
 @using OfficeProject.Models.DTO;
 
@@ -418,6 +419,65 @@ button:disabled {
     }
     
 
+    // private Task LoadSheetData()
+    // {
+    //     if (workbook == null || selectedSheetIndex < 0 || selectedSheetIndex >= sheetNames.Count)
+    //         return Task.CompletedTask;
+
+    //     try
+    //     {
+    //         var worksheet = workbook.Worksheet(selectedSheetIndex + 1);
+    //         var range = worksheet.RangeUsed();
+    //         var data = new ExcelData();
+
+    //         backlinkDtoList.Clear(); ✅ clear before reloading
+
+    //         if (range != null)
+    //         {
+    //             Read headers (first row)
+    //             var firstRow = range.FirstRow();
+    //             var firstColumnHeader = firstRow.Cell(1).GetString();
+    //             data.Headers.Add(firstColumnHeader);
+
+    //             Read data rows (skip first row)
+    //             foreach (var row in range.Rows().Skip(1))
+    //             {
+    //                 var firstColumnValue = row.Cell(1).GetString();
+
+    //                 if (!string.IsNullOrWhiteSpace(firstColumnValue))
+    //                 {
+    //                     if (IsValidUrl(firstColumnValue))
+    //                     {
+    //                         ✅ Mark valid URLs
+    //                         data.Rows.Add(new List<string> { $"✅ {firstColumnValue}" });
+
+    //                         backlinkDtoList.Add(new BacklinkUrlListDTO
+    //                             {
+    //                                 SiteUrl = firstColumnValue
+    //                             });
+    //                     }
+    //                     else
+    //                     {
+    //                         ❌ Mark invalid URLs
+    //                         data.Rows.Add(new List<string> { $"❌ {firstColumnValue}" });
+    //                     }
+    //                 }
+    //             }
+
+    //         }
+
+    //         excelData = data;
+    //         DataSerializer?.Serializer(backlinkDtoList, "ExcelFilesReader:LoadSheetData");
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         message = $"Error loading sheet '{sheetNames[selectedSheetIndex]}': {ex.Message}";
+    //     }
+
+    //     return Task.CompletedTask;
+    // }
+
+
     private Task LoadSheetData()
     {
         if (workbook == null || selectedSheetIndex < 0 || selectedSheetIndex >= sheetNames.Count)
@@ -429,44 +489,54 @@ button:disabled {
             var range = worksheet.RangeUsed();
             var data = new ExcelData();
 
-            backlinkDtoList.Clear(); // ✅ clear before reloading
+            backlinkDtoList.Clear();
 
             if (range != null)
             {
-                // Read headers (first row)
+                // Read headers
                 var firstRow = range.FirstRow();
-                var firstColumnHeader = firstRow.Cell(1).GetString();
-                data.Headers.Add(firstColumnHeader);
+                foreach (var cell in firstRow.Cells())
+                {
+                    data.Headers.Add(cell.GetString());
+                }
 
-                // Read data rows (skip first row)
+                // Read rows (skip header row)
                 foreach (var row in range.Rows().Skip(1))
                 {
-                    var firstColumnValue = row.Cell(1).GetString();
+                    var siteUrl = row.Cell(1).GetString();
+                    var categoryText = row.Cell(2).GetString();
 
-                    if (!string.IsNullOrWhiteSpace(firstColumnValue))
+                    if (!string.IsNullOrWhiteSpace(siteUrl))
                     {
-                        if (IsValidUrl(firstColumnValue))
+                        if (IsValidUrl(siteUrl))
                         {
-                            // ✅ Mark valid URLs
-                            data.Rows.Add(new List<string> { $"✅ {firstColumnValue}" });
+                            var category = NormalizeCategory(categoryText);
+
+                            data.Rows.Add(new List<string>
+                        {
+                            $"✅ {siteUrl}",
+                            category.ToString()
+                        });
 
                             backlinkDtoList.Add(new BacklinkUrlListDTO
                                 {
-                                    SiteUrl = firstColumnValue
+                                    SiteUrl = siteUrl,
+                                    ProjectCategory = category
                                 });
                         }
                         else
                         {
-                            // ❌ Mark invalid URLs
-                            data.Rows.Add(new List<string> { $"❌ {firstColumnValue}" });
+                            data.Rows.Add(new List<string>
+                        {
+                            $"❌ {siteUrl}",
+                            categoryText
+                        });
                         }
                     }
                 }
-
             }
 
             excelData = data;
-            // DataSerializer?.Serializer(backlinkDtoList, "ExcelFilesReader:LoadSheetData");
         }
         catch (Exception ex)
         {
@@ -474,6 +544,21 @@ button:disabled {
         }
 
         return Task.CompletedTask;
+    }
+
+    private ProjectCategory NormalizeCategory(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return ProjectCategory.OTHERS;
+
+        var normalized = input.Trim().ToUpperInvariant();
+
+        if (normalized.Contains("TRAVEL"))
+            return ProjectCategory.TRAVEL_HOSPITALITY;
+        if (normalized.Contains("HEALTH"))
+            return ProjectCategory.HEALTHCARE;
+
+        return ProjectCategory.OTHERS;
     }
 
     private bool IsValidUrl(string url)

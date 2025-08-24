@@ -63,6 +63,12 @@ namespace OfficeProject.Models.DTO
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ProjectType ProjectType { get; set; } = ProjectType.SERVICE;
 
+
+        [Column(TypeName = "nvarchar(50)")]
+        [Required(ErrorMessage = "Project Category is required")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ProjectCategory ProjectCategory { get; set; } = ProjectCategory.OTHERS;
+
         public bool IsUserWorkDone { get; set; } = false;
         public bool IsUserMarkAsRead { get; set; } = false;
         public bool IsAdminMarkAsRead { get; set; } = false;
