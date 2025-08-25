@@ -143,6 +143,7 @@
                     <th>Billing Type</th>
                     <th>Used Ads Budget</th>
                     <th>Deadline</th>
+                    <th>Note</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -160,6 +161,7 @@
                         <td>@service.BillingType</td>
                         <td class="@GetProgressClass(service.CompleteUsedAdsBudget ?? 0, service.AdsBudget)">@((service.CompleteUsedAdsBudget ?? 0).ToString("c", new System.Globalization.CultureInfo("en-IN")))of (@service.AdsBudget.ToString("c", new System.Globalization.CultureInfo("en-IN"))) </td>
                         <td>@service.DeadLine.ToString("dd-MMM-yyyy", new System.Globalization.CultureInfo("en-IN"))</td>
+                        <td>@service.ExtraField1</td>
                         <td><button class="btn btn-sm btn-primary" @onclick="() => AddWorkRecord(service)"><i class="fas fa-plus"></i> Add Work </button></td>
                     </tr>
                 }

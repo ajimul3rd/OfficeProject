@@ -71,7 +71,7 @@ namespace OfficeProject.Models.DTO
         public DateTime DeadLine { get; set; }
 
         [MaxLength(250)]
-        public string? ExtraField1 { get; set; }
+        public string? ExtraField1 { get; set; }//Use For User Given Note 
 
         [MaxLength(250)]
         public string? ExtraField2 { get; set; }

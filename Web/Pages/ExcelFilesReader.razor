@@ -418,66 +418,6 @@ button:disabled {
         }
     }
     
-
-    // private Task LoadSheetData()
-    // {
-    //     if (workbook == null || selectedSheetIndex < 0 || selectedSheetIndex >= sheetNames.Count)
-    //         return Task.CompletedTask;
-
-    //     try
-    //     {
-    //         var worksheet = workbook.Worksheet(selectedSheetIndex + 1);
-    //         var range = worksheet.RangeUsed();
-    //         var data = new ExcelData();
-
-    //         backlinkDtoList.Clear(); ✅ clear before reloading
-
-    //         if (range != null)
-    //         {
-    //             Read headers (first row)
-    //             var firstRow = range.FirstRow();
-    //             var firstColumnHeader = firstRow.Cell(1).GetString();
-    //             data.Headers.Add(firstColumnHeader);
-
-    //             Read data rows (skip first row)
-    //             foreach (var row in range.Rows().Skip(1))
-    //             {
-    //                 var firstColumnValue = row.Cell(1).GetString();
-
-    //                 if (!string.IsNullOrWhiteSpace(firstColumnValue))
-    //                 {
-    //                     if (IsValidUrl(firstColumnValue))
-    //                     {
-    //                         ✅ Mark valid URLs
-    //                         data.Rows.Add(new List<string> { $"✅ {firstColumnValue}" });
-
-    //                         backlinkDtoList.Add(new BacklinkUrlListDTO
-    //                             {
-    //                                 SiteUrl = firstColumnValue
-    //                             });
-    //                     }
-    //                     else
-    //                     {
-    //                         ❌ Mark invalid URLs
-    //                         data.Rows.Add(new List<string> { $"❌ {firstColumnValue}" });
-    //                     }
-    //                 }
-    //             }
-
-    //         }
-
-    //         excelData = data;
-    //         DataSerializer?.Serializer(backlinkDtoList, "ExcelFilesReader:LoadSheetData");
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         message = $"Error loading sheet '{sheetNames[selectedSheetIndex]}': {ex.Message}";
-    //     }
-
-    //     return Task.CompletedTask;
-    // }
-
-
     private Task LoadSheetData()
     {
         if (workbook == null || selectedSheetIndex < 0 || selectedSheetIndex >= sheetNames.Count)

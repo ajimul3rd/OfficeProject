@@ -90,7 +90,7 @@
                             } *@
 
 
-                            @if (flags.IsClasified)
+                          @*   @if (flags.IsClasified)
                             {
                             <div class="row mb-3">
                                 <div class="col-md-6">
@@ -105,11 +105,10 @@
                                     <div class="form-group">
                                         <label>Clasified URL:</label>
                                         <InputText @bind-Value="@WorkRecord.ClasifiedURL" class="form-control" readonly="@(!flags.IsClasified)" />
-                                        @* <ValidationMessage For="@(() => WorkRecord.ClasifiedURL)" /> *@
                                     </div>
                                 </div>
                             </div>
-                            }
+                            } *@
 
                             @if(flags.IsSocialSharing){
                             <div class="row mb-3">
