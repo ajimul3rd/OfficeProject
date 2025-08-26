@@ -343,7 +343,7 @@ namespace OfficeProject.Servicess
                             .ThenInclude(s => s.WorkTaskDetails!)
                         .Include(p => p.Services!)
                             .ThenInclude(s => s.SpacificUserTask)
-                        .Where(p => p.AssignedUsers!.Any(u => u.UserId == userId))
+                        .Where(p => p.AssignedUsers!.Any(u => u.UserId == userId) && p.IsActive)
                         .AsSplitQuery()
                         .ToListAsync();
 

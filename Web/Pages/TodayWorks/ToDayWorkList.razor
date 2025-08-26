@@ -9,114 +9,114 @@
 
 <style>
     .low-progress {
-    background-color: #f8d7da; /* light red */
-    color: #721c24;
+        background-color: #f8d7da; /* light red */
+        color: #721c24;
     }
 
     .medium-progress {
-    background-color: #fff3cd; /* light yellow */
-    color: #856404;
+        background-color: #fff3cd; /* light yellow */
+        color: #856404;
     }
 
     .high-progress {
-    background-color: #d4edda; /* light green */
-    color: #155724;
+        background-color: #d4edda; /* light green */
+        color: #155724;
     }
 
 
     .low-progress-bg {
-    background-color: #FF0000 !important; /* Light red */
-    color: #FFFFFF !important;
+        background-color: #FF0000 !important; /* Light red */
+        color: #FFFFFF !important;
     }
 
     .medium-progress-bg {
-    background-color: #F6BE13 !important; /* Light yellow */
-    color: #000000 !important;
+        background-color: #F6BE13 !important; /* Light yellow */
+        color: #000000 !important;
     }
 
     .advanced-progress-bg {
-    background-color: #008000 !important; /* Light yellow */
-    color: white !important;
+        background-color: #008000 !important; /* Light yellow */
+        color: white !important;
     }
 
     .high-progress-bg {
-    background-color: #d4edda !important; /* light green */
-    color: #155724 !important;
+        background-color: #d4edda !important; /* light green */
+        color: #155724 !important;
     }
 
 
     .sticky-header th {
-    position: sticky;
-    top: 0;
-    background-color: #e9f4ff; /* or your header background */
-    z-index: 10;
+        position: sticky;
+        top: 0;
+        background-color: #e9f4ff; /* or your header background */
+        z-index: 10;
     }
 
     .truncate-text {
-    display: inline-block;
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .modal {
-    z-index: 1050;
+        z-index: 1050;
     }
 
     /* Activity dialog should appear above main form */
     .activity-dialog-modal {
-    z-index: 1060 !important;
+        z-index: 1060 !important;
     }
 
     /* Backdrop for activity dialog */
     .activity-dialog-backdrop {
-    z-index: 1055 !important;
-    background-color: rgba(0,0,0,0.5);
+        z-index: 1055 !important;
+        background-color: rgba(0,0,0,0.5);
     }
 
     body.modal-open {
-    overflow: hidden;
+        overflow: hidden;
     }
 
     .sticky-header th {
-    position: sticky;
-    top: 0;
-    background-color: #e9f4ff;
-    z-index: 10;
+        position: sticky;
+        top: 0;
+        background-color: #e9f4ff;
+        z-index: 10;
     }
 
     .truncate-text {
-    display: inline-block;
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .large-checkbox {
-    transform: scale(1.4);
-    transform-origin: left center;
-    margin-right: 0.5rem;
+        transform: scale(1.4);
+        transform-origin: left center;
+        margin-right: 0.5rem;
     }
 
     .checkbox-label {
-    display: flex;
-    align-items: center;
-    font-weight: 500;
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    cursor: pointer;
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
     }
 
     /*    .fixed-top {
-    z-index: 2000;
-    }
+        z-index: 2000;
+        }
 
-    .scale-wrapper {
-    transform: scale(0.85);
-    transform-origin: top left;
-    } */
+        .scale-wrapper {
+        transform: scale(0.85);
+        transform-origin: top left;
+        } */
 </style>
 
 <AuthorizeView Context="outerAuthContext">
@@ -132,16 +132,29 @@
         <div class="row align-items-start m-0 p-1 border border-primary shadow rounded">
             <!-- Left Column: 30% width (Overview + Search) -->
             <h3 class="mb-4 fw-bold text-primary">Overview</h3>
-            <div class="d-flex flex-wrap align-items-center gap-2">
-                <div class="flex-grow-1" style="max-width: 400px;">
-                    <input class="form-control form-control-lg"
-                    type="text"
-                    @bind="searchText"
-                    @bind:event="oninput"
-                    placeholder="🔍 Search by PID, Project Name or Client Name..." />
+            <div class="row align-items-center">
+                <!-- Search bar -->
+                <div class="col-md-6 col-lg-4">
+                    <input class="form-control"
+                           type="text"
+                           @bind="searchText"
+                           @bind:event="oninput"
+                           placeholder="🔍 Search by PID, Project Name or Client Name..." />
                 </div>
 
+                <!-- Total Project -->
+                <div class="col-md-3 col-6 d-flex align-items-center">
+                    <span class="text-primary fw-semibold fs-5">📊 Total Project:</span>
+                    <span class="text-dark fw-bold fs-5 ms-1">@TotalProject</span>
+                </div>
+
+                <!-- Total Services -->
+                <div class="col-md-3 col-6 d-flex align-items-center">
+                    <span class="text-primary fw-semibold fs-5">📊 Total Services:</span>
+                    <span class="text-dark fw-bold fs-5 ms-1">@TotalService</span>
+                </div>
             </div>
+
             <div class="row g-2 flex-wrap">
                 <div class="col-md-2 col-6">
                     <strong class="text-primary summary-label">📝 Posts:</strong>
@@ -200,7 +213,7 @@
                     <table class="table table-bordered">
                         <thead class="table-info sticky-header">
                             <tr>
-                                @* <th>Service Date</th> *@
+                                <th>#</th>
                                 <th class="align-top">PID-SID</th>
                                 <th class="align-top">Project Name</th>
                                 <th class="align-top">Post</th>
@@ -216,10 +229,14 @@
 
                         </thead>
                         <tbody>
+
                             @foreach (var project in filteredProjects)
                             {
                                 if (project.Services != null && project.Services.Any())
                                 {
+
+                                    int serial = 1;
+
                                     foreach (var service in project.Services)
                                     {
                                         <tr>
@@ -255,8 +272,15 @@
                                                 service.RequiredSocialSharing = socilSharingRequired.RequiredUnit;
                                             }
                                             @* <td>@service.StartDate</td> *@
+                                            <td>@serial</td>
                                             <td>@project.ProjectId - @service.ServiceId</td>
-                                            <td>@project.ProjectName - @service.ServiceName</td>
+                                            <td>
+                                                @project.ProjectName - @service.ServiceName
+                                                @if (project.ProjectType == ProjectType.EXTRA_SERVICE)
+                                                {
+                                                    <span class="ms-1 fw-bold text-primary">(Extra Service)</span>
+                                                }
+                                            </td>
 
                                             <td class="@postProgress.ColorClass" style="padding: 8px; line-height: 1.4;">
                                                 <div style="font-weight: 500;">@service.CompletePost <span>of (@service.TotalPost)</span></div>
@@ -305,19 +329,19 @@
                                             <td>@service.BillingType</td>
                                             <td class="text-center">
                                                 <button class="btn btn-sm btn-primary"
-                                                @onclick="() => ViewTeamWork((int)project.ProjectId!)" @onclick:stopPropagation
-                                                title="View Team Work">
+                                                        @onclick="() => ViewTeamWork((int)project.ProjectId!)" @onclick:stopPropagation
+                                                        title="View Team Work">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
                                             </td>
                                             <td>
                                                 <button class="btn btn-sm btn-primary"
-                                                @onclick="() => AddWorkRecord(service)">
+                                                        @onclick="() => AddWorkRecord(service)">
                                                     <i class="fas fa-plus"></i> Add Work
                                                 </button>
                                             </td>
                                         </tr>
-
+                                        serial++;
                                     }
                                 }
                                 else
@@ -340,17 +364,17 @@
         @if (IsVisible)
         {
             <DialogAddWorkTask IsVisible="@IsVisible"
-            service="@Service"
-            isAddWorkFormSubmit="@HandleWorkFormSubmit"
-            OnCancel="@OnDialogCancel" />
+                               service="@Service"
+                               isAddWorkFormSubmit="@HandleWorkFormSubmit"
+                               OnCancel="@OnDialogCancel" />
         }
 
 
         @if (ShowTeamWork)
         {
             <DialogViewTeamWorks ShowTeamWork="@ShowTeamWork"
-            ProjectId="@ProjectId"
-            IsDialogClose="@((bool val) => ShowTeamWork = val)" />
+                                 ProjectId="@ProjectId"
+                                 IsDialogClose="@((bool val) => ShowTeamWork = val)" />
 
         }
 
@@ -374,6 +398,9 @@
     [Inject] private DateService? DateService { get; set; }
     [Inject] private IService? GetServices { get; set; }
     [Inject] private IGlobalDataService? GlobalDataService { get; set; }
+
+    private int TotalProject;
+    private int TotalService;
 
     private List<DateTime> breakpoints = new();
 
@@ -415,11 +442,18 @@
             projects = GlobalDataService.Projects;
             data = GlobalDataService.Data;
         }
-
+        if (projects.Count > 0)
+        {
+            TotalProject = projects.Count;
+        }
+        if (projects.Sum(p => p.Services?.Count ?? 0) > 0)
+        {
+            TotalService = projects.Sum(p => p.Services?.Count ?? 0);
+        }
         isLoading = false;
 
     }
-    
+
 
 
     protected async Task GetProjectPerUserAsync()
@@ -434,6 +468,7 @@
             {
                 projects.Clear(); // Or assign new List<ProjectsDTO>() again if preferred
             }
+
 
             // Save globally
             GlobalDataService!.Clear();

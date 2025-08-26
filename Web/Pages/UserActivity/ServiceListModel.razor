@@ -65,25 +65,36 @@
 
 <div class="row align-items-start m-0 p-1 border border-primary shadow rounded">
     <!-- Left Column: 30% width (Overview + Search) -->
-    <div class="col-md-3 col-12 mt-2">
-        <h4 class="text-primary fw-semibold mb-2">📋 Services Overview</h4>
-        <input class="form-control form-control-sm"
-               type="text"
-               @bind="searchText"
-               @bind:event="oninput"
-               placeholder="🔍 Search..." />
-    </div>
-    <div class="col-md-9 col-12">
-        <div class="card bg-light">
-            <div class="card-body m-0 p-0">
-                <h6 class="card-title text-dark mb-3">📊 <strong>Summary</strong></h6>
+    <div class="summary-card bg-white p-3 mb-3">
+        <div class="row g-2 align-items-center">
+            <!-- Services Overview -->
+            <div class="col-md-3 col-12">
+                <h4 class="text-primary fw-semibold mb-2">📋 Services Overview</h4>
+                <input class="form-control form-control-sm"
+                       type="text"
+                       @bind="searchText"
+                       @bind:event="oninput"
+                       placeholder="🔍 Search..." />
+            </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-6 col-12 mb-2">
-                        <strong>👤 Client:</strong> @ClientName
-                    </div>
-                    <div class="col-md-6 col-12 mb-2">
-                        <strong>📞 Contact:</strong> @ContactPersonName
+            <!-- Total Services -->
+            <div class="col-md-3 col-12 d-flex align-items-center">
+                <span class="text-primary fw-semibold fs-5">📊 Total Services:</span>
+                <span class="text-dark fw-bold fs-5 ms-1">@TotalService</span>
+            </div>
+            <!-- Client Info -->
+            <div class="col-md-6 col-12">
+                <div class="card bg-light h-100 border-0 shadow-sm">
+                    <div class="card-body p-2">
+                        <h6 class="card-title text-dark mb-2">📊 <strong>Summary</strong></h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>👤 Client:</strong> @ClientName
+                            </div>
+                            <div class="col-6">
+                                <strong>📞 Contact:</strong> @ContactPersonName
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -91,7 +102,10 @@
     </div>
 
 
+
+
     <div class="row g-2 flex-wrap">
+       
         <div class="col-md-2 col-6">
             <strong class="text-primary summary-label">📝 Posts:</strong>
             <span class="ms-1">@CompletedPosts / @TotalPosts</span>
@@ -133,6 +147,7 @@
         <table class="table table-bordered table-hover">
             <thead class="table-primary">
                 <tr>
+                    <th>#</th>
                     <th>SID</th>
                     <th>Service Name</th>
                     <th>Post</th>
@@ -148,9 +163,13 @@
                 </tr>
             </thead>
             <tbody>
+                @{
+                    int serial = 1;
+                }
                 @foreach (var service in FilteredServices)
                 {
                     <tr style="cursor: pointer;" class="hover-row">
+                        <td>@serial</td>
                         <td>@service.ServiceId</td>
                         <td>@service.ServiceName</td>
                         <td class="@GetProgressClass((int)service.CompletePost!, service.TotalPost)">@service.CompletePost of (@service.TotalPost)</td>
@@ -164,6 +183,7 @@
                         <td>@service.ExtraField1</td>
                         <td><button class="btn btn-sm btn-primary" @onclick="() => AddWorkRecord(service)"><i class="fas fa-plus"></i> Add Work </button></td>
                     </tr>
+                    serial++;
                 }
 
             </tbody>
@@ -189,6 +209,8 @@ else
     private bool IsVisible { get; set; } = false;
 
     private ServicesDTO Service;
+
+    private int TotalService;
 
     private List<ServicesDTO> Services = new();
 
@@ -225,6 +247,7 @@ else
             if (projects.Services != null)
             {
                 Services = projects.Services;
+                TotalService = Services.Count;
             }
             @* DataSerializer.Serializer(Services, "ServiceListModel:OnParametersSet"); *@
             base.OnParametersSet();
